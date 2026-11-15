@@ -1,71 +1,70 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-canvas: #FAF8F5;
+  --color-canvas: #F8FAFC;
   --color-surface: #FFFFFF;
-  --color-surface-subtle: #F6F3ED;
-  --color-surface-warm: #EFEAE1;
-  --color-ink: #191716;
-  --color-ink-secondary: #4A4641;
-  --color-ink-muted: #79736B;
-  --color-stone-border: #E6E1D7;
-  --color-stone-border-strong: #D5CEBE;
+  --color-surface-subtle: #F1F5F9;
+  --color-surface-warm: #E2E8F0;
+  --color-ink: #0F172A;
+  --color-ink-secondary: #475569;
+  --color-ink-muted: #64748B;
+  --color-stone-border: #E2E8F0;
+  --color-stone-border-strong: #CBD5E1;
   
-  --color-clay: #C96442;
-  --color-clay-hover: #B55433;
-  --color-clay-subtle: #FAF0EB;
-  --color-clay-border: #F0D5CA;
+  --color-brand: #059669;
+  --color-brand-hover: #047857;
+  --color-brand-subtle: #ECFDF5;
+  --color-brand-border: #A7F3D0;
   
-  --color-sage: #276749;
-  --color-sage-subtle: #F0F6F2;
-  --color-sage-border: #C8E3D4;
+  --color-success: #059669;
+  --color-success-subtle: #ECFDF5;
+  --color-success-border: #A7F3D0;
   
-  --color-brick: #B93826;
-  --color-brick-subtle: #FDF3F1;
-  --color-brick-border: #F8D2CC;
+  --color-danger: #E11D48;
+  --color-danger-subtle: #FFF1F2;
+  --color-danger-border: #FECDD3;
 
-  --color-amber-accent: #B45309;
-  --color-amber-subtle: #FEF8EE;
-  --color-amber-border: #F9E3B4;
+  --color-warning: #D97706;
+  --color-warning-subtle: #FFFBEB;
+  --color-warning-border: #FDE68A;
 
-  --font-serif: 'Newsreader', 'Georgia', serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 @layer base {
   :root {
-    --bg-canvas: #FAF8F5;
+    --bg-canvas: #F8FAFC;
     --bg-surface: #FFFFFF;
-    --bg-surface-subtle: #F6F3ED;
-    --bg-surface-muted: #EFEAE1;
-    --ink-primary: #191716;
-    --ink-secondary: #4A4641;
-    --ink-muted: #79736B;
-    --border-subtle: #E6E1D7;
-    --border-strong: #D5CEBE;
-    --accent-clay: #C96442;
-    --accent-sage: #276749;
-    --accent-brick: #B93826;
-    --accent-amber: #B45309;
+    --bg-surface-subtle: #F1F5F9;
+    --bg-surface-muted: #E2E8F0;
+    --ink-primary: #0F172A;
+    --ink-secondary: #475569;
+    --ink-muted: #64748B;
+    --border-subtle: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --accent-brand: #059669;
+    --accent-success: #059669;
+    --accent-danger: #E11D48;
+    --accent-warning: #D97706;
   }
 
   body {
-    background-color: var(--bg-canvas);
-    color: var(--ink-primary);
+    background-color: #F8FAFC;
+    color: #0F172A;
     min-height: 100vh;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    selection-background-color: #191716;
-    selection-color: #FAF8F5;
+    selection-background-color: #0F172A;
+    selection-color: #FFFFFF;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.03em;
-    color: var(--ink-primary);
+    color: #0F172A;
     text-wrap: balance;
   }
 
@@ -80,8 +79,8 @@
 
 /* Base motion curve */
 .transition-editorial {
-  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 200ms;
 }
 
 /* Modern Web Guidance: Dialog scroll containment without locking body/html */
@@ -91,7 +90,7 @@ dialog:modal {
 dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
-  background-color: rgba(25, 23, 22, 0.4);
+  background-color: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(4px);
 }
 
@@ -107,12 +106,12 @@ dialog::backdrop {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: #F8FAFC;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D5CEBE;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A8A29A;
+  background: #94A3B8;
 }

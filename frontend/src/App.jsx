@@ -30,7 +30,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#191716] flex flex-col font-sans selection:bg-[#191716] selection:text-[#FAF8F5]">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-[#0F172A] selection:text-white">
       
       {/* Navigation */}
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -89,18 +89,18 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-[#E6E1D7] py-8 text-center text-xs text-[#79736B] bg-[#FAF8F5]">
+      <footer className="border-t border-[#E2E8F0] py-8 text-center text-xs text-[#64748B] bg-white">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center space-x-2 text-sm text-[#191716]">
+          <div className="flex items-center space-x-2 text-sm text-[#0F172A]">
             <span className="font-bold">SmartATS</span>
-            <span className="text-[#79736B] text-xs">&mdash; Research-Grade Explainable Screening</span>
+            <span className="text-[#64748B] text-xs">&mdash; Enterprise Candidate Screening Platform</span>
           </div>
-          <div className="flex items-center space-x-3 font-mono text-[11px] text-[#79736B]">
+          <div className="flex items-center space-x-3 font-mono text-[11px] text-[#64748B]">
             <span>Deterministic Scoring</span>
             <span>&bull;</span>
-            <span>Private & Local</span>
+            <span>Local SHA-256 Deduplication</span>
             <span>&bull;</span>
-            <span>Anthropic-Caliber Editorial</span>
+            <span>Zero Hallucinations</span>
           </div>
         </div>
       </footer>
