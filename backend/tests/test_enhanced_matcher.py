@@ -117,3 +117,27 @@ def test_job_weights_persistence_endpoint(db_session):
         db=db_session
     )
     assert rankings.weights_applied["weight_skills"] == 0.7
+
+
+def test_experience_range_matching_2_to_4_years():
+    from app.services.matcher import compute_experience_score
+
+    jd_with_range = "We are seeking a Backend Engineer with 2 - 4 years experience in Python and microservices."
+
+    # In target range: 2.0, 3.0, 4.0 years -> 100%
+    assert compute_experience_score(2.0, "Mid-Level", jd_with_range) == 100.0
+    assert compute_experience_score(3.0, "Mid-Level", jd_with_range) == 100.0
+    assert compute_experience_score(4.0, "Mid-Level", jd_with_range) == 100.0
+
+    # Above target: 5.5 years -> 100%
+    assert compute_experience_score(5.5, "Senior", jd_with_range) == 100.0
+
+    # Near minimum threshold (1.5 - 1.9 yrs) -> 85%
+    assert compute_experience_score(1.6, "Junior / Entry", jd_with_range) == 85.0
+
+    # Partial / emerging (1.0 - 1.4 yrs) -> 65%
+    assert compute_experience_score(1.0, "Junior / Entry", jd_with_range) == 65.0
+
+    # No documented experience -> 30%
+    assert compute_experience_score(0.0, "Junior / Entry", jd_with_range) == 30.0
+

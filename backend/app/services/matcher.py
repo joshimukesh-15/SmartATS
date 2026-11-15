@@ -73,33 +73,70 @@ def compute_keyword_score(matched_count: int, total_required: int, equivalent_co
 def compute_experience_score(exp_years: float, candidate_seniority: str, job_description: str) -> float:
     """
     Evaluates candidate experience years and seniority against the job requirements.
+    Supports explicit ranges (e.g. '2 - 4 years experience'), single thresholds ('3+ years'),
+    and role-level seniority inference.
     """
     jd_lower = job_description.lower()
-    target_years = 3.0
 
-    if re.search(r"\b(?:senior|sr\.?|lead|principal|architect)\b", jd_lower):
-        target_years = 5.0
-    elif re.search(r"\b(?:junior|entry|intern|associate)\b", jd_lower):
-        target_years = 1.0
+    # 1. Check for explicit range in JD (e.g. "2 - 4 years", "2 to 4 years", "between 2 and 4 yrs")
+    range_pat = re.compile(
+        r"(?:(?:between|from)\s+)?(\d+(?:\.\d+)?)\s*(?:-|–|—|\s+to\s+)\s*(\d+(?:\.\d+)?)\s*\+?\s*(?:years?|yrs?)(?:\s+of)?(?:\s+\w+){0,3}\s+experience",
+        re.IGNORECASE,
+    )
+    m_range = range_pat.search(jd_lower)
 
-    # Look for explicit years specified in JD
-    m = re.search(r"(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)(?:\s+of)?\s+experience", jd_lower)
-    if m:
+    if m_range:
         try:
-            target_years = float(m.group(1))
+            val1 = float(m_range.group(1))
+            val2 = float(m_range.group(2))
+            min_years = min(val1, val2)
+            max_years = max(val1, val2)
         except ValueError:
-            pass
+            min_years, max_years = 2.0, 4.0
 
-    if exp_years >= target_years:
-        score = 100.0
-    elif exp_years >= target_years * 0.7:
-        score = 85.0
-    elif exp_years >= target_years * 0.4:
-        score = 65.0
-    elif exp_years > 0:
-        score = 45.0
+        if min_years <= exp_years <= max_years:
+            score = 100.0
+        elif exp_years > max_years:
+            # Within reasonable range above max (e.g. 5-7 yrs for a 2-4 yr role) -> 100%
+            # Overqualified senior (> max + 4 yrs) -> 95%
+            score = 100.0 if exp_years <= max_years + 4.0 else 95.0
+        elif exp_years >= min_years * 0.75:
+            score = 85.0
+        elif exp_years >= min_years * 0.50:
+            score = 65.0
+        elif exp_years > 0:
+            score = 45.0
+        else:
+            score = 30.0
     else:
-        score = 30.0
+        # 2. Check for explicit single requirement (e.g. "5+ years", "at least 3 years", "minimum 2 years")
+        single_pat = re.compile(
+            r"(?:(?:at least|min(?:imum)?(?:\s+of)?)\s+)?(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)(?:\s+of)?(?:\s+\w+){0,3}\s+experience",
+            re.IGNORECASE,
+        )
+        m_single = single_pat.search(jd_lower)
+        if m_single:
+            try:
+                target_years = float(m_single.group(1))
+            except ValueError:
+                target_years = 3.0
+        elif re.search(r"\b(?:senior|sr\.?|lead|principal|architect)\b", jd_lower):
+            target_years = 5.0
+        elif re.search(r"\b(?:junior|entry|intern|associate)\b", jd_lower):
+            target_years = 1.0
+        else:
+            target_years = 3.0
+
+        if exp_years >= target_years:
+            score = 100.0
+        elif exp_years >= target_years * 0.7:
+            score = 85.0
+        elif exp_years >= target_years * 0.4:
+            score = 65.0
+        elif exp_years > 0:
+            score = 45.0
+        else:
+            score = 30.0
 
     # Boost if candidate seniority matches role seniority
     if "senior" in jd_lower and candidate_seniority in {"Senior", "Lead / Principal"}:
