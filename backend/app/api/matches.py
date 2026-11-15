@@ -109,6 +109,9 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
     ]
     
     score_ranges = {
+        "80-100%": len([s for s in all_scores if s >= 80]),
+        "60-79%": len([s for s in all_scores if 60 <= s < 80]),
+        "<60%": len([s for s in all_scores if s < 60]),
         "90-100%": len([s for s in all_scores if s >= 90]),
         "75-89%": len([s for s in all_scores if 75 <= s < 90]),
         "50-74%": len([s for s in all_scores if 50 <= s < 75]),
@@ -138,8 +141,17 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
         "pending_resumes": status_counts.get("PENDING", 0) + status_counts.get("PROCESSING", 0),
         "failed_resumes": status_counts.get("FAILED", 0),
         "duplicate_resumes": status_counts.get("DUPLICATE", 0),
+        "duplicate_count": status_counts.get("DUPLICATE", 0),
         "average_score": avg_score,
+        "avg_final_score": avg_score,
         "score_distribution": score_ranges,
+        "score_buckets": {
+            "80-100%": len([s for s in all_scores if s >= 80]),
+            "60-79%": len([s for s in all_scores if 60 <= s < 80]),
+            "40-59%": len([s for s in all_scores if 40 <= s < 60]),
+            "<40%": len([s for s in all_scores if s < 40]),
+            "<60%": len([s for s in all_scores if s < 60])
+        },
         "stage_distribution": stage_counts
     }
 
@@ -173,12 +185,21 @@ def get_job_specific_analytics(job_id: int, db: Session = Depends(get_db)):
         st = a.review_stage or "New"
         job_stage_counts[st] = job_stage_counts.get(st, 0) + 1
 
+    duplicate_count = sum(1 for a in apps if a.processing_status == "DUPLICATE")
+    keyword_scores = [m.keyword_score for m in matches if m.keyword_score is not None]
+    avg_keyword_score = round(sum(keyword_scores) / len(keyword_scores), 1) if keyword_scores else 0.0
+    avg_final = round(sum(scores) / len(scores), 1) if scores else 0.0
+
     return {
         "job_id": job.job_id,
         "job_title": job.title,
         "total_applications": len(apps),
         "total_processed": len(matches),
-        "average_final_score": round(sum(scores) / len(scores), 1) if scores else 0.0,
+        "average_final_score": avg_final,
+        "avg_final_score": avg_final,
+        "average_keyword_score": avg_keyword_score,
+        "avg_keyword_score": avg_keyword_score,
+        "duplicate_count": duplicate_count,
         "stage_distribution": job_stage_counts,
         "score_buckets": {
             "80-100%": len([s for s in scores if s >= 80]),

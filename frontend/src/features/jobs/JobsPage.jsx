@@ -281,7 +281,7 @@ export default function JobsPage() {
                     </button>
                   </TableCell>
                   <TableCell className="text-center tabular-nums font-semibold text-ink text-[13px]">
-                    {job.application_count ?? '—'}
+                    {job.application_count ?? job.applications_count ?? 0}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">

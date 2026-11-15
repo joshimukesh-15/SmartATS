@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, FileText, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import { UploadCloud, FileText, AlertCircle, ArrowRight, Clock, X } from 'lucide-react';
 import { useJobs, useUploadResumes } from '../../hooks';
 import { Select, Button, Panel, toast } from '../../components/ui';
 
@@ -19,18 +19,28 @@ export default function UploadPage() {
   const uploadMutation = useUploadResumes(currentJobId);
 
   const handleFilesAdded = (incomingFiles) => {
-    const valid = Array.from(incomingFiles).filter((f) => /\.(pdf|docx)$/i.test(f.name));
-    if (valid.length === 0) {
-      toast.error('Please select valid PDF or DOCX files');
-      return;
-    }
-    setFileList((prev) => [...prev, ...valid]);
+    const files = Array.from(incomingFiles);
+    if (files.length === 0) return;
+    setFileList((prev) => [...prev, ...files]);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     if (e.dataTransfer.files?.length) {
       handleFilesAdded(e.dataTransfer.files);
+    }
+  };
+
+  const handleRemoveFile = (indexToRemove) => {
+    const fileToRemove = fileList[indexToRemove];
+    setFileList((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+    if (fileToRemove) {
+      setFileStatuses((prev) => {
+        const next = { ...prev };
+        delete next[fileToRemove.name];
+        delete next[`${fileToRemove.name}-${indexToRemove}`];
+        return next;
+      });
     }
   };
 
@@ -48,17 +58,22 @@ export default function UploadPage() {
 
     // Initial status: Uploading
     const initialStatuses = {};
-    fileList.forEach((f) => {
-      initialStatuses[f.name] = { status: 'uploading', text: 'Uploading document...' };
+    fileList.forEach((f, idx) => {
+      const key = `${f.name}-${idx}`;
+      const uploadingObj = { status: 'uploading', text: 'Uploading document...' };
+      initialStatuses[key] = uploadingObj;
+      initialStatuses[f.name] = uploadingObj;
     });
     setFileStatuses(initialStatuses);
 
-    // Simulate pipeline stages for responsive feedback
-    setTimeout(() => {
+    // Provide responsive feedback while in flight
+    const timer = setTimeout(() => {
       setFileStatuses((prev) => {
         const next = { ...prev };
-        Object.keys(next).forEach((name) => {
-          next[name] = { status: 'parsing', text: 'Reading text & verifying structure...' };
+        Object.keys(next).forEach((key) => {
+          if (next[key]?.status === 'uploading') {
+            next[key] = { status: 'parsing', text: 'Screening and validating file...' };
+          }
         });
         return next;
       });
@@ -66,42 +81,112 @@ export default function UploadPage() {
 
     uploadMutation.mutate(fileList, {
       onSuccess: (response) => {
+        clearTimeout(timer);
         setProcessing(false);
+        const results = Array.isArray(response) ? response : [];
         const nextStatuses = {};
 
-        // Parse results from backend response
-        const duplicates = response?.duplicates || [];
-        const processed = response?.processed || [];
+        let acceptedCount = 0;
+        let duplicateCount = 0;
+        let rejectedCount = 0;
+        let errorCount = 0;
 
-        fileList.forEach((file) => {
-          const isDup = duplicates.some((d) => d.filename === file.name || d.name === file.name);
-          if (isDup) {
-            nextStatuses[file.name] = {
+        fileList.forEach((file, idx) => {
+          const key = `${file.name}-${idx}`;
+
+          // Match each response to its uploaded file (by filename/index)
+          const resultItem =
+            results.find((r, rIdx) => r.filename === file.name && rIdx === idx) ||
+            results.find((r) => r.filename === file.name) ||
+            results[idx];
+
+          if (!resultItem) {
+            const statusObj = {
+              status: 'error',
+              text: 'No response received from server',
+            };
+            nextStatuses[key] = statusObj;
+            nextStatuses[file.name] = statusObj;
+            errorCount++;
+            return;
+          }
+
+          const status = (resultItem.status || '').toUpperCase();
+          const message = resultItem.message || '';
+
+          let statusObj;
+          if (status === 'ACCEPTED') {
+            acceptedCount++;
+            statusObj = {
+              status: 'queued',
+              text: message || 'Queued for background screening & scoring',
+              applicationId: resultItem.application_id,
+              candidateId: resultItem.candidate_id,
+              candidateName: resultItem.candidate_name,
+            };
+          } else if (status === 'DUPLICATE') {
+            duplicateCount++;
+            statusObj = {
               status: 'duplicate',
-              text: 'Duplicate skipped: SHA-256 match in database',
+              text: message || 'Duplicate resume detected for this job (skipped)',
+              applicationId: resultItem.application_id,
+              candidateId: resultItem.candidate_id,
+              candidateName: resultItem.candidate_name,
+            };
+          } else if (status === 'REJECTED') {
+            rejectedCount++;
+            statusObj = {
+              status: 'rejected',
+              text: message || 'File rejected by server',
+            };
+          } else if (status === 'ERROR') {
+            errorCount++;
+            statusObj = {
+              status: 'error',
+              text: message || 'Upload failed',
             };
           } else {
-            const resultItem = processed.find(
-              (p) => p.filename === file.name || p.name === file.name
-            );
-            const score = resultItem?.final_score ?? resultItem?.score ?? 84.5;
-            nextStatuses[file.name] = {
-              status: 'scored',
-              text: `Scored: ${score.toFixed ? score.toFixed(1) : score}% fit computed`,
+            statusObj = {
+              status: status.toLowerCase(),
+              text: message || status,
             };
           }
+
+          nextStatuses[key] = statusObj;
+          nextStatuses[file.name] = statusObj;
         });
 
         setFileStatuses(nextStatuses);
-        toast.success(`Processed ${fileList.length} resume(s) successfully`);
+
+        // Feedback toast supporting partial upload success
+        if (acceptedCount === fileList.length) {
+          toast.success(
+            acceptedCount === 1
+              ? 'Resume uploaded successfully and queued for screening'
+              : `All ${acceptedCount} resumes uploaded and queued for screening`
+          );
+        } else if (acceptedCount > 0) {
+          const parts = [`${acceptedCount} queued`];
+          if (duplicateCount > 0) parts.push(`${duplicateCount} duplicate(s)`);
+          if (rejectedCount > 0) parts.push(`${rejectedCount} rejected`);
+          if (errorCount > 0) parts.push(`${errorCount} failed`);
+          toast.info(`Partial upload complete: ${parts.join(', ')}`);
+        } else {
+          const reasons = [];
+          if (duplicateCount > 0) reasons.push(`${duplicateCount} duplicate(s)`);
+          if (rejectedCount > 0) reasons.push(`${rejectedCount} rejected`);
+          if (errorCount > 0) reasons.push(`${errorCount} failed`);
+          toast.error(`Upload unsuccessful: ${reasons.join(', ') || 'No resumes processed'}`);
+        }
       },
       onError: (err) => {
+        clearTimeout(timer);
         setProcessing(false);
-        toast.error(`Upload error: ${err.message}`);
+        toast.error(`Upload error: ${err.message || 'Failed to upload resumes'}`);
         setFileStatuses((prev) => {
           const next = { ...prev };
-          Object.keys(next).forEach((name) => {
-            next[name] = { status: 'error', text: `Failed: ${err.message}` };
+          Object.keys(next).forEach((key) => {
+            next[key] = { status: 'error', text: `Failed: ${err.message || 'Server error'}` };
           });
           return next;
         });
@@ -117,7 +202,7 @@ export default function UploadPage() {
           Upload Resumes
         </h1>
         <p className="text-[14px] text-ink-muted mt-1">
-          Ingest applicant documents in PDF or DOCX format for instant dual-track scoring and
+          Ingest applicant documents in PDF or DOCX format for background parsing, screening, and
           duplicate prevention.
         </p>
       </div>
@@ -186,6 +271,7 @@ export default function UploadPage() {
               <Button
                 variant="ghost"
                 size="sm"
+                disabled={processing}
                 onClick={() => {
                   setFileList([]);
                   setFileStatuses({});
@@ -193,18 +279,24 @@ export default function UploadPage() {
               >
                 Clear all
               </Button>
-              <Button variant="primary" size="sm" loading={processing} onClick={handleUploadSubmit}>
-                Process & Score
+              <Button
+                variant="primary"
+                size="sm"
+                loading={processing}
+                onClick={handleUploadSubmit}
+              >
+                Upload & Process
               </Button>
             </div>
           </div>
 
           <div className="divide-y divide-line">
             {fileList.map((file, idx) => {
-              const statusInfo = fileStatuses[file.name];
+              const fileKey = `${file.name}-${idx}`;
+              const statusInfo = fileStatuses[fileKey] || fileStatuses[file.name];
               return (
                 <div
-                  key={idx}
+                  key={fileKey}
                   className="py-3 flex items-center justify-between gap-4 first:pt-0 last:pb-0"
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -217,29 +309,47 @@ export default function UploadPage() {
                     </div>
                   </div>
 
-                  <div className="text-[13px] shrink-0">
-                    {!statusInfo ? (
-                      <span className="text-ink-muted">Ready to upload</span>
-                    ) : statusInfo.status === 'scored' ? (
-                      <span className="inline-flex items-center gap-1.5 text-ink font-medium">
-                        <CheckCircle2 className="w-4 h-4 text-champagne" />
-                        <span>{statusInfo.text}</span>
-                      </span>
-                    ) : statusInfo.status === 'duplicate' ? (
-                      <span className="inline-flex items-center gap-1.5 text-ink-muted">
-                        <AlertCircle className="w-4 h-4 text-ink-subtle" />
-                        <span>{statusInfo.text}</span>
-                      </span>
-                    ) : statusInfo.status === 'error' ? (
-                      <span className="inline-flex items-center gap-1.5 text-danger">
-                        <AlertCircle className="w-4 h-4" />
-                        <span>{statusInfo.text}</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-2 text-ink-muted">
-                        <span className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                        <span>{statusInfo.text}</span>
-                      </span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-[13px] text-right">
+                      {!statusInfo ? (
+                        <span className="text-ink-muted">Ready to upload</span>
+                      ) : statusInfo.status === 'queued' || statusInfo.status === 'accepted' ? (
+                        <span className="inline-flex items-center gap-1.5 text-primary font-medium">
+                          <Clock className="w-4 h-4 text-primary shrink-0" />
+                          <span>{statusInfo.text}</span>
+                        </span>
+                      ) : statusInfo.status === 'duplicate' ? (
+                        <span className="inline-flex items-center gap-1.5 text-ink-muted">
+                          <AlertCircle className="w-4 h-4 text-ink-subtle shrink-0" />
+                          <span>{statusInfo.text}</span>
+                        </span>
+                      ) : statusInfo.status === 'rejected' ? (
+                        <span className="inline-flex items-center gap-1.5 text-danger font-medium">
+                          <AlertCircle className="w-4 h-4 shrink-0" />
+                          <span>{statusInfo.text}</span>
+                        </span>
+                      ) : statusInfo.status === 'error' ? (
+                        <span className="inline-flex items-center gap-1.5 text-danger font-medium">
+                          <AlertCircle className="w-4 h-4 shrink-0" />
+                          <span>{statusInfo.text}</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-2 text-ink-muted">
+                          <span className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
+                          <span>{statusInfo.text}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {!processing && !statusInfo && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFile(idx)}
+                        aria-label={`Remove ${file.name}`}
+                        className="p-1 text-ink-muted hover:text-ink transition-colors rounded"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
                 </div>
@@ -248,7 +358,9 @@ export default function UploadPage() {
           </div>
 
           {/* Action to view results */}
-          {Object.values(fileStatuses).some((s) => s.status === 'scored') && (
+          {Object.values(fileStatuses).some(
+            (s) => s.status === 'queued' || s.status === 'accepted'
+          ) && (
             <div className="pt-4 border-t border-line flex justify-end">
               <Button
                 variant="primary"

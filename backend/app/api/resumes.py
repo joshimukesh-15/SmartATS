@@ -1,5 +1,5 @@
 import os
-import aiofiles
+import inspect
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
 from sqlalchemy.orm import Session
@@ -56,7 +56,8 @@ async def upload_resumes(
 
         try:
             # 2. Read bytes and calculate SHA-256 hash
-            content = await file.read()
+            raw_read = file.read()
+            content = await raw_read if inspect.isawaitable(raw_read) else raw_read
             if len(content) > settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024:
                 results.append(ApplicationUploadResult(
                     filename=filename,
@@ -85,8 +86,8 @@ async def upload_resumes(
             # 4. Save file to disk securely
             safe_name = sanitize_filename(filename)
             saved_path = os.path.join(settings.UPLOAD_DIR, safe_name)
-            async with aiofiles.open(saved_path, "wb") as f:
-                await f.write(content)
+            with open(saved_path, "wb") as f:
+                f.write(content)
 
             # 5. Create Candidate record
             base_cand_name = os.path.splitext(filename)[0].replace("_", " ").replace("-", " ")
@@ -136,6 +137,7 @@ async def upload_resumes(
             ))
 
         except Exception as e:
+            db.rollback()
             results.append(ApplicationUploadResult(
                 filename=filename,
                 status="ERROR",

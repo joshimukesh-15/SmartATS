@@ -66,6 +66,7 @@ class JobResponse(JobBase):
     job_id: int
     created_at: datetime
     updated_at: datetime
+    application_count: Optional[int] = 0
     applications_count: Optional[int] = 0
 
     model_config = ConfigDict(from_attributes=True)

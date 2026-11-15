@@ -51,6 +51,7 @@ def create_job(job_in: JobCreate, db: Session = Depends(get_db)):
     db.refresh(job)
 
     job_dict = JobResponse.model_validate(job)
+    job_dict.application_count = 0
     job_dict.applications_count = 0
     return job_dict
 
@@ -63,6 +64,7 @@ def list_jobs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     for j in jobs:
         count = db.query(Application).filter(Application.job_id == j.job_id).count()
         j_resp = JobResponse.model_validate(j)
+        j_resp.application_count = count
         j_resp.applications_count = count
         results.append(j_resp)
     return results
@@ -121,6 +123,7 @@ def update_job_weights(
 
     count = db.query(Application).filter(Application.job_id == job.job_id).count()
     resp = JobResponse.model_validate(job)
+    resp.application_count = count
     resp.applications_count = count
     return resp
 
@@ -134,6 +137,7 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     
     count = db.query(Application).filter(Application.job_id == job.job_id).count()
     resp = JobResponse.model_validate(job)
+    resp.application_count = count
     resp.applications_count = count
     return resp
 
@@ -165,6 +169,7 @@ def update_job(job_id: int, job_update: JobUpdate, db: Session = Depends(get_db)
 
     count = db.query(Application).filter(Application.job_id == job.job_id).count()
     resp = JobResponse.model_validate(job)
+    resp.application_count = count
     resp.applications_count = count
     return resp
 

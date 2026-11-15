@@ -60,6 +60,8 @@ export default function OverviewPage() {
     );
   }
 
+  const avgScore = analytics?.average_score ?? analytics?.avg_final_score ?? 0;
+
   const statItems = [
     {
       label: 'Job Openings',
@@ -73,55 +75,27 @@ export default function OverviewPage() {
     },
     {
       label: 'Average Score',
-      value: `${(analytics?.avg_final_score ?? 78.4).toFixed(1)}%`,
+      value: `${Number(avgScore).toFixed(1)}%`,
       caption: 'Dual-track fit average',
     },
     {
       label: 'Duplicates Blocked',
-      value: analytics?.duplicate_count ?? 0,
+      value: analytics?.duplicate_resumes ?? analytics?.duplicate_count ?? 0,
       caption: 'SHA-256 hash matches',
     },
   ];
 
   // Candidates list
-  const topCandidates = rankingsData?.rankings?.slice(0, 4) || [
-    {
-      application_id: 'sample-1',
-      candidate_name: 'Sarah Jenkins',
-      candidate_email: 'sarah.jenkins@example.com',
-      review_stage: 'Interview',
-      rank: 1,
-      final_score: 93.4,
-      keyword_score: 95.0,
-      tfidf_score: 91.0,
-    },
-    {
-      application_id: 'sample-2',
-      candidate_name: 'Alex Rivera',
-      candidate_email: 'alex.rivera@example.com',
-      review_stage: 'Reviewing',
-      rank: 2,
-      final_score: 87.2,
-      keyword_score: 88.0,
-      tfidf_score: 86.0,
-    },
-    {
-      application_id: 'sample-3',
-      candidate_name: 'Jordan Lee',
-      candidate_email: 'jordan.lee@example.com',
-      review_stage: 'New',
-      rank: 3,
-      final_score: 81.0,
-      keyword_score: 82.0,
-      tfidf_score: 79.5,
-    },
-  ];
+  const topCandidates = rankingsData?.rankings?.slice(0, 4) || [];
 
   // Distribution calculations
-  const totalApps = analytics?.total_applications || 12;
-  const highTier = Math.round(totalApps * 0.42);
-  const midTier = Math.round(totalApps * 0.38);
-  const lowTier = Math.max(0, totalApps - highTier - midTier);
+  const scoreDist = analytics?.score_distribution || analytics?.score_buckets || {};
+  const highTier = scoreDist['80-100%'] ?? 0;
+  const midTier = scoreDist['60-79%'] ?? 0;
+  const lowTier =
+    scoreDist['<60%'] ??
+    (scoreDist['40-59%'] ?? 0) + (scoreDist['<40%'] ?? 0) + (scoreDist['<50%'] ?? 0);
+  const evaluatedCount = highTier + midTier + lowTier;
 
   const stageDistribution = analytics?.stage_distribution || {
     New: 0,
@@ -249,43 +223,50 @@ export default function OverviewPage() {
         <Panel className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-[16px] font-semibold text-ink">Score distribution</h2>
-            <span className="text-[13px] text-ink-muted tabular-nums">{totalApps} evaluations</span>
+            <span className="text-[13px] text-ink-muted tabular-nums">
+              {evaluatedCount} {evaluatedCount === 1 ? 'evaluation' : 'evaluations'}
+            </span>
           </div>
 
-          {/* Stacked Horizontal Bar */}
-          <div className="space-y-2">
-            <div className="h-3 w-full rounded-full bg-surface-alt flex overflow-hidden">
-              <div
-                style={{ width: `${(highTier / totalApps) * 100}%` }}
-                className="bg-primary h-full transition-all"
-                title={`High fit: ${highTier}`}
-              />
-              <div
-                style={{ width: `${(midTier / totalApps) * 100}%` }}
-                className="bg-champagne h-full transition-all"
-                title={`Moderate fit: ${midTier}`}
-              />
-              <div
-                style={{ width: `${(lowTier / totalApps) * 100}%` }}
-                className="bg-line h-full transition-all"
-                title={`Needs review: ${lowTier}`}
-              />
+          {evaluatedCount === 0 ? (
+            <div className="py-8 text-center text-[13px] text-ink-muted">
+              No candidate evaluations yet to display score distribution.
             </div>
-            <div className="flex items-center justify-between text-[13px] text-ink-muted pt-1">
-              <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-                80%–100% ({highTier})
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-champagne" />
-                60%–79% ({midTier})
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-line" />
-                &lt;60% ({lowTier})
-              </span>
+          ) : (
+            <div className="space-y-2">
+              <div className="h-3 w-full rounded-full bg-surface-alt flex overflow-hidden">
+                <div
+                  style={{ width: `${(highTier / evaluatedCount) * 100}%` }}
+                  className="bg-primary h-full transition-all"
+                  title={`High fit: ${highTier}`}
+                />
+                <div
+                  style={{ width: `${(midTier / evaluatedCount) * 100}%` }}
+                  className="bg-champagne h-full transition-all"
+                  title={`Moderate fit: ${midTier}`}
+                />
+                <div
+                  style={{ width: `${(lowTier / evaluatedCount) * 100}%` }}
+                  className="bg-line h-full transition-all"
+                  title={`Needs review: ${lowTier}`}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[13px] text-ink-muted pt-1">
+                <span className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+                  80%–100% ({highTier})
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-champagne" />
+                  60%–79% ({midTier})
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-line" />
+                  &lt;60% ({lowTier})
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="pt-2 text-[13px] text-ink-muted leading-relaxed">
             Composite rankings balance deterministic skill coverage (60%) with lexical document
