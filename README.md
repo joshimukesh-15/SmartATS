@@ -4,12 +4,13 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
 [![React 19](https://img.shields.io/badge/React-19.3-61dafb.svg?logo=react)](https://react.dev)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4.0-38bdf8.svg?logo=tailwindcss)](https://tailwindcss.com)
-[![Tests Passing](https://img.shields.io/badge/tests-17%2F17%20passing-brightgreen.svg)]()
+[![Backend Tests](https://img.shields.io/badge/backend%20tests-59%2F59%20passing-brightgreen.svg)]()
+[![Frontend Tests](https://img.shields.io/badge/frontend%20tests-31%2F31%20passing-brightgreen.svg)]()
 [![Design System](https://img.shields.io/badge/Design_System-Luxury_Editorial_B2B-7B1E3A.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Explainable Recruiter Decision Support Platform**  
-> Combines deterministic keyword extraction, TF-IDF lexical cosine similarity, and skill gap diagnostics to generate transparent, auditable candidate rankings.
+> Combines deterministic keyword extraction, TF-IDF lexical cosine similarity, and 4-pillar multi-factor evaluation (Skills, Text, Experience, Education) to generate transparent, auditable candidate rankings.
 > Engineered with a luxury editorial B2B design system on warm cream (`#FBF7F2`), deep wine (`#7B1E3A`), accent gold (`#B8893B`), and high-contrast serif typography.
 
 Repository: **[https://github.com/joshimukesh-15/SmartATS](https://github.com/joshimukesh-15/SmartATS)**
@@ -23,13 +24,15 @@ SmartATS is an enterprise resume-screening and candidate-ranking platform engine
 ### Key Capabilities
 - **Multi-Format Ingestion**: Supports `.pdf` and `.docx` resumes using PyMuPDF and python-docx, with automated OCR fallback via Tesseract for scanned documents.
 - **SHA-256 Binary Deduplication**: Computes cryptographic hashes on raw file payloads before GPU/CPU computation, eliminating duplicate submissions across agencies.
-- **Dual-Track Hybrid Matching Engine**:
-  $$\text{Final Score} = (0.60 \times \text{Keyword Coverage}) + (0.40 \times \text{Vector TF-IDF Cosine Similarity})$$
+- **Unified 4-Pillar Multi-Factor Scoring**:
+  $$\text{Final Score} = (w_{\text{skills}} \times \text{Skills}) + (w_{\text{text}} \times \text{Semantic Text}) + (w_{\text{exp}} \times \text{Experience}) + (w_{\text{edu}} \times \text{Education})$$
+  Default recruiter weights: **Skills: 40%**, **Semantic Text: 20%**, **Experience Fit: 25%**, **Education: 15%**. Recruiter-configurable per job opening with automatic normalization to 1.0.
 - **Explainable Skill Gap Diagnostics**: Segregates mandatory requirements, missing critical skills, and optional preferred skills with exact text verification.
+- **Candidate Review Studio (`/studio/review`)**: Dedicated candidate evaluation dossier with interactive recruitment pipeline stages (New, Reviewing, Interview, Hired, Rejected), chronological audit timeline, and recruiter notes.
 - **Side-by-Side Differential Matrix**: Compare 2 to 5 candidates simultaneously with leading candidate highlighting and shared competency analysis.
 - **Luxury Editorial B2B Design System**: High-craft aesthetic featuring cream canvas, deep wine, accent gold, and zero generic AI slop.
-- **Award-Style Landing Page**: 10 distinct asymmetric sections, 3D perspective hero with drifting parallax chips, infinite marquee, 4-column bento grid, sticky-scroll workflow, diagonal stats band, browser mockup with clip-path inset reveal, and Lenis-style smooth virtual scrolling.
-- **Evaluation & Benchmarking**: Comprehensive suite measuring Precision@K, Recall@K, and NDCG@K, plus instant CSV exports.
+- **Enterprise Security & Reliability**: OWASP CSV formula injection defense, file magic bytes validation (`%PDF-`, `PK\x03\x04`), zip-bomb protection, JWT authentication for recruiter actions, and background task crash recovery.
+- **Production Containerization**: Multi-stage Dockerfile (Node 22 build -> Python 3.11-slim non-root runtime) with health checks and Docker Compose.
 
 ---
 
@@ -50,7 +53,7 @@ SmartATS is an enterprise resume-screening and candidate-ranking platform engine
 | **NLP & Similarity**| `scikit-learn` | TF-IDF vectorization ($n$-grams 1–2) & Cosine Similarity |
 | **Data Validation** | Pydantic V2 (`BaseModel`, `ConfigDict`) | Request/response contracts & typing |
 | **Evaluation** | Pandas, NumPy | Benchmarking metrics & CSV generation |
-| **Testing** | Pytest, Pytest-Asyncio | Automated unit and integration test suite |
+| **Testing** | Pytest, Vitest, Oxlint | Automated unit, regression, and linting test suites |
 
 ---
 
@@ -257,11 +260,61 @@ SmartATS/
 
 ---
 
-## 7. Getting Started
+## 7. Environment Configuration
+
+All configuration is managed via environment variables (or a local `.env` file). See `.env.example` for details:
+
+| Variable | Default Value | Description |
+|---|---|---|
+| `PROJECT_NAME` | `SmartATS` | System project name displayed in API and logs |
+| `ENVIRONMENT` | `development` | Deployment environment: `development` or `production` |
+| `SECRET_KEY` | `smartats-secret-key-change-in-production` | Secret key for JWT tokens. **Must be >= 16 chars in production** |
+| `ALGORITHM` | `HS256` | JWT signature algorithm |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `1440` (24h) | Token lifespan before expiration |
+| `DEFAULT_RECRUITER_EMAIL` | `recruiter@smartats.com` | Initial recruiter account email |
+| `DEFAULT_RECRUITER_PASSWORD` | `recruiter123` | Initial recruiter account password |
+| `DATABASE_URL` | `sqlite:///./smartats.db` | Relational database connection string (SQLite or PostgreSQL) |
+| `UPLOAD_DIR` | `./data/resumes` | Directory path for candidate resume files |
+| `MAX_UPLOAD_SIZE_MB` | `15` | Maximum allowed resume file size in megabytes |
+| `TESSERACT_CMD` | `""` | Optional system path to Tesseract OCR executable |
+| `OCR_MIN_TEXT_LENGTH` | `60` | Minimum character threshold before triggering OCR fallback |
+| `ALLOWED_ORIGINS` | `http://localhost:5173,http://localhost:3000` | Comma-separated CORS allowed domains (**No '*' in production**) |
+
+---
+
+## 8. Authentication & Core API Endpoints
+
+All recruiter mutation routes require a valid JWT Bearer token in the `Authorization: Bearer <token>` header.
+
+### Recruiter Authentication
+- `POST /api/v1/auth/login`: Authenticates recruiter credentials and returns a Bearer access token.
+- `GET /api/v1/auth/me`: Retrieves current authenticated recruiter profile.
+
+### Jobs & Scoring Weights
+- `GET /api/v1/jobs/`: Lists all open job requisitions with application counts.
+- `POST /api/v1/jobs/`: Creates a new job requisition (supports optional `custom_weights`).
+- `PUT /api/v1/jobs/{job_id}`: Updates job details or configures custom 4-pillar scoring weights.
+
+### Resume Ingestion & Processing
+- `POST /api/v1/jobs/{job_id}/upload-resumes/`: Uploads resumes, executes SHA-256 duplicate checks, verifies file magic bytes (`%PDF-`, `PK\x03\x04`), and queues background parsing.
+- `POST /api/v1/applications/{id}/retry`: Manually re-queues a failed or interrupted application for processing.
+- `GET /api/v1/applications/{id}/download`: Securely downloads resume document without leaking server paths.
+- `GET /api/v1/applications/{id}/preview`: Direct stream for in-browser PDF preview.
+
+### Candidates & Review Workflow
+- `GET /api/v1/jobs/{job_id}/rankings`: Dynamic leaderboard with 4-pillar scores and explainability breakdowns.
+- `POST /api/v1/candidates/compare`: Side-by-side technical skill matrix and winner identification.
+- `PUT /api/v1/applications/{id}/stage`: Moves candidate across recruitment stages (`New`, `Reviewing`, `Interview`, `Hired`, `Rejected`).
+- `POST /api/v1/applications/{id}/notes`: Adds an interview note or committee evaluation.
+- `GET /api/v1/jobs/{job_id}/export/csv`: Exports candidate rankings as an OWASP-compliant formula-safe CSV.
+
+---
+
+## 9. Getting Started
 
 ### Prerequisites
 - Python 3.11+
-- Node.js 18+ (verified on Node v20/v22/v26)
+- Node.js 20+ (Node v20/v22 verified)
 
 ### Option A: Local Development Setup
 
@@ -283,7 +336,7 @@ SmartATS/
    # From the backend directory:
    python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
    ```
-   Interactive OpenAPI Documentation available at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+   Interactive OpenAPI Documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 4. **Start the React Frontend Dev Server:**
    ```bash
@@ -295,39 +348,38 @@ SmartATS/
 
 ---
 
-### Option B: Docker Multi-Container Deployment
+### Option B: Production Docker Deployment
 
-Run the complete production containerized stack with PostgreSQL:
+Build and run the complete multi-stage containerized stack with PostgreSQL:
 ```bash
 docker-compose up --build -d
 ```
-Access the application directly at [http://localhost:8000](http://localhost:8000).
+Access the application directly at [http://localhost:8000](http://localhost:8000). The multi-stage Docker build bundles the compiled React frontend into FastAPI with SPA static fallback routing.
 
 ---
 
-## 8. Testing & Verification
+## 10. Testing & Verification
 
-Run the automated test suite covering parsing, extraction, duplicate detection, hybrid matching, and API endpoints:
+Run the full automated test suite covering all P0, P1, and P2 regression fixtures:
 ```bash
+# Backend pytest suite (59 passing tests)
 cd backend
 python -m pytest -v tests/
-```
 
-Run the benchmark evaluation script:
-```bash
-cd backend
+# Benchmark evaluation script
 python scripts/evaluate.py
 ```
 
-Build, test, and lint the production frontend bundle:
+Run frontend linting, tests, and production build:
 ```bash
-npm --prefix frontend run test
-npm --prefix frontend run lint
-npm --prefix frontend run build
+cd frontend
+npm run lint
+npm run test
+npm run build
 ```
 
 ---
 
-## 9. License
+## 11. License
 
 MIT License. Designed and engineered for transparent recruiter decision support.
