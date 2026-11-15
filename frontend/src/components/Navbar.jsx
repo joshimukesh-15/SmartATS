@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -25,91 +25,32 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   const handleTabClick = (id) => {
     setActiveTab(id);
-    setMobileMenuOpen(false);
+    setMobileOpen(false);
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FBF7F2]/95 backdrop-blur-md border-b border-[#E8DDD0]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          
-          {/* Brand */}
-          <div className="flex items-center space-x-3.5">
-            <button
-              onClick={() => handleTabClick('landing')}
-              title="Return to Product Landing Page"
-              className="flex items-center space-x-3 text-left focus:outline-none group"
-            >
-              <div className="w-8 h-8 rounded-lg bg-[#7B1E3A] flex items-center justify-center text-[#F7EDD8] transition-transform group-hover:scale-105 shadow-xs">
-                <span className="font-serif font-bold text-sm tracking-tight">S</span>
-              </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-base font-serif font-bold tracking-tight text-[#2A1015] group-hover:text-[#7B1E3A] transition-colors">
-                    SmartATS
-                  </span>
-                  <span className="text-[10px] uppercase font-mono font-semibold tracking-wider px-2 py-0.5 rounded-full border border-[#E8DDD0] bg-[#F7EDD8] text-[#8A6420]">
-                    Studio
-                  </span>
-                </div>
-                <p className="text-[11px] text-[#6B5A55]">
-                  Explainable Resume Matching
-                </p>
-              </div>
-            </button>
-          </div>
-
-          {/* Desktop Navigation Items */}
-          <div className="hidden lg:flex items-center space-x-2">
-            <nav className="flex space-x-1" aria-label="Main Navigation">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => handleTabClick(tab.id)}
-                    className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all active:scale-[0.98] ${
-                      isActive
-                        ? 'bg-[#F8ECEF] text-[#7B1E3A] border border-[#7B1E3A]/20 shadow-xs'
-                        : 'text-[#6B5A55] hover:text-[#2A1015] hover:bg-[#F5EEE6]'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-
-            <div className="h-5 w-px bg-[#E8DDD0] mx-1"></div>
-
-            <button
-              onClick={() => handleTabClick('landing')}
-              className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border border-[#7B1E3A] bg-transparent hover:bg-[#F8ECEF] active:scale-[0.98] text-[#7B1E3A] transition-all shadow-xs"
-            >
-              <Globe className="w-3.5 h-3.5 text-[#B8893B]" />
-              <span>Landing Page</span>
-            </button>
-          </div>
-
-          {/* Mobile Hamburger Button */}
-          <div className="flex items-center lg:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-[#2A1015] hover:bg-[#F5EEE6] transition-colors focus:outline-none"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-
-        </div>
+    <>
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between px-6 py-4 bg-surface border-b border-line sticky top-0 z-30">
+        <button
+          onClick={() => handleTabClick('landing')}
+          className="flex items-center space-x-2 text-left"
+        >
+          <span className="font-serif text-2xl text-ink font-normal">SmartATS</span>
+          <span className="text-[13px] font-mono text-ink-muted">Studio</span>
+        </button>
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle navigation"
+          className="p-1.5 text-ink-muted hover:text-ink"
+        >
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
 
       {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-[#E8DDD0] bg-[#FBF7F2] px-4 pt-3 pb-4 space-y-1.5 shadow-md">
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-x-0 top-[65px] z-30 bg-surface border-b border-line p-6 space-y-2 shadow-lg">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -117,29 +58,86 @@ export default function Navbar({ activeTab, setActiveTab }) {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-[8px] text-[15px] font-sans transition-colors ${
                   isActive
-                    ? 'bg-[#F8ECEF] text-[#7B1E3A] border border-[#7B1E3A]/20'
-                    : 'text-[#6B5A55] hover:text-[#2A1015] hover:bg-[#F5EEE6]'
+                    ? 'bg-wine-soft text-wine font-medium'
+                    : 'text-ink-muted hover:text-ink hover:bg-surface-alt'
                 }`}
               >
-                <Icon className="w-4 h-4 text-[#B8893B]" />
+                <Icon className="w-4 h-4" />
                 <span>{tab.label}</span>
               </button>
             );
           })}
-
-          <div className="pt-2 border-t border-[#E8DDD0]">
+          <div className="pt-3 border-t border-line">
             <button
               onClick={() => handleTabClick('landing')}
-              className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-semibold border border-[#7B1E3A] text-[#7B1E3A] bg-transparent hover:bg-[#F8ECEF] transition-all"
+              className="w-full flex items-center space-x-3 px-4 py-2 text-[14px] text-ink-muted hover:text-ink"
             >
-              <Globe className="w-4 h-4 text-[#B8893B]" />
-              <span>View Product Landing Page</span>
+              <Globe className="w-4 h-4" />
+              <span>Back to Landing Page</span>
             </button>
           </div>
         </div>
       )}
-    </header>
+
+      {/* Desktop Slim Left Sidebar (240px) */}
+      <aside className="hidden md:flex flex-col justify-between w-60 min-h-screen bg-surface border-r border-line p-6 sticky top-0 z-20 flex-shrink-0">
+        <div className="space-y-8">
+          
+          {/* Brand Wordmark Header */}
+          <button
+            onClick={() => handleTabClick('landing')}
+            className="flex flex-col text-left group"
+          >
+            <span className="font-serif text-2xl text-ink font-normal tracking-tight group-hover:text-wine transition-colors">
+              SmartATS
+            </span>
+            <span className="text-[13px] font-sans text-ink-muted mt-0.5">
+              Screening Studio
+            </span>
+          </button>
+
+          {/* Navigation Links */}
+          <nav className="space-y-1.5" aria-label="Studio Navigation">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab.id)}
+                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-[8px] text-[14px] font-sans transition-colors ${
+                    isActive
+                      ? 'bg-wine-soft text-wine font-medium'
+                      : 'text-ink-muted hover:text-ink hover:bg-surface-alt'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+        </div>
+
+        {/* Footer / System Status Area */}
+        <div className="pt-6 border-t border-line space-y-3">
+          <button
+            onClick={() => handleTabClick('landing')}
+            className="w-full flex items-center space-x-2 text-[13px] font-sans text-ink-muted hover:text-ink transition-colors"
+          >
+            <Globe className="w-4 h-4" />
+            <span>Product Landing Page</span>
+          </button>
+
+          <div className="text-[13px] font-mono text-ink-muted/80 flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-gold" />
+            <span>Deterministic Engine</span>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

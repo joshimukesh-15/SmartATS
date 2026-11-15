@@ -1,66 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-cream: #FBF7F2;
-  --color-surface-white: #FFFFFF;
+  --color-canvas: #FBF7F2;
+  --color-surface: #FFFFFF;
   --color-surface-alt: #F5EEE6;
-  --color-border-card: #E8DDD0;
-  
-  --color-text-main: #2A1015;
-  --color-text-muted: #6B5A55;
-  
+  --color-line: #E8DDD0;
+  --color-line-soft: #F0E8DE;
+
+  --color-ink: #2A1015;
+  --color-ink-muted: #6B5A55;
+  --color-ink-subtle: #8F7E79;
+
   --color-wine: #7B1E3A;
   --color-wine-hover: #5E1229;
   --color-wine-soft: #F8ECEF;
-  
+  --color-wine-deep: #3A121E;
+
   --color-gold: #B8893B;
   --color-gold-hover: #9A7230;
   --color-gold-soft: #F7EDD8;
   --color-gold-text: #8A6420;
-  
+
   --color-tier-low-bg: #EFE7E1;
   --color-tier-low-text: #6B5A55;
 
-  --font-serif: 'Playfair Display', 'Fraunces', Georgia, serif;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-sans: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 }
 
 @layer base {
-  :root {
-    --bg-app: #FBF7F2;
-    --surface-app: #FFFFFF;
-    --surface-alt: #F5EEE6;
-    --border-app: #E8DDD0;
-    --text-app: #2A1015;
-    --muted-app: #6B5A55;
-    --primary-app: #7B1E3A;
-    --primary-hover: #5E1229;
-    --primary-soft: #F8ECEF;
-    --gold-app: #B8893B;
-    --gold-hover: #9A7230;
-    --gold-soft: #F7EDD8;
-    --gold-text: #8A6420;
-    --score-low-bg: #EFE7E1;
-    --score-low-text: #6B5A55;
-  }
-
   body {
-    background-color: #FBF7F2;
-    color: #2A1015;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     min-height: 100vh;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    selection-background-color: #7B1E3A;
+    selection-background-color: var(--color-wine);
     selection-color: #FFFFFF;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: var(--font-serif);
+    font-weight: 400;
     letter-spacing: -0.02em;
-    color: #2A1015;
+    color: var(--color-ink);
     text-wrap: balance;
   }
 
@@ -69,58 +56,49 @@
   }
 
   code, pre, .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--font-mono);
+    font-feature-settings: "tnum" 1;
   }
 
   *:focus-visible {
-    outline: 2px solid #B8893B;
+    outline: 2px solid var(--color-gold);
     outline-offset: 2px;
   }
 }
 
-/* Luxury B2B Visual Tokens */
-.eyebrow-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #B8893B;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 600;
-}
-
-.luxury-card {
-  background-color: #FFFFFF;
-  border: 1px solid #E8DDD0;
+/* Quiet Editorial Cards */
+.quiet-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
   border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(42, 16, 21, 0.05);
-  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(42, 16, 21, 0.04), 0 12px 32px rgba(42, 16, 21, 0.04);
 }
 
-.luxury-card:hover {
-  border-color: #B8893B;
-  box-shadow: 0 8px 24px rgba(123, 30, 58, 0.12);
-  transform: translateY(-2px);
+.quiet-card-interactive {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(42, 16, 21, 0.04), 0 12px 32px rgba(42, 16, 21, 0.04);
+  transition: border-color 200ms ease;
+}
+.quiet-card-interactive:hover {
+  border-color: rgba(42, 16, 21, 0.25);
 }
 
-.luxury-gold-top {
-  position: relative;
-  overflow: hidden;
+/* Subtle Hero Slanted Edge */
+.slant-bottom {
+  clip-path: polygon(0 0, 100% 0, 100% 96%, 0 100%);
 }
 
-.luxury-gold-top::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #B8893B;
-  z-index: 10;
+/* Motion Budget: Scroll-in Fade + 12px Rise (600-800ms, ease-out-expo) */
+.fade-rise {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-/* Dark section gradient */
-.bg-dark-section {
-  background: linear-gradient(135deg, #2A1015 0%, #4A1527 100%);
+.fade-rise.in-view {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Modal Dialog */
@@ -130,7 +108,7 @@ dialog:modal {
 dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
-  background-color: rgba(42, 16, 21, 0.5);
+  background-color: rgba(42, 16, 21, 0.45);
   backdrop-filter: blur(4px);
 }
 
@@ -146,80 +124,24 @@ dialog::backdrop {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #FBF7F2;
+  background: var(--color-canvas);
 }
 ::-webkit-scrollbar-thumb {
-  background: #E8DDD0;
+  background: var(--color-line);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B8893B;
+  background: var(--color-ink-muted);
 }
 
-/* Award-Style Editorial Clip-Paths */
-.slant-bottom {
-  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-}
-
-.band {
-  clip-path: polygon(0 6%, 100% 0, 100% 94%, 0 100%);
-}
-
-.arch {
-  clip-path: ellipse(75% 100% at 50% 100%);
-}
-
-.cut-card {
-  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
-}
-
-/* Reveal animation on scroll */
-.reveal {
-  clip-path: inset(12% 10% round 28px);
-  transform: scale(0.92);
-  transition: clip-path 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.9s ease;
-  opacity: 0.85;
-}
-
-.reveal.in-view {
-  clip-path: inset(0 round 0);
-  transform: scale(1);
-  opacity: 1;
-}
-
-/* Infinite Marquee Animation */
-@keyframes marquee-scroll {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee-scroll 28s linear infinite;
-}
-
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* Respect Prefers Reduced Motion */
+/* Prefers Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee {
-    animation: none;
-  }
-  .reveal {
-    clip-path: none !important;
+  .fade-rise {
+    opacity: 1 !important;
     transform: none !important;
     transition: none !important;
-    opacity: 1 !important;
   }
-  .slant-bottom, .band {
+  .slant-bottom {
     clip-path: none !important;
   }
 }
-

@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles,
+  Check,
   Mail,
   Phone,
   Calendar,
@@ -17,7 +15,6 @@ export default function CandidateModal({ candidate, onClose }) {
   const dialogRef = useRef(null);
   const [candidateProfile, setCandidateProfile] = useState(null);
   const [showRawText, setShowRawText] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -33,11 +30,9 @@ export default function CandidateModal({ candidate, onClose }) {
 
   useEffect(() => {
     if (candidate && candidate.candidate_id) {
-      setLoading(true);
       fetchCandidateDetails(candidate.candidate_id)
         .then((data) => setCandidateProfile(data))
-        .catch((err) => console.error(err))
-        .finally(() => setLoading(false));
+        .catch((err) => console.error(err));
     }
   }, [candidate]);
 
@@ -67,39 +62,39 @@ export default function CandidateModal({ candidate, onClose }) {
       onCancel={onClose}
       onClick={handleBackdropClick}
       aria-labelledby="candidate-modal-title"
-      className="fixed inset-0 m-auto bg-white border border-[#E8DDD0] rounded-2xl w-full max-w-3xl p-0 text-[#2A1015] shadow-2xl backdrop:bg-[#2A1015]/50 backdrop:backdrop-blur-xs animate-in fade-in zoom-in-95 duration-200"
+      className="fixed inset-0 m-auto bg-surface border border-line rounded-[16px] w-full max-w-3xl p-0 text-ink shadow-[0_1px_2px_rgba(42,16,21,0.04),0_24px_64px_rgba(42,16,21,0.12)] backdrop:bg-ink/40 backdrop:backdrop-blur-xs animate-in fade-in zoom-in-95 duration-200"
     >
       <div className="flex flex-col max-h-[85vh] overflow-hidden">
         
         {/* Header */}
-        <div className="p-6 border-b border-[#E8DDD0] flex items-start justify-between bg-[#F5EEE6]">
+        <div className="p-6 border-b border-line flex items-start justify-between bg-surface-alt">
           <div>
             <div className="flex items-center space-x-3">
-              <h2 id="candidate-modal-title" className="text-2xl sm:text-3xl font-serif font-bold text-[#2A1015] tracking-tight">
+              <h2 id="candidate-modal-title" className="text-2xl sm:text-3xl font-serif text-ink font-normal tracking-tight">
                 {candidate.candidate_name}
               </h2>
               {candidate.rank && (
-                <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#F7EDD8] text-[#8A6420] border border-[#B8893B]/30 font-semibold shadow-xs">
+                <span className="font-mono text-[13px] px-2.5 py-0.5 rounded-[6px] bg-wine-soft text-wine font-medium">
                   Rank #{candidate.rank}
                 </span>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-[#6B5A55] font-mono">
+            <div className="flex flex-wrap items-center gap-4 mt-2 text-[13px] text-ink-muted font-mono">
               {candidate.candidate_email && (
                 <span className="flex items-center space-x-1.5">
-                  <Mail className="w-3.5 h-3.5 text-[#B8893B]" />
+                  <Mail className="w-3.5 h-3.5 text-ink-muted" />
                   <span>{candidate.candidate_email}</span>
                 </span>
               )}
               {candidate.candidate_phone && (
                 <span className="flex items-center space-x-1.5">
-                  <Phone className="w-3.5 h-3.5 text-[#B8893B]" />
+                  <Phone className="w-3.5 h-3.5 text-ink-muted" />
                   <span>{candidate.candidate_phone}</span>
                 </span>
               )}
               {candidate.applied_at && (
                 <span className="flex items-center space-x-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-[#6B5A55]" />
+                  <Calendar className="w-3.5 h-3.5 text-ink-muted" />
                   <span>{new Date(candidate.applied_at).toLocaleDateString()}</span>
                 </span>
               )}
@@ -109,7 +104,7 @@ export default function CandidateModal({ candidate, onClose }) {
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="p-1.5 rounded-lg text-[#6B5A55] hover:text-[#7B1E3A] hover:bg-[#F8ECEF] transition"
+            className="p-1.5 rounded-[8px] text-ink-muted hover:text-ink hover:bg-surface transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -118,128 +113,117 @@ export default function CandidateModal({ candidate, onClose }) {
         {/* Content */}
         <div className="p-6 sm:p-8 space-y-7 overflow-y-auto">
           
-          {/* Score Summary Metrics */}
+          {/* Score Summary Metrics: Quiet Tonal Layering */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className={`rounded-xl p-4 text-center shadow-xs border ${
-              finalScore >= 80
-                ? 'bg-[#7B1E3A] text-white border-[#7B1E3A]'
-                : finalScore >= 60
-                ? 'bg-[#F7EDD8] text-[#8A6420] border-[#B8893B]/30'
-                : 'bg-[#EFE7E1] text-[#6B5A55] border-[#E8DDD0]'
-            }`}>
-              <span className={`text-[10px] uppercase font-mono tracking-[0.12em] font-semibold ${
-                finalScore >= 80 ? 'text-[#F7EDD8]' : 'text-[#6B5A55]'
-              }`}>
-                Final Match Score
+            <div className="p-4 rounded-[12px] bg-surface-alt text-center space-y-1">
+              <span className="text-[13px] font-mono text-ink-muted uppercase block">
+                Composite Score
               </span>
-              <div className="text-3xl font-serif font-bold mt-1">
+              <div className="text-3xl font-mono font-semibold text-ink">
                 {finalScore.toFixed(1)}%
               </div>
-              <div className={`text-[10px] mt-1 font-mono ${
-                finalScore >= 80 ? 'text-white/80' : 'text-[#6B5A55]'
-              }`}>
-                Weighted Recommendation
+              <div className="text-[13px] text-ink-muted font-sans">
+                60% Skills + 40% Vector
               </div>
             </div>
 
-            <div className="bg-[#F7EDD8] border border-[#B8893B]/30 rounded-xl p-4 text-center">
-              <span className="text-[10px] uppercase font-mono tracking-[0.12em] font-semibold text-[#8A6420]">
-                Required Skills Match
+            <div className="p-4 rounded-[12px] bg-surface-alt text-center space-y-1">
+              <span className="text-[13px] font-mono text-ink-muted uppercase block">
+                Required Skill Coverage
               </span>
-              <div className="text-2xl font-serif font-bold text-[#8A6420] mt-1">
+              <div className="text-3xl font-mono font-semibold text-wine">
                 {keywordScore.toFixed(1)}%
               </div>
-              <div className="text-[10px] text-[#8A6420]/80 mt-1 font-mono">
+              <div className="text-[13px] text-ink-muted font-sans">
                 {candidate.matched_skills?.length || 0} skills verified
               </div>
             </div>
 
-            <div className="bg-[#F5EEE6] border border-[#E8DDD0] rounded-xl p-4 text-center">
-              <span className="text-[10px] uppercase font-mono tracking-[0.12em] font-semibold text-[#6B5A55]">
-                Experience Alignment
+            <div className="p-4 rounded-[12px] bg-surface-alt text-center space-y-1">
+              <span className="text-[13px] font-mono text-ink-muted uppercase block">
+                Contextual Similarity
               </span>
-              <div className="text-2xl font-serif font-bold text-[#2A1015] mt-1">
+              <div className="text-3xl font-mono font-semibold text-ink">
                 {tfidfScore.toFixed(1)}%
               </div>
-              <div className="text-[10px] text-[#6B5A55] mt-1 font-mono">
-                Contextual Vector Alignment
+              <div className="text-[13px] text-ink-muted font-sans">
+                TF-IDF Cosine Depth
               </div>
             </div>
           </div>
 
           {/* Diagnostic Note */}
-          <div className="bg-[#FBF7F2] border border-[#E8DDD0] rounded-xl p-5 space-y-3">
-            <div className="flex items-center space-x-2 text-xs font-mono uppercase tracking-[0.12em] text-[#B8893B] font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-[#B8893B]" />
-              <span>Diagnostic Scoring Explanation</span>
-            </div>
-            <div className="p-4 bg-white rounded-lg border border-[#E8DDD0] text-xs text-[#2A1015] font-mono whitespace-pre-line leading-relaxed shadow-xs">
+          <div className="quiet-card bg-surface p-5 space-y-2">
+            <span className="text-[13px] font-mono uppercase text-ink-muted font-medium block">
+              Diagnostic Scoring Explanation
+            </span>
+            <div className="p-3 bg-surface-alt rounded-[8px] text-[14px] text-ink font-mono whitespace-pre-line leading-relaxed">
               {candidate.score_explanation || 'No evaluation notes available.'}
             </div>
           </div>
 
           {/* Skill Gap Analysis Section */}
           <div className="space-y-4">
-            <h3 className="text-base font-serif font-bold text-[#2A1015]">
+            <h3 className="text-xl font-serif text-ink font-normal">
               Competency Breakdown
             </h3>
             
             {/* Matched Required Skills */}
-            <div className="space-y-1.5">
-              <div className="flex items-center space-x-1.5 text-xs font-semibold text-[#8A6420] font-mono tracking-wider">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#B8893B]" />
-                <span>MATCHED MANDATORY SKILLS ({candidate.matched_skills?.length || 0})</span>
+            <div className="space-y-2">
+              <div className="text-[13px] font-mono uppercase text-ink-muted flex items-center justify-between">
+                <span>Matched Mandatory Skills ({candidate.matched_skills?.length || 0})</span>
+                <span className="text-wine font-medium">Verified</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {candidate.matched_skills && candidate.matched_skills.length > 0 ? (
                   candidate.matched_skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#F7EDD8] text-[#8A6420] border border-[#B8893B]/30"
+                      className="px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans flex items-center space-x-1"
                     >
-                      ✓ {skill}
+                      <Check className="w-3.5 h-3.5 text-wine" />
+                      <span>{skill}</span>
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-[#6B5A55]">No mandatory skills identified</span>
+                  <span className="text-[13px] text-ink-muted font-sans">No mandatory skills identified</span>
                 )}
               </div>
             </div>
 
             {/* Missing Required Skills */}
-            <div className="space-y-1.5">
-              <div className="flex items-center space-x-1.5 text-xs font-semibold text-[#6B5A55] font-mono tracking-wider">
-                <AlertCircle className="w-3.5 h-3.5 text-[#6B5A55]" />
-                <span>MISSING MANDATORY SKILLS ({candidate.missing_skills?.length || 0})</span>
+            <div className="space-y-2 pt-2 border-t border-line">
+              <div className="text-[13px] font-mono uppercase text-ink-muted flex items-center justify-between">
+                <span>Missing Mandatory Skills ({candidate.missing_skills?.length || 0})</span>
+                <span className="text-ink-muted">Requirement Gaps</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {candidate.missing_skills && candidate.missing_skills.length > 0 ? (
                   candidate.missing_skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#EFE7E1] text-[#6B5A55] border border-dashed border-[#6B5A55]/40"
+                      className="px-2.5 py-1 rounded-[6px] text-[13px] bg-canvas border border-dashed border-line text-ink-muted font-sans"
                     >
                       ✕ {skill}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-[#8A6420] font-medium">None. Candidate satisfies 100% of required competencies.</span>
+                  <span className="text-[13px] text-wine font-medium font-sans">None. Candidate satisfies 100% of required competencies.</span>
                 )}
               </div>
             </div>
 
             {/* Preferred Skills */}
             {candidate.preferred_matched_skills && candidate.preferred_matched_skills.length > 0 && (
-              <div className="space-y-1.5">
-                <div className="flex items-center space-x-1.5 text-xs font-semibold text-[#7B1E3A] font-mono tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5 text-[#7B1E3A]" />
-                  <span>PREFERRED QUALIFICATIONS ({candidate.preferred_matched_skills.length})</span>
+              <div className="space-y-2 pt-2 border-t border-line">
+                <div className="text-[13px] font-mono uppercase text-ink-muted">
+                  Preferred Qualifications ({candidate.preferred_matched_skills.length})
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {candidate.preferred_matched_skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#F8ECEF] text-[#7B1E3A] border border-[#7B1E3A]/20"
+                      className="px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans"
                     >
                       + {skill}
                     </span>
@@ -250,21 +234,21 @@ export default function CandidateModal({ candidate, onClose }) {
           </div>
 
           {/* Original Resume Text Toggle */}
-          <div className="pt-2 border-t border-[#E8DDD0]">
+          <div className="pt-2 border-t border-line">
             <button
               type="button"
               onClick={() => setShowRawText(!showRawText)}
-              className="w-full flex items-center justify-between px-4 py-2.5 bg-[#F5EEE6] hover:bg-[#F8ECEF] rounded-xl border border-[#E8DDD0] text-xs font-semibold text-[#2A1015] transition"
+              className="w-full flex items-center justify-between px-4 py-2.5 bg-surface-alt hover:bg-canvas rounded-[8px] text-[14px] font-sans text-ink transition-colors"
             >
               <div className="flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-[#B8893B]" />
+                <FileText className="w-4 h-4 text-ink-muted" />
                 <span>Original Document Text View</span>
               </div>
-              {showRawText ? <ChevronUp className="w-4 h-4 text-[#7B1E3A]" /> : <ChevronDown className="w-4 h-4 text-[#6B5A55]" />}
+              {showRawText ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
             {showRawText && (
-              <div className="mt-3 p-4 bg-white border border-[#E8DDD0] rounded-xl text-xs text-[#2A1015] font-mono whitespace-pre-wrap max-h-60 overflow-y-auto leading-relaxed shadow-inner">
+              <div className="mt-3 p-4 bg-canvas border border-line rounded-[8px] text-[13px] text-ink font-mono whitespace-pre-wrap max-h-60 overflow-y-auto leading-relaxed">
                 {candidateProfile?.raw_text || 'Loading document contents...'}
               </div>
             )}
@@ -273,11 +257,11 @@ export default function CandidateModal({ candidate, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#E8DDD0] bg-[#F5EEE6] flex justify-end">
+        <div className="p-4 border-t border-line bg-surface-alt flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2.5 bg-[#7B1E3A] hover:bg-[#5E1229] active:scale-[0.98] text-white text-xs font-semibold rounded-full transition shadow-xs"
+            className="px-6 py-2 bg-wine hover:bg-wine-hover text-white text-[14px] font-medium rounded-[8px] transition-colors shadow-xs"
           >
             Dismiss
           </button>

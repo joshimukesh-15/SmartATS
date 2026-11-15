@@ -112,25 +112,25 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
       onCancel={onClose}
       onClick={handleBackdropClick}
       aria-labelledby="create-job-modal-title"
-      className="fixed inset-0 m-auto bg-white border border-[#E8DDD0] rounded-2xl w-full max-w-xl p-0 text-[#2A1015] shadow-2xl backdrop:bg-[#2A1015]/50 backdrop:backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200"
+      className="fixed inset-0 m-auto bg-surface border border-line rounded-[16px] w-full max-w-xl p-0 text-ink shadow-[0_1px_2px_rgba(42,16,21,0.04),0_24px_64px_rgba(42,16,21,0.12)] backdrop:bg-ink/40 backdrop:backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200"
     >
       <div className="flex flex-col max-h-[85vh] overflow-hidden">
         
         {/* Header */}
-        <div className="p-6 border-b border-[#E8DDD0] flex items-center justify-between bg-[#F5EEE6]">
+        <div className="p-6 border-b border-line flex items-center justify-between bg-surface-alt">
           <div>
-            <span className="text-xs uppercase font-mono tracking-[0.12em] text-[#B8893B] font-semibold">
-              New Specification
-            </span>
-            <h2 id="create-job-modal-title" className="text-2xl font-serif font-bold text-[#2A1015] mt-0.5 tracking-tight">
-              Create Job Opening
+            <h2 id="create-job-modal-title" className="text-2xl font-serif font-normal text-ink tracking-tight">
+              Create Job Specification
             </h2>
+            <p className="text-[13px] text-ink-muted font-sans mt-0.5">
+              Define mandatory criteria and contextual scope.
+            </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="p-1.5 rounded-lg text-[#6B5A55] hover:text-[#7B1E3A] hover:bg-[#F8ECEF] transition"
+            className="p-1.5 rounded-[8px] text-ink-muted hover:text-ink hover:bg-surface transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -139,13 +139,13 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
           {error && (
-            <div className="p-3 bg-[#EFE7E1] border border-[#6B5A55]/30 rounded-xl text-xs text-[#2A1015] font-mono">
+            <div className="p-3 bg-surface-alt border border-line rounded-[8px] text-[13px] text-ink font-mono">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="job-title" className="block text-xs font-mono uppercase tracking-[0.12em] text-[#6B5A55] mb-1.5 font-semibold">
+            <label htmlFor="job-title" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
               Position Title *
             </label>
             <input
@@ -155,12 +155,12 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
               placeholder="e.g. Senior Backend Engineer"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#FBF7F2] border border-[#E8DDD0] rounded-xl text-xs text-[#2A1015] placeholder-[#6B5A55]/50 focus:outline-none focus:border-[#7B1E3A] transition-colors shadow-xs"
+              className="w-full px-3.5 py-2.5 bg-canvas border border-line rounded-[8px] text-[14px] text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-gold transition-colors"
             />
           </div>
 
           <div>
-            <label htmlFor="job-desc" className="block text-xs font-mono uppercase tracking-[0.12em] text-[#6B5A55] mb-1.5 font-semibold">
+            <label htmlFor="job-desc" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
               Role Description *
             </label>
             <textarea
@@ -170,13 +170,13 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
               placeholder="Detail key responsibilities, deliverables, and technical scope..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#FBF7F2] border border-[#E8DDD0] rounded-xl text-xs text-[#2A1015] placeholder-[#6B5A55]/50 focus:outline-none focus:border-[#7B1E3A] leading-relaxed transition-colors shadow-xs"
+              className="w-full px-3.5 py-2.5 bg-canvas border border-line rounded-[8px] text-[14px] text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-gold leading-relaxed transition-colors"
             />
           </div>
 
           {/* Mandatory Skills */}
           <div>
-            <label htmlFor="req-skills-input" className="block text-xs font-mono uppercase tracking-[0.12em] text-[#8A6420] mb-1.5 font-semibold">
+            <label htmlFor="req-skills-input" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
               Required Technical Skills * (Press Enter or comma)
             </label>
             <input
@@ -186,21 +186,21 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
               value={reqInput}
               onChange={(e) => setReqInput(e.target.value)}
               onKeyDown={addRequiredSkill}
-              className="w-full px-3.5 py-2.5 bg-[#FBF7F2] border border-[#E8DDD0] rounded-xl text-xs text-[#2A1015] placeholder-[#6B5A55]/50 focus:outline-none focus:border-[#7B1E3A] transition-colors shadow-xs"
+              className="w-full px-3.5 py-2.5 bg-canvas border border-line rounded-[8px] text-[14px] text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-gold transition-colors"
             />
             <div className="flex flex-wrap gap-1.5 mt-2">
               {requiredSkills.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F7EDD8] text-[#8A6420] border border-[#B8893B]/30"
+                  className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans"
                 >
                   <span>{skill}</span>
                   <button
                     type="button"
                     onClick={() => removeRequiredSkill(skill)}
-                    className="hover:text-[#7B1E3A] transition ml-1"
+                    className="hover:text-wine transition-colors ml-1"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 </span>
               ))}
@@ -209,7 +209,7 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
 
           {/* Preferred Skills */}
           <div>
-            <label htmlFor="pref-skills-input" className="block text-xs font-mono uppercase tracking-[0.12em] text-[#7B1E3A] mb-1.5 font-semibold">
+            <label htmlFor="pref-skills-input" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
               Preferred Qualifications (Optional)
             </label>
             <input
@@ -219,21 +219,21 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
               value={prefInput}
               onChange={(e) => setPrefInput(e.target.value)}
               onKeyDown={addPreferredSkill}
-              className="w-full px-3.5 py-2.5 bg-[#FBF7F2] border border-[#E8DDD0] rounded-xl text-xs text-[#2A1015] placeholder-[#6B5A55]/50 focus:outline-none focus:border-[#7B1E3A] transition-colors shadow-xs"
+              className="w-full px-3.5 py-2.5 bg-canvas border border-line rounded-[8px] text-[14px] text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-gold transition-colors"
             />
             <div className="flex flex-wrap gap-1.5 mt-2">
               {preferredSkills.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F8ECEF] text-[#7B1E3A] border border-[#7B1E3A]/20"
+                  className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans"
                 >
                   <span>{skill}</span>
                   <button
                     type="button"
                     onClick={() => removePreferredSkill(skill)}
-                    className="hover:text-[#5E1229] transition ml-1"
+                    className="hover:text-wine transition-colors ml-1"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 </span>
               ))}
@@ -241,18 +241,18 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
           </div>
 
           {/* Form Actions */}
-          <div className="pt-4 border-t border-[#E8DDD0] flex items-center justify-end space-x-2.5">
+          <div className="pt-4 border-t border-line flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-white hover:bg-[#F8ECEF] text-[#7B1E3A] border border-[#7B1E3A]/30 text-xs font-semibold rounded-full shadow-xs transition"
+              className="px-4 py-2 bg-surface hover:bg-surface-alt text-ink border border-line text-[14px] font-medium rounded-[8px] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-[#7B1E3A] hover:bg-[#5E1229] text-white text-xs font-semibold rounded-full shadow-xs transition disabled:opacity-50"
+              className="px-5 py-2 bg-wine hover:bg-wine-hover text-white text-[14px] font-medium rounded-[8px] transition-colors disabled:opacity-50 shadow-xs"
             >
               {loading ? 'Publishing...' : 'Save Job Opening'}
             </button>

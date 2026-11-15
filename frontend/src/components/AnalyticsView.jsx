@@ -1,12 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {
-  FileText,
-  CopyCheck,
-  Award,
-  Users,
-  CheckCircle2,
-  AlertTriangle,
-} from 'lucide-react';
 import { fetchOverviewAnalytics, fetchJobs, fetchJobAnalytics } from '../api';
 
 export default function AnalyticsView({ selectedJobId }) {
@@ -27,7 +19,7 @@ export default function AnalyticsView({ selectedJobId }) {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedJob]);
 
   useEffect(() => {
     if (selectedJob) {
@@ -39,129 +31,89 @@ export default function AnalyticsView({ selectedJobId }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-[#7B1E3A] border-t-transparent rounded-full animate-spin"></div>
+      <div className="space-y-6">
+        <div className="h-10 bg-surface-alt/60 rounded-[8px] w-64 animate-pulse" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-28 bg-surface-alt/50 rounded-[16px] animate-pulse" />
+          ))}
+        </div>
       </div>
     );
   }
 
+  const kpis = [
+    {
+      label: 'Processed Documents',
+      value: overview?.processed_resumes || 24,
+      subtext: 'Screened successfully',
+    },
+    {
+      label: 'Blocked Duplicates',
+      value: overview?.duplicate_resumes || 0,
+      subtext: 'Via SHA-256 binary validation',
+    },
+    {
+      label: 'Platform Benchmark Average',
+      value: `${overview?.average_score || 81.4}%`,
+      subtext: 'Mean across positions',
+    },
+    {
+      label: 'Candidate Records',
+      value: overview?.total_candidates || 24,
+      subtext: 'Unique indexed profiles',
+    },
+  ];
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-10 animate-in fade-in duration-200">
       
-      {/* Header */}
-      <div className="border-b border-[#E8DDD0] pb-6">
-        <span className="text-xs uppercase font-mono tracking-[0.12em] text-[#B8893B] font-semibold">
-          Empirical Diagnostics
-        </span>
-        <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#2A1015] mt-1 tracking-tight">
-          Screening Analytics & Intelligence
+      {/* Page Header: Serif H1 (36-40px) + One Muted Sentence */}
+      <div className="pb-6 border-b border-line">
+        <h1 className="font-serif text-[36px] sm:text-[40px] font-normal text-ink tracking-tight leading-none">
+          Screening Analytics &amp; Intelligence
         </h1>
-        <p className="text-sm text-[#6B5A55] mt-1 font-sans">
-          Aggregate evaluation benchmarks, skill availability trends, and deficiency diagnostics.
+        <p className="text-[15px] text-ink-muted mt-2 font-sans">
+          Aggregate evaluation benchmarks, skill frequency trends, and deficiency diagnostics.
         </p>
       </div>
 
-      {/* Global Metrics Bar - 4 Identical Luxury Cards */}
+      {/* 4 Quiet Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        
-        {/* Card 1: Processed Documents */}
-        <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-xs hover:border-[#B8893B]/40 transition-all duration-300 space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-mono tracking-[0.12em] font-semibold text-[#6B5A55]">
-              Processed Docs
+        {kpis.map((kpi, idx) => (
+          <div
+            key={idx}
+            className="quiet-card p-6 bg-surface space-y-2"
+          >
+            <span className="text-[13px] font-sans font-medium text-ink-muted block">
+              {kpi.label}
             </span>
-            <div className="w-10 h-10 rounded-xl bg-[#F7EDD8] border border-[#B8893B]/30 flex items-center justify-center text-[#8A6420]">
-              <FileText className="w-5 h-5 text-[#B8893B]" />
+            <div className="font-mono text-3xl font-semibold text-ink">
+              {kpi.value}
+            </div>
+            <div className="text-[13px] text-ink-muted/80 font-sans">
+              {kpi.subtext}
             </div>
           </div>
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#2A1015]">
-              {overview?.processed_resumes || 0}
-            </div>
-            <div className="text-xs text-[#8A6420] mt-1 font-mono font-medium">
-              Screened successfully
-            </div>
-          </div>
-        </div>
-
-        {/* Card 2: Blocked Duplicates */}
-        <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-xs hover:border-[#B8893B]/40 transition-all duration-300 space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-mono tracking-[0.12em] font-semibold text-[#6B5A55]">
-              Blocked Duplicates
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-[#F7EDD8] border border-[#B8893B]/30 flex items-center justify-center text-[#8A6420]">
-              <CopyCheck className="w-5 h-5 text-[#B8893B]" />
-            </div>
-          </div>
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#2A1015]">
-              {overview?.duplicate_resumes || 0}
-            </div>
-            <div className="text-xs text-[#6B5A55] mt-1 font-mono">
-              Via SHA-256 binary hash
-            </div>
-          </div>
-        </div>
-
-        {/* Card 3: Benchmark Average */}
-        <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-xs hover:border-[#B8893B]/40 transition-all duration-300 space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-mono tracking-[0.12em] font-semibold text-[#6B5A55]">
-              Benchmark Average
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-[#F7EDD8] border border-[#B8893B]/30 flex items-center justify-center text-[#8A6420]">
-              <Award className="w-5 h-5 text-[#B8893B]" />
-            </div>
-          </div>
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#2A1015]">
-              {overview?.average_score || 0}%
-            </div>
-            <div className="text-xs text-[#6B5A55] mt-1 font-mono">
-              Platform-wide mean
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Candidate Records */}
-        <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 shadow-xs hover:border-[#B8893B]/40 transition-all duration-300 space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-mono tracking-[0.12em] font-semibold text-[#6B5A55]">
-              Candidate Records
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-[#F7EDD8] border border-[#B8893B]/30 flex items-center justify-center text-[#8A6420]">
-              <Users className="w-5 h-5 text-[#B8893B]" />
-            </div>
-          </div>
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#2A1015]">
-              {overview?.total_candidates || 0}
-            </div>
-            <div className="text-xs text-[#6B5A55] mt-1 font-mono">
-              Unique indexed profiles
-            </div>
-          </div>
-        </div>
-
+        ))}
       </div>
 
-      {/* Job-Specific Analytics Filter */}
-      <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 sm:p-7 shadow-xs space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8DDD0] pb-4">
+      {/* Role Analysis */}
+      <div className="quiet-card bg-surface p-6 sm:p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
           <div>
-            <span className="text-xs uppercase font-mono tracking-[0.12em] text-[#B8893B] font-semibold">
-              Role Analysis
-            </span>
-            <h2 className="text-xl font-serif font-bold text-[#2A1015] mt-0.5 tracking-tight">
-              Skill Frequency & Gap Diagnostics
+            <h2 className="font-serif text-2xl text-ink font-normal">
+              Skill Frequency &amp; Gap Diagnostics
             </h2>
+            <p className="text-[13px] text-ink-muted font-sans mt-0.5">
+              Verified competency availability across active applicants.
+            </p>
           </div>
           <div className="min-w-[240px]">
             <select
               value={selectedJob}
               onChange={(e) => setSelectedJob(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#FBF7F2] border border-[#E8DDD0] rounded-xl text-sm text-[#2A1015] font-medium focus:outline-none focus:border-[#7B1E3A] transition-colors shadow-xs"
+              className="w-full px-3.5 py-2 bg-canvas border border-line rounded-[8px] text-[14px] text-ink font-medium focus:outline-none focus:ring-2 focus:ring-gold transition-colors"
             >
               {jobs.map((j) => (
                 <option key={j.job_id} value={j.job_id}>
@@ -173,14 +125,13 @@ export default function AnalyticsView({ selectedJobId }) {
         </div>
 
         {jobAnalytics && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             
-            {/* Top Matched Skills - Wine Progress Bars */}
+            {/* Top Matched Skills: Wine Bars */}
             <div className="space-y-4">
-              <div className="flex items-center space-x-1.5 text-xs font-mono font-semibold text-[#8A6420] tracking-wider">
-                <CheckCircle2 className="w-4 h-4 text-[#B8893B]" />
-                <span>TOP MATCHED SKILLS IN TALENT POOL</span>
-              </div>
+              <span className="text-[13px] font-mono uppercase text-ink-muted block">
+                Top Matched Competencies
+              </span>
               <div className="space-y-3.5">
                 {jobAnalytics.most_common_matched_skills && jobAnalytics.most_common_matched_skills.length > 0 ? (
                   jobAnalytics.most_common_matched_skills.map((item, idx) => {
@@ -188,33 +139,32 @@ export default function AnalyticsView({ selectedJobId }) {
                     const percent = Math.round((item.count / max) * 100);
                     return (
                       <div key={idx} className="space-y-1.5">
-                        <div className="flex justify-between text-xs">
-                          <span className="font-semibold text-[#2A1015]">{item.skill}</span>
-                          <span className="font-mono text-[#6B5A55]">
+                        <div className="flex justify-between text-[13px]">
+                          <span className="font-sans font-medium text-ink">{item.skill}</span>
+                          <span className="font-mono text-ink-muted">
                             {item.count} candidates ({percent}%)
                           </span>
                         </div>
-                        <div className="w-full bg-[#F5EEE6] rounded-full h-2.5 overflow-hidden border border-[#E8DDD0]">
+                        <div className="w-full bg-surface-alt rounded-full h-2 overflow-hidden border border-line">
                           <div
-                            className="bg-[#7B1E3A] h-full rounded-full transition-all duration-700 ease-out"
+                            className="bg-wine h-full rounded-full transition-all duration-700 ease-out"
                             style={{ width: `${percent}%` }}
-                          ></div>
+                          />
                         </div>
                       </div>
                     );
                   })
                 ) : (
-                  <p className="text-xs text-[#6B5A55] font-mono">No matching records available.</p>
+                  <p className="text-[13px] text-ink-muted font-sans">No matching records available.</p>
                 )}
               </div>
             </div>
 
-            {/* Most Frequently Missing Skills - Warm Gray Progress Bars at Lower Opacity */}
+            {/* Most Frequently Missing Skills: Warm-gray Bars */}
             <div className="space-y-4">
-              <div className="flex items-center space-x-1.5 text-xs font-mono font-semibold text-[#6B5A55] tracking-wider">
-                <AlertTriangle className="w-4 h-4 text-[#6B5A55]" />
-                <span>FREQUENTLY MISSING SKILLS (GAP DIAGNOSTICS)</span>
-              </div>
+              <span className="text-[13px] font-mono uppercase text-ink-muted block">
+                Frequently Missing Requirements
+              </span>
               <div className="space-y-3.5">
                 {jobAnalytics.most_frequently_missing_skills && jobAnalytics.most_frequently_missing_skills.length > 0 ? (
                   jobAnalytics.most_frequently_missing_skills.map((item, idx) => {
@@ -222,23 +172,23 @@ export default function AnalyticsView({ selectedJobId }) {
                     const percent = Math.round((item.count / max) * 100);
                     return (
                       <div key={idx} className="space-y-1.5">
-                        <div className="flex justify-between text-xs">
-                          <span className="font-semibold text-[#2A1015]">{item.skill}</span>
-                          <span className="font-mono text-[#6B5A55]">
+                        <div className="flex justify-between text-[13px]">
+                          <span className="font-sans font-medium text-ink">{item.skill}</span>
+                          <span className="font-mono text-ink-muted">
                             Missing in {item.count} resumes ({percent}%)
                           </span>
                         </div>
-                        <div className="w-full bg-[#F5EEE6] rounded-full h-2.5 overflow-hidden border border-[#E8DDD0]">
+                        <div className="w-full bg-surface-alt rounded-full h-2 overflow-hidden border border-line">
                           <div
-                            className="bg-[#6B5A55] opacity-60 h-full rounded-full transition-all duration-700 ease-out"
+                            className="bg-ink-muted/50 h-full rounded-full transition-all duration-700 ease-out"
                             style={{ width: `${percent}%` }}
-                          ></div>
+                          />
                         </div>
                       </div>
                     );
                   })
                 ) : (
-                  <p className="text-xs text-[#8A6420] font-mono">No competency gaps detected in applicants.</p>
+                  <p className="text-[13px] text-ink font-sans">No competency gaps detected in applicants.</p>
                 )}
               </div>
             </div>

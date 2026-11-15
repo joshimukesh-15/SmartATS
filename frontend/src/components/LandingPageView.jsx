@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import FloatingNav from './landing/FloatingNav';
 import HeroSection from './landing/HeroSection';
-import SkillsMarquee from './landing/SkillsMarquee';
-import BentoBenefits from './landing/BentoBenefits';
-import WorkflowSticky from './landing/WorkflowSticky';
-import StatsBand from './landing/StatsBand';
-import ProductShowcase from './landing/ProductShowcase';
+import ProofStrip from './landing/ProofStrip';
+import ScoringFormulaSection from './landing/ScoringFormulaSection';
+import FeaturesAlternating from './landing/FeaturesAlternating';
+import WorkflowSimple from './landing/WorkflowSimple';
 import FAQSection from './landing/FAQSection';
 import CTASection from './landing/CTASection';
 import FooterSection from './landing/FooterSection';
@@ -20,38 +19,31 @@ export default function LandingPageView({ onLaunchApp }) {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#FBF7F2] text-[#2A1015] overflow-x-hidden selection:bg-[#7B1E3A] selection:text-white">
-      
+    <div className="relative min-h-screen bg-canvas text-ink overflow-x-hidden selection:bg-wine selection:text-white">
       {/* 1. Floating Nav */}
       <FloatingNav onEnterApp={onLaunchApp} />
 
-      {/* 2. Hero Section (Two-Column + 3D Tilted Mockup + Parallax Floating Chips + Slanted Bottom) */}
+      {/* 2. Hero Section */}
       <HeroSection onEnterApp={onLaunchApp} />
 
-      {/* 3. Skills Marquee (Infinite Horizontal Scroll with Edge Mask Fades) */}
-      <SkillsMarquee />
+      {/* 3. Proof Strip */}
+      <ProofStrip />
 
-      {/* 4. Core Benefits as Bento Grid (2x2 Cut-Corner + Cursor Spotlight + 1x1 + 1x1 + 2x1 Wide) */}
-      <BentoBenefits />
+      {/* 4. Signature Section: How Scoring Works */}
+      <ScoringFormulaSection />
 
-      {/* 5. Workflow (Sticky-Scroll with Vertical Progress Line + 3 Tall Panels + Watermark Numerals) */}
-      <WorkflowSticky />
+      {/* 5. Features: 3 Alternating Image + Text Rows */}
+      <FeaturesAlternating />
 
-      {/* 6. Stats Band (Full-Width Dark Band with Diagonal Clip-Path + Count-Up + Gold Dividers) */}
-      <StatsBand />
+      {/* 6. Workflow: 3 Numbered Steps with Connecting Rule */}
+      <WorkflowSimple />
 
-      {/* 7. Product Showcase (Large Browser Mockup with Inset Clip-Path Reveal on Scroll) */}
-      <ProductShowcase onEnterApp={onLaunchApp} />
-
-      {/* 8. FAQ (Two Columns: Sticky Left + Smooth Animated Accordion with Rotating Plus Right) */}
+      {/* 7. FAQ: Two Columns with Hairline Dividers */}
       <FAQSection />
 
-      {/* 9. CTA Block (Arched Top Ellipse + Subtle Grain + Cursor Spotlight + Big Serif + Gold Button) */}
+      {/* 8. CTA + Minimal Footer */}
       <CTASection onEnterApp={onLaunchApp} />
-
-      {/* 10. Footer (Minimal Links Row + Oversized 18vw Cropped Serif Wordmark at 8% Opacity) */}
       <FooterSection onEnterApp={onLaunchApp} />
-
     </div>
   );
 }

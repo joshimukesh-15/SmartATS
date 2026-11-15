@@ -1,138 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, Menu, X, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 
 export default function FloatingNav({ onEnterApp }) {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
-    { label: 'Capabilities', href: '#benefits' },
-    { label: 'Architecture', href: '#workflow' },
-    { label: 'Performance', href: '#stats' },
-    { label: 'Platform Studio', href: '#showcase' },
-    { label: 'FAQ', href: '#faq' },
-  ];
 
   return (
     <>
-      {/* Floating Pill Nav Bar */}
-      <header
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl transition-all duration-300 ease-out ${
-          scrolled
-            ? 'py-2 px-4 sm:px-6 bg-white/90 backdrop-blur-md border border-[#B8893B]/30 shadow-[0_12px_32px_rgba(42,16,21,0.08)] rounded-full'
-            : 'py-3.5 px-5 sm:px-7 bg-white/70 backdrop-blur-sm border border-[#E8DDD0] rounded-full'
-        }`}
-      >
+      <header className="fixed top-6 left-1/2 -translate-x-1/2 z-40 w-[calc(100%-2.5rem)] max-w-4xl bg-surface/90 backdrop-blur-md border border-line rounded-[12px] px-6 py-3.5 shadow-[0_1px_2px_rgba(42,16,21,0.04),0_8px_24px_rgba(42,16,21,0.04)] transition-all">
         <div className="flex items-center justify-between">
           
-          {/* Brand Emblem */}
-          <a href="#" className="flex items-center space-x-2.5 group">
-            <div className="w-8 h-8 rounded-full bg-[#7B1E3A] flex items-center justify-center text-[#F7EDD8] font-serif font-bold text-sm shadow-xs transition-transform duration-200 group-hover:scale-105">
-              S
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif font-bold text-base text-[#2A1015] tracking-tight leading-none">
-                SmartATS
-              </span>
-              <span className="text-[9px] uppercase font-mono tracking-[0.14em] text-[#B8893B] font-semibold mt-0.5">
-                Editorial AI
-              </span>
-            </div>
+          {/* Wordmark */}
+          <a href="#" className="flex items-center space-x-2.5">
+            <span className="font-serif text-2xl tracking-tight text-ink font-normal">
+              SmartATS
+            </span>
           </a>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center space-x-7 text-xs font-medium text-[#6B5A55]">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="hover:text-[#7B1E3A] transition-colors relative py-1 hover:font-semibold"
-              >
-                {link.label}
-              </a>
-            ))}
+          {/* 3 Calm Desktop Links */}
+          <nav className="hidden md:flex items-center space-x-8 text-[14px] text-ink-muted">
+            <a href="#scoring" className="hover:text-ink transition-colors">
+              Methodology
+            </a>
+            <a href="#evidence" className="hover:text-ink transition-colors">
+              Evidence
+            </a>
+            <a href="#features" className="hover:text-ink transition-colors">
+              Interface
+            </a>
           </nav>
 
-          {/* Desktop Launch Studio Button */}
-          <div className="hidden md:flex items-center space-x-3">
+          {/* One Wine Button */}
+          <div className="hidden md:flex items-center">
             <button
               onClick={onEnterApp}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 bg-[#7B1E3A] hover:bg-[#5E1229] text-white rounded-full text-xs font-semibold tracking-wide transition-all shadow-xs active:scale-[0.98]"
+              className="px-5 py-2 bg-wine hover:bg-wine-hover text-white rounded-[8px] text-[14px] font-medium transition-colors shadow-xs"
             >
-              <span>Launch Studio</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#F7EDD8]" />
+              Open the studio
             </button>
           </div>
 
-          {/* Mobile Hamburger Toggle */}
+          {/* Mobile Menu Button */}
           <button
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open mobile menu"
-            className="md:hidden p-1.5 rounded-full text-[#6B5A55] hover:text-[#7B1E3A] hover:bg-[#F8ECEF] transition"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle navigation menu"
+            className="md:hidden p-1.5 text-ink-muted hover:text-ink transition"
           >
-            <Menu className="w-5 h-5" />
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </header>
 
-      {/* Full-Screen Mobile Drawer with Staggered Link Reveal */}
+      {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 bg-[#FBF7F2] flex flex-col justify-between p-8 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between border-b border-[#E8DDD0] pb-6">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-9 h-9 rounded-full bg-[#7B1E3A] flex items-center justify-center text-[#F7EDD8] font-serif font-bold text-base">
-                S
-              </div>
-              <span className="font-serif font-bold text-xl text-[#2A1015]">
-                SmartATS
-              </span>
-            </div>
-            <button
+        <div className="fixed inset-0 z-30 bg-canvas/98 backdrop-blur-lg flex flex-col justify-between p-8 pt-28 md:hidden">
+          <nav className="flex flex-col space-y-6">
+            <a
+              href="#scoring"
               onClick={() => setMobileOpen(false)}
-              aria-label="Close mobile menu"
-              className="p-2 rounded-full border border-[#B8893B]/40 text-[#7B1E3A] hover:bg-[#F8ECEF] transition"
+              className="font-serif text-3xl text-ink hover:text-wine transition-colors"
             >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <nav className="flex flex-col space-y-6 my-auto">
-            {navLinks.map((link, idx) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                style={{
-                  animationDelay: `${idx * 80}ms`,
-                }}
-                className="font-serif text-3xl font-bold text-[#2A1015] hover:text-[#7B1E3A] transition-colors animate-in slide-in-from-bottom-3 duration-300 fill-mode-both"
-              >
-                {link.label}
-              </a>
-            ))}
+              Methodology
+            </a>
+            <a
+              href="#evidence"
+              onClick={() => setMobileOpen(false)}
+              className="font-serif text-3xl text-ink hover:text-wine transition-colors"
+            >
+              Evidence
+            </a>
+            <a
+              href="#features"
+              onClick={() => setMobileOpen(false)}
+              className="font-serif text-3xl text-ink hover:text-wine transition-colors"
+            >
+              Interface
+            </a>
           </nav>
 
-          <div className="border-t border-[#E8DDD0] pt-6 space-y-3">
+          <div className="pt-6 border-t border-line space-y-4">
             <button
               onClick={() => {
                 setMobileOpen(false);
                 onEnterApp();
               }}
-              className="w-full py-4 bg-[#7B1E3A] text-white rounded-full text-sm font-semibold tracking-wide flex items-center justify-center space-x-2 shadow-md"
+              className="w-full py-3.5 bg-wine hover:bg-wine-hover text-white rounded-[8px] text-[15px] font-medium transition-colors shadow-xs"
             >
-              <span>Enter Screening Studio</span>
-              <ArrowRight className="w-4 h-4 text-[#F7EDD8]" />
+              Open the studio
             </button>
-            <p className="text-center text-xs text-[#6B5A55] font-mono">
-              Explainable Recruiter Screening & Matching
+            <p className="text-[13px] text-ink-muted font-sans text-center">
+              Explainable resume screening and matching.
             </p>
           </div>
         </div>
