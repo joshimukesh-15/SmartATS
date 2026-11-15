@@ -20,9 +20,16 @@ class RankingItem(BaseModel):
     final_score: float
     keyword_score: float
     tfidf_score: float
+    experience_score: Optional[float] = None
+    education_score: Optional[float] = None
+    experience_years: Optional[float] = 0.0
+    seniority_level: Optional[str] = "Junior / Entry"
+    education_level: Optional[str] = "Unspecified"
     matched_skills: List[str] = Field(default_factory=list)
     missing_skills: List[str] = Field(default_factory=list)
+    equivalent_skills: Dict[str, str] = Field(default_factory=dict)
     preferred_matched_skills: List[str] = Field(default_factory=list)
+    score_breakdown: Optional[Dict[str, float]] = None
     score_explanation: Optional[str] = None
     notes: List[ApplicationNoteResponse] = Field(default_factory=list)
     status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
@@ -34,6 +41,7 @@ class JobRankingsResponse(BaseModel):
     job_title: str
     total_candidates: int
     processed_count: int
+    weights_applied: Optional[Dict[str, float]] = None
     rankings: List[RankingItem]
 
 
@@ -49,8 +57,12 @@ class CandidateCompareItem(BaseModel):
     final_score: float
     keyword_score: float
     tfidf_score: float
+    experience_years: Optional[float] = 0.0
+    seniority_level: Optional[str] = "Junior / Entry"
+    education_level: Optional[str] = "Unspecified"
     matched_skills: List[str]
     missing_skills: List[str]
+    equivalent_skills: Dict[str, str] = Field(default_factory=dict)
     preferred_matched_skills: List[str]
     total_extracted_skills: int
     applied_at: datetime

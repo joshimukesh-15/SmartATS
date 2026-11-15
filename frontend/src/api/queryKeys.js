@@ -7,7 +7,13 @@ export const queryKeys = {
     all: ['jobs'],
     lists: () => [...queryKeys.jobs.all, 'list'],
     detail: (id) => [...queryKeys.jobs.all, 'detail', String(id)],
-    rankings: (id) => [...queryKeys.jobs.all, 'rankings', String(id)],
+    rankings: (id, weights = null) => [
+      ...queryKeys.jobs.all,
+      'rankings',
+      String(id),
+      weights ? JSON.stringify(weights) : 'default',
+    ],
+    quality: (id) => [...queryKeys.jobs.all, 'quality', String(id)],
     analytics: (id) => [...queryKeys.jobs.all, 'analytics', String(id)],
   },
   analytics: {

@@ -5,7 +5,12 @@ from app.schemas.match import (
     CandidateCompareResponse,
     CandidateCompareItem
 )
-from app.services.taxonomy import normalize_skill_name
+from app.services.taxonomy import normalize_skill_name, get_equivalent_skill_match
+from app.services.extractor import (
+    extract_experience_years,
+    extract_seniority_level,
+    extract_education
+)
 
 
 def compare_candidates_service(
@@ -51,6 +56,19 @@ def compare_candidates_service(
         tfidf_score = match.tfidf_score if match else 0.0
         total_extracted = len(cand.extracted_skills) if cand and cand.extracted_skills else 0
 
+        raw_resume = cand.raw_text if cand and cand.raw_text else ""
+        exp_years = extract_experience_years(raw_resume)
+        seniority = extract_seniority_level(raw_resume, exp_years)
+        edu_data = extract_education(raw_resume)
+
+        cand_all_skills = cand.extracted_skills if cand and cand.extracted_skills else []
+        eq_skills = {}
+        for req in (job.required_skills or []):
+            if req not in matched_skills:
+                eq = get_equivalent_skill_match(req, cand_all_skills)
+                if eq:
+                    eq_skills[req] = eq
+
         candidates_list.append(
             CandidateCompareItem(
                 application_id=app.application_id,
@@ -60,8 +78,12 @@ def compare_candidates_service(
                 final_score=final_score,
                 keyword_score=kw_score,
                 tfidf_score=tfidf_score,
+                experience_years=exp_years,
+                seniority_level=seniority,
+                education_level=edu_data.get("degree", "Unspecified"),
                 matched_skills=matched_skills,
                 missing_skills=missing_skills,
+                equivalent_skills=eq_skills,
                 preferred_matched_skills=pref_skills,
                 total_extracted_skills=total_extracted,
                 applied_at=app.applied_at

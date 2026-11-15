@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -18,13 +18,28 @@ router = APIRouter(tags=["Screening, Matching & Analytics"])
 
 
 @router.get("/jobs/{job_id}/rankings/", response_model=JobRankingsResponse)
-def get_job_rankings_endpoint(job_id: int, db: Session = Depends(get_db)):
+def get_job_rankings_endpoint(
+    job_id: int,
+    db: Session = Depends(get_db),
+    w_skills: Optional[float] = None,
+    w_text: Optional[float] = None,
+    w_exp: Optional[float] = None,
+    w_edu: Optional[float] = None
+):
     """
     Returns ranked candidates for a specific job with complete score breakdowns,
-    formula justifications, matched/missing skill lists, and ranking position.
+    formula justifications, matched/missing skill lists, equivalent skill credits,
+    and dynamically adjustable scoring weights.
     """
     try:
-        return get_job_rankings(db, job_id)
+        return get_job_rankings(
+            db=db,
+            job_id=job_id,
+            w_skills=w_skills,
+            w_text=w_text,
+            w_exp=w_exp,
+            w_edu=w_edu
+        )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

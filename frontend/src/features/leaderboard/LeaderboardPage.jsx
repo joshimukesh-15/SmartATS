@@ -10,12 +10,17 @@ import {
   Phone,
   Clock,
   MessageSquare,
+  SlidersHorizontal,
+  Briefcase,
+  GraduationCap,
+  RotateCcw,
 } from 'lucide-react';
 import {
   useJobs,
   useRankings,
   useUpdateApplicationStage,
   useAddApplicationNote,
+  useUpdateJobWeights,
 } from '../../hooks';
 import {
   Select,
@@ -69,9 +74,42 @@ export default function LeaderboardPage() {
   const activeJobId = routeJobId || (jobs.length > 0 ? String(jobs[0].job_id) : '');
   const activeJob = jobs.find((j) => String(j.job_id) === String(activeJobId));
 
-  const { data: rankingsData, isLoading: rankingsLoading } = useRankings(activeJobId);
+  // Recruiter Scoring Weights State
+  const [isWeightsOpen, setIsWeightsOpen] = useState(false);
+  const [appliedWeights, setAppliedWeights] = useState(null);
+  const [weightValues, setWeightValues] = useState({
+    weight_skills: 0.40,
+    weight_text: 0.20,
+    weight_experience: 0.25,
+    weight_education: 0.15,
+  });
+
+  // Sync weights when active job changes
+  const [prevJobId, setPrevJobId] = useState(activeJobId);
+  if (prevJobId !== activeJobId) {
+    setPrevJobId(activeJobId);
+    setAppliedWeights(null);
+    if (activeJob?.custom_weights) {
+      setWeightValues({
+        weight_skills: activeJob.custom_weights.weight_skills ?? 0.40,
+        weight_text: activeJob.custom_weights.weight_text ?? 0.20,
+        weight_experience: activeJob.custom_weights.weight_experience ?? 0.25,
+        weight_education: activeJob.custom_weights.weight_education ?? 0.15,
+      });
+    } else {
+      setWeightValues({
+        weight_skills: 0.40,
+        weight_text: 0.20,
+        weight_experience: 0.25,
+        weight_education: 0.15,
+      });
+    }
+  }
+
+  const { data: rankingsData, isLoading: rankingsLoading } = useRankings(activeJobId, appliedWeights);
   const updateStageMutation = useUpdateApplicationStage(activeJobId);
   const addNoteMutation = useAddApplicationNote(activeJobId);
+  const updateWeightsMutation = useUpdateJobWeights(activeJobId);
 
   // Search & Stage Filter state
   const [search, setSearch] = useState('');
@@ -222,6 +260,56 @@ export default function LeaderboardPage() {
     }
   };
 
+  // Calculate total raw weight and normalized fractions
+  const totalWeight = Math.max(
+    0.01,
+    (Number(weightValues.weight_skills) || 0) +
+      (Number(weightValues.weight_text) || 0) +
+      (Number(weightValues.weight_experience) || 0) +
+      (Number(weightValues.weight_education) || 0)
+  );
+
+  const normalizedWeights = useMemo(
+    () => ({
+      weight_skills: Math.round(((Number(weightValues.weight_skills) || 0) / totalWeight) * 100) / 100,
+      weight_text: Math.round(((Number(weightValues.weight_text) || 0) / totalWeight) * 100) / 100,
+      weight_experience:
+        Math.round(((Number(weightValues.weight_experience) || 0) / totalWeight) * 100) / 100,
+      weight_education:
+        Math.round(((Number(weightValues.weight_education) || 0) / totalWeight) * 100) / 100,
+    }),
+    [weightValues, totalWeight]
+  );
+
+  const handleApplyWeights = () => {
+    setAppliedWeights(normalizedWeights);
+    setIsWeightsOpen(false);
+    toast.success('Custom weights applied to rankings');
+  };
+
+  const handleSaveJobWeights = async () => {
+    try {
+      await updateWeightsMutation.mutateAsync(normalizedWeights);
+      setAppliedWeights(normalizedWeights);
+      setIsWeightsOpen(false);
+      toast.success('Scoring weights saved as job default');
+    } catch (err) {
+      toast.error(err.message || 'Failed to save job weights');
+    }
+  };
+
+  const handleResetWeights = () => {
+    setAppliedWeights(null);
+    setWeightValues({
+      weight_skills: 0.40,
+      weight_text: 0.20,
+      weight_experience: 0.25,
+      weight_education: 0.15,
+    });
+    setIsWeightsOpen(false);
+    toast.info('Reverted to balanced scoring defaults');
+  };
+
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Top Header & Job Switcher */}
@@ -231,12 +319,12 @@ export default function LeaderboardPage() {
             Leaderboard
           </h1>
           <p className="text-[14px] text-ink-muted mt-1">
-            Explainable candidate rankings with dual-track scoring breakdown and pipeline stage workflow.
+            Explainable candidate rankings with multi-pillar scoring, configurable weights, and pipeline review.
           </p>
         </div>
 
-        {/* Job Selector + Export */}
-        <div className="flex items-center gap-3">
+        {/* Job Selector + Weights Tuner + Export */}
+        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
           {jobs.length > 0 && (
             <div className="w-56">
               <Select value={activeJobId} onChange={(e) => handleJobChange(e.target.value)}>
@@ -248,6 +336,20 @@ export default function LeaderboardPage() {
               </Select>
             </div>
           )}
+
+          {/* Scoring Weights Tuner Trigger */}
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<SlidersHorizontal className="w-3.5 h-3.5" />}
+            onClick={() => setIsWeightsOpen(true)}
+            className="relative"
+          >
+            <span>Weights</span>
+            {(appliedWeights || activeJob?.custom_weights) && (
+              <span className="w-1.5 h-1.5 rounded-full bg-champagne ml-0.5" title="Custom weights active" />
+            )}
+          </Button>
 
           {activeJobId && (
             <a
@@ -449,14 +551,42 @@ export default function LeaderboardPage() {
                           </span>
                         </td>
 
-                        {/* Candidate Name & Email */}
-                        <td className="px-4 py-3 min-w-[150px]">
+                        {/* Candidate Name, Email, Experience & Equiv Skills */}
+                        <td className="px-4 py-3 min-w-[170px]">
                           <div className="font-semibold text-ink text-[14px]">
                             {cleanCandidateName(candidate.candidate_name)}
                           </div>
                           <div className="text-[13px] text-ink-muted truncate">
                             {candidate.candidate_email || '—'}
                           </div>
+                          {(candidate.experience_years !== undefined || candidate.education_level) && (
+                            <div className="flex items-center gap-1.5 mt-0.5 text-[13px] text-ink-muted flex-wrap">
+                              {candidate.experience_years !== undefined && (
+                                <span className="font-medium text-ink">
+                                  {candidate.experience_years} yrs
+                                </span>
+                              )}
+                              {candidate.seniority_level && (
+                                <>
+                                  <span className="text-ink-subtle">·</span>
+                                  <span>{candidate.seniority_level}</span>
+                                </>
+                              )}
+                              {candidate.education_level && candidate.education_level !== 'Unspecified' && (
+                                <>
+                                  <span className="text-ink-subtle">·</span>
+                                  <span className="truncate max-w-[120px]">{candidate.education_level}</span>
+                                </>
+                              )}
+                            </div>
+                          )}
+                          {candidate.equivalent_skills && Object.keys(candidate.equivalent_skills).length > 0 && (
+                            <div className="mt-1">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[13px] bg-champagne-soft text-ink font-medium border border-champagne/30">
+                                <span>+{Object.keys(candidate.equivalent_skills).length} equiv skill</span>
+                              </span>
+                            </div>
+                          )}
                         </td>
 
                         {/* Stage Badge */}
@@ -487,6 +617,8 @@ export default function LeaderboardPage() {
                             <ScoreBar
                               skillsPoints={breakdown.skillsCoveredPoints}
                               textMatchPoints={breakdown.textMatchPoints}
+                              experiencePoints={breakdown.experiencePoints}
+                              educationPoints={breakdown.educationPoints}
                               finalScore={breakdown.finalScore}
                               height="h-1"
                             />
@@ -526,6 +658,21 @@ export default function LeaderboardPage() {
                         <div className="flex items-center gap-2">
                           <Phone className="w-3.5 h-3.5 text-ink-subtle" />
                           <span>{selectedCandidate.candidate_phone}</span>
+                        </div>
+                      )}
+                      {selectedCandidate.experience_years !== undefined && (
+                        <div className="flex items-center gap-2">
+                          <Briefcase className="w-3.5 h-3.5 text-ink-subtle" />
+                          <span className="text-ink font-medium">
+                            {selectedCandidate.experience_years} years experience
+                            {selectedCandidate.seniority_level && ` · ${selectedCandidate.seniority_level}`}
+                          </span>
+                        </div>
+                      )}
+                      {selectedCandidate.education_level && selectedCandidate.education_level !== 'Unspecified' && (
+                        <div className="flex items-center gap-2">
+                          <GraduationCap className="w-3.5 h-3.5 text-ink-subtle" />
+                          <span className="text-ink">{selectedCandidate.education_level}</span>
                         </div>
                       )}
                     </div>
@@ -647,14 +794,16 @@ export default function LeaderboardPage() {
                   <ScoreBar
                     skillsPoints={selectedBreakdown.skillsCoveredPoints}
                     textMatchPoints={selectedBreakdown.textMatchPoints}
+                    experiencePoints={selectedBreakdown.experiencePoints}
+                    educationPoints={selectedBreakdown.educationPoints}
                     finalScore={selectedBreakdown.finalScore}
                     height="h-2"
                   />
-                  <div className="pt-2 text-[13px] text-ink-muted space-y-1 tabular-nums">
+                  <div className="pt-2 text-[13px] text-ink-muted space-y-1.5 tabular-nums">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-primary" />
-                        Skills covered {selectedBreakdown.skillsCoveredPercent.toFixed(1)}% × 0.6
+                        Skills covered {selectedBreakdown.skillsCoveredPercent.toFixed(1)}% × {selectedBreakdown.weightSkills.toFixed(2)}
                       </span>
                       <span className="font-medium text-ink">
                         {selectedBreakdown.skillsCoveredPoints.toFixed(1)} pts
@@ -663,34 +812,73 @@ export default function LeaderboardPage() {
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-champagne" />
-                        Text match {selectedBreakdown.textMatchPercent.toFixed(1)}% × 0.4
+                        Text match {selectedBreakdown.textMatchPercent.toFixed(1)}% × {selectedBreakdown.weightText.toFixed(2)}
                       </span>
                       <span className="font-medium text-ink">
                         {selectedBreakdown.textMatchPoints.toFixed(1)} pts
                       </span>
                     </div>
+                    {selectedBreakdown.hasMultiPillar && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-ink-muted" />
+                            Experience {selectedBreakdown.experiencePercent.toFixed(1)}% × {selectedBreakdown.weightExperience.toFixed(2)}
+                          </span>
+                          <span className="font-medium text-ink">
+                            {selectedBreakdown.experiencePoints.toFixed(1)} pts
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-champagne/40 border border-champagne" />
+                            Education {selectedBreakdown.educationPercent.toFixed(1)}% × {selectedBreakdown.weightEducation.toFixed(2)}
+                          </span>
+                          <span className="font-medium text-ink">
+                            {selectedBreakdown.educationPoints.toFixed(1)} pts
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* 4. Required Skills Diagnostic */}
                 <div className="space-y-3">
-                  <h3 className="text-[14px] font-semibold text-ink">Required skills status</h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[14px] font-semibold text-ink">Required skills status</h3>
+                    {selectedCandidate.equivalent_skills &&
+                      Object.keys(selectedCandidate.equivalent_skills).length > 0 && (
+                        <span className="text-[13px] text-ink-muted">
+                          {Object.keys(selectedCandidate.equivalent_skills).length} equivalent recognized
+                        </span>
+                      )}
+                  </div>
                   <div className="space-y-2">
                     {activeJob?.required_skills?.map((skill, sIdx) => {
                       const isFound = selectedCandidate.matched_skills?.some(
                         (m) => m.toLowerCase().trim() === skill.toLowerCase().trim()
                       );
+                      const equivSource = selectedCandidate.equivalent_skills?.[skill];
 
                       return (
                         <div
                           key={sIdx}
-                          className="flex items-center justify-between text-[13px] py-1 border-b border-line/50 last:border-b-0"
+                          className="flex items-center justify-between text-[13px] py-1 border-b border-line/50 last:border-b-0 gap-2"
                         >
                           <span className="font-medium text-ink">{skill}</span>
                           {isFound ? (
                             <span className="inline-flex items-center gap-1 text-[13px] font-medium text-ink bg-champagne-soft px-2 py-0.5 rounded-[4px]">
                               <Check className="w-3.5 h-3.5 text-champagne" />
                               Found in resume
+                            </span>
+                          ) : equivSource ? (
+                            <span
+                              className="inline-flex items-center gap-1 text-[13px] font-medium text-ink bg-champagne-soft/70 px-2 py-0.5 rounded-[4px] border border-champagne/30"
+                              title="Recognized as equivalent skill family with 75% credit"
+                            >
+                              <Check className="w-3.5 h-3.5 text-champagne" />
+                              Via {equivSource} (75%)
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-[13px] text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[4px] border border-dashed border-line">
@@ -885,6 +1073,8 @@ export default function LeaderboardPage() {
               <ScoreBar
                 skillsPoints={selectedBreakdown.skillsCoveredPoints}
                 textMatchPoints={selectedBreakdown.textMatchPoints}
+                experiencePoints={selectedBreakdown.experiencePoints}
+                educationPoints={selectedBreakdown.educationPoints}
                 finalScore={selectedBreakdown.finalScore}
                 height="h-2"
               />
@@ -935,6 +1125,213 @@ export default function LeaderboardPage() {
                   ? 'Remove from compare'
                   : 'Add to compare'}
               </Button>
+            </div>
+          </div>
+        </Dialog>
+      )}
+
+      {/* Scoring Weights Tuner Dialog */}
+      {isWeightsOpen && (
+        <Dialog
+          isOpen={isWeightsOpen}
+          onClose={() => setIsWeightsOpen(false)}
+          title="Recruiter Scoring Weights & Tuner"
+          description="Adjust multi-pillar scoring weights dynamically. Re-ranks candidates instantly using transparent, auditable math."
+        >
+          <div className="space-y-6 pt-2">
+            {/* Presets */}
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-ink">Weight Presets</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setWeightValues({
+                      weight_skills: 0.40,
+                      weight_text: 0.20,
+                      weight_experience: 0.25,
+                      weight_education: 0.15,
+                    })
+                  }
+                  className="p-2.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-left text-[13px] transition-colors cursor-pointer"
+                >
+                  <div className="font-semibold text-ink">Balanced</div>
+                  <div className="text-ink-muted text-[13px] tabular-nums mt-0.5">
+                    40 / 20 / 25 / 15
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setWeightValues({
+                      weight_skills: 0.60,
+                      weight_text: 0.15,
+                      weight_experience: 0.15,
+                      weight_education: 0.10,
+                    })
+                  }
+                  className="p-2.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-left text-[13px] transition-colors cursor-pointer"
+                >
+                  <div className="font-semibold text-ink">Skills-First</div>
+                  <div className="text-ink-muted text-[13px] tabular-nums mt-0.5">
+                    60 / 15 / 15 / 10
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setWeightValues({
+                      weight_skills: 0.25,
+                      weight_text: 0.15,
+                      weight_experience: 0.45,
+                      weight_education: 0.15,
+                    })
+                  }
+                  className="p-2.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-left text-[13px] transition-colors cursor-pointer"
+                >
+                  <div className="font-semibold text-ink">Seniority-First</div>
+                  <div className="text-ink-muted text-[13px] tabular-nums mt-0.5">
+                    25 / 15 / 45 / 15
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Sliders */}
+            <div className="space-y-4 p-4 rounded-[12px] bg-surface-alt/50 border border-line">
+              {/* 1. Skills */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="font-medium text-ink flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+                    Required Skills Coverage
+                  </span>
+                  <span className="font-semibold tabular-nums text-ink">
+                    {(normalizedWeights.weight_skills * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0.05"
+                  max="1"
+                  step="0.05"
+                  value={weightValues.weight_skills}
+                  onChange={(e) =>
+                    setWeightValues((prev) => ({
+                      ...prev,
+                      weight_skills: parseFloat(e.target.value),
+                    }))
+                  }
+                  className="w-full accent-primary cursor-pointer"
+                />
+              </div>
+
+              {/* 2. Text Match */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="font-medium text-ink flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-champagne" />
+                    Text Semantic Similarity
+                  </span>
+                  <span className="font-semibold tabular-nums text-ink">
+                    {(normalizedWeights.weight_text * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0.05"
+                  max="1"
+                  step="0.05"
+                  value={weightValues.weight_text}
+                  onChange={(e) =>
+                    setWeightValues((prev) => ({
+                      ...prev,
+                      weight_text: parseFloat(e.target.value),
+                    }))
+                  }
+                  className="w-full accent-primary cursor-pointer"
+                />
+              </div>
+
+              {/* 3. Experience */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="font-medium text-ink flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-ink-muted" />
+                    Experience & Seniority Fit
+                  </span>
+                  <span className="font-semibold tabular-nums text-ink">
+                    {(normalizedWeights.weight_experience * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0.05"
+                  max="1"
+                  step="0.05"
+                  value={weightValues.weight_experience}
+                  onChange={(e) =>
+                    setWeightValues((prev) => ({
+                      ...prev,
+                      weight_experience: parseFloat(e.target.value),
+                    }))
+                  }
+                  className="w-full accent-primary cursor-pointer"
+                />
+              </div>
+
+              {/* 4. Education */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="font-medium text-ink flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-champagne/40 border border-champagne" />
+                    Education Level
+                  </span>
+                  <span className="font-semibold tabular-nums text-ink">
+                    {(normalizedWeights.weight_education * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0.05"
+                  max="1"
+                  step="0.05"
+                  value={weightValues.weight_education}
+                  onChange={(e) =>
+                    setWeightValues((prev) => ({
+                      ...prev,
+                      weight_education: parseFloat(e.target.value),
+                    }))
+                  }
+                  className="w-full accent-primary cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Dialog Footer Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+                onClick={handleResetWeights}
+              >
+                Reset defaults
+              </Button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  loading={updateWeightsMutation.isPending}
+                  onClick={handleSaveJobWeights}
+                >
+                  Save as job default
+                </Button>
+                <Button variant="primary" size="sm" onClick={handleApplyWeights}>
+                  Apply to rankings
+                </Button>
+              </div>
             </div>
           </div>
         </Dialog>

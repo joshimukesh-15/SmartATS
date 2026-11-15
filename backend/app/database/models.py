@@ -21,6 +21,7 @@ class Job(Base):
     description = Column(Text, nullable=False)
     required_skills = Column(JSON, default=list, nullable=False)
     preferred_skills = Column(JSON, default=list, nullable=False)
+    custom_weights = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 

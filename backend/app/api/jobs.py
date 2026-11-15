@@ -1,12 +1,35 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.database.models import Job, Application
-from app.schemas.job import JobCreate, JobUpdate, JobResponse
+from app.schemas.job import (
+    JobCreate,
+    JobUpdate,
+    JobResponse,
+    JobQualityCheckRequest,
+    JobQualityCheckResponse,
+    JobWeightsUpdateRequest
+)
 from app.services.taxonomy import normalize_skill_name
+from app.services.job_quality import check_job_description_quality
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
+
+
+@router.post("/quality-check/", response_model=JobQualityCheckResponse)
+def check_job_quality_endpoint(payload: JobQualityCheckRequest):
+    """
+    Evaluates job posting text for missing salary/location, vague requirements,
+    and unnecessarily restrictive wording before or during creation.
+    """
+    result = check_job_description_quality(
+        title=payload.title,
+        description=payload.description,
+        required_skills=payload.required_skills,
+        preferred_skills=payload.preferred_skills
+    )
+    return JobQualityCheckResponse(**result)
 
 
 @router.post("/", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
@@ -20,7 +43,8 @@ def create_job(job_in: JobCreate, db: Session = Depends(get_db)):
         title=job_in.title.strip(),
         description=job_in.description.strip(),
         required_skills=list(dict.fromkeys(normalized_req)),
-        preferred_skills=list(dict.fromkeys(normalized_pref))
+        preferred_skills=list(dict.fromkeys(normalized_pref)),
+        custom_weights=job_in.custom_weights
     )
     db.add(job)
     db.commit()
@@ -42,6 +66,63 @@ def list_jobs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
         j_resp.applications_count = count
         results.append(j_resp)
     return results
+
+
+@router.get("/{job_id}/quality-check/", response_model=JobQualityCheckResponse)
+def get_existing_job_quality(job_id: int, db: Session = Depends(get_db)):
+    """Performs a quality check on an existing job opening."""
+    job = db.query(Job).filter(Job.job_id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job opening not found.")
+
+    result = check_job_description_quality(
+        title=job.title,
+        description=job.description,
+        required_skills=job.required_skills or [],
+        preferred_skills=job.preferred_skills or []
+    )
+    return JobQualityCheckResponse(**result)
+
+
+@router.patch("/{job_id}/weights", response_model=JobResponse)
+def update_job_weights(
+    job_id: int,
+    payload: JobWeightsUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Updates and persists the default scoring weights for a specific job opening:
+    skills, text, experience, and education.
+    """
+    job = db.query(Job).filter(Job.job_id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job opening not found.")
+
+    total_weight = (
+        payload.weight_skills
+        + payload.weight_text
+        + payload.weight_experience
+        + payload.weight_education
+    )
+    if total_weight <= 0:
+        raise HTTPException(status_code=400, detail="Weights must sum to greater than 0.")
+
+    # Normalize weights so they sum to 1.0
+    normalized_weights = {
+        "weight_skills": round(payload.weight_skills / total_weight, 3),
+        "weight_text": round(payload.weight_text / total_weight, 3),
+        "weight_experience": round(payload.weight_experience / total_weight, 3),
+        "weight_education": round(payload.weight_education / total_weight, 3),
+    }
+
+    job.custom_weights = normalized_weights
+    db.commit()
+    db.refresh(job)
+
+    count = db.query(Application).filter(Application.job_id == job.job_id).count()
+    resp = JobResponse.model_validate(job)
+    resp.applications_count = count
+    return resp
 
 
 @router.get("/{job_id}", response_model=JobResponse)
@@ -76,6 +157,8 @@ def update_job(job_id: int, job_update: JobUpdate, db: Session = Depends(get_db)
         job.preferred_skills = list(dict.fromkeys(
             [normalize_skill_name(s) for s in job_update.preferred_skills if s.strip()]
         ))
+    if job_update.custom_weights is not None:
+        job.custom_weights = job_update.custom_weights
 
     db.commit()
     db.refresh(job)

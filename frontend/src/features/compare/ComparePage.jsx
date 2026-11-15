@@ -228,6 +228,15 @@ export default function ComparePage() {
                         <div className="font-semibold text-ink text-[15px] truncate">
                           {cleanCandidateName(cand.candidate_name)}
                         </div>
+                        {(cand.experience_years !== undefined || cand.education_level) && (
+                          <div className="text-[13px] text-ink-muted truncate">
+                            {cand.experience_years !== undefined ? `${cand.experience_years} yrs` : ''}
+                            {cand.seniority_level ? ` · ${cand.seniority_level}` : ''}
+                            {cand.education_level && cand.education_level !== 'Unspecified'
+                              ? ` · ${cand.education_level}`
+                              : ''}
+                          </div>
+                        )}
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
                             <ScoreValue score={breakdown.finalScore} size="md" />
@@ -238,6 +247,8 @@ export default function ComparePage() {
                           <ScoreBar
                             skillsPoints={breakdown.skillsCoveredPoints}
                             textMatchPoints={breakdown.textMatchPoints}
+                            experiencePoints={breakdown.experiencePoints}
+                            educationPoints={breakdown.educationPoints}
                             finalScore={breakdown.finalScore}
                             height="h-1.5"
                           />
@@ -249,8 +260,40 @@ export default function ComparePage() {
               </tr>
             </thead>
 
-            {/* Matrix Body: Per-skill check/dash */}
+            {/* Matrix Body: Experience, Education & Per-skill check/dash */}
             <tbody className="divide-y divide-line">
+              {/* Profile Comparison Rows */}
+              <tr className="bg-surface-alt/30">
+                <td className="sticky left-0 bg-surface z-10 px-5 py-3 font-semibold text-[13px] text-ink border-r border-line">
+                  Experience & Seniority
+                </td>
+                {comparedCandidates.map((cand) => (
+                  <td
+                    key={cand.application_id}
+                    className="px-5 py-3 text-center text-[13px] text-ink font-medium"
+                  >
+                    {cand.experience_years !== undefined ? `${cand.experience_years} yrs` : '—'}
+                    {cand.seniority_level && (
+                      <span className="text-ink-muted"> ({cand.seniority_level})</span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+
+              <tr className="bg-surface-alt/30">
+                <td className="sticky left-0 bg-surface z-10 px-5 py-3 font-semibold text-[13px] text-ink border-r border-line">
+                  Education Credential
+                </td>
+                {comparedCandidates.map((cand) => (
+                  <td
+                    key={cand.application_id}
+                    className="px-5 py-3 text-center text-[13px] text-ink font-medium"
+                  >
+                    {cand.education_level || 'Unspecified'}
+                  </td>
+                ))}
+              </tr>
+
               {visibleSkills.length === 0 ? (
                 <tr>
                   <td
@@ -282,6 +325,7 @@ export default function ComparePage() {
                         const hasSkill = cand.matched_skills?.some(
                           (m) => m.toLowerCase().trim() === skill.toLowerCase().trim()
                         );
+                        const equiv = cand.equivalent_skills?.[skill];
 
                         return (
                           <td
@@ -293,6 +337,14 @@ export default function ComparePage() {
                             {hasSkill ? (
                               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-champagne-soft text-ink">
                                 <Check className="w-3.5 h-3.5 text-champagne" />
+                              </span>
+                            ) : equiv ? (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-champagne-soft/70 text-ink text-[12px] font-medium border border-champagne/30"
+                                title="Equivalent skill match with 75% credit"
+                              >
+                                <Check className="w-3 h-3 text-champagne" />
+                                <span>via {equiv}</span>
                               </span>
                             ) : (
                               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-surface-alt text-ink-subtle">

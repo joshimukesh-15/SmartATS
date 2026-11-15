@@ -18,9 +18,38 @@ export async function deleteJob(jobId) {
   return true;
 }
 
-export async function fetchJobRankings(jobId) {
+export async function checkJobQuality(jobData) {
+  return apiClient('jobs/quality-check/', {
+    method: 'POST',
+    body: jobData,
+  });
+}
+
+export async function fetchJobQuality(jobId) {
+  if (!jobId) return null;
+  return apiClient(`jobs/${jobId}/quality-check/`);
+}
+
+export async function updateJobWeights(jobId, weights) {
+  return apiClient(`jobs/${jobId}/weights`, {
+    method: 'PATCH',
+    body: weights,
+  });
+}
+
+export async function fetchJobRankings(jobId, weights = null) {
   if (!jobId) return [];
-  return apiClient(`jobs/${jobId}/rankings/`);
+  let url = `jobs/${jobId}/rankings/`;
+  if (weights) {
+    const params = new URLSearchParams();
+    if (weights.weight_skills !== undefined) params.set('w_skills', weights.weight_skills);
+    if (weights.weight_text !== undefined) params.set('w_text', weights.weight_text);
+    if (weights.weight_experience !== undefined) params.set('w_exp', weights.weight_experience);
+    if (weights.weight_education !== undefined) params.set('w_edu', weights.weight_education);
+    const qs = params.toString();
+    if (qs) url += `?${qs}`;
+  }
+  return apiClient(url);
 }
 
 export async function fetchJobAnalytics(jobId) {

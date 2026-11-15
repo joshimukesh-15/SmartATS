@@ -5,3 +5,4 @@ export * from './useOverviewAnalytics';
 export * from './useUploadResumes';
 export * from './useCompareCandidates';
 export * from './useApplicationWorkflow';
+export * from './useJobQuality';

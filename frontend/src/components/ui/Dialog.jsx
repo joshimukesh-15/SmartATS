@@ -17,11 +17,11 @@ export function Dialog({
     if (!dialog) return;
 
     if (isOpen) {
-      if (!dialog.open) {
+      if (!dialog.open && typeof dialog.showModal === 'function') {
         dialog.showModal();
       }
     } else {
-      if (dialog.open) {
+      if (dialog.open && typeof dialog.close === 'function') {
         dialog.close();
       }
     }

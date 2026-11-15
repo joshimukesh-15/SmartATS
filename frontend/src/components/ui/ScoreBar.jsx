@@ -1,20 +1,26 @@
 /**
- * Two-segment score bar:
- * - Primary bar = skills covered points (coverage% * 0.6)
- * - Champagne bar = text match points (match% * 0.4)
+ * Multi-segment score bar:
+ * - Primary bar = skills covered points
+ * - Champagne bar = text match points
+ * - Ink-muted bar = experience & seniority points
+ * - Champagne/40 bar = education points
  * Strict rules: No red/green/amber tiers.
  */
 export function ScoreBar({
   skillsPoints = 0,
   textMatchPoints = 0,
+  experiencePoints = 0,
+  educationPoints = 0,
   finalScore = 0,
   height = 'h-1.5',
   className = '',
   showLabel = false,
 }) {
-  const skillsWidth = Math.min(Math.max(skillsPoints, 0), 60);
-  const textWidth = Math.min(Math.max(textMatchPoints, 0), 40);
-  const total = finalScore || skillsPoints + textMatchPoints;
+  const skillsWidth = Math.max(0, skillsPoints);
+  const textWidth = Math.max(0, textMatchPoints);
+  const expWidth = Math.max(0, experiencePoints);
+  const eduWidth = Math.max(0, educationPoints);
+  const total = finalScore || skillsPoints + textMatchPoints + experiencePoints + educationPoints;
 
   return (
     <div className={`w-full space-y-1 ${className}`}>
@@ -25,21 +31,41 @@ export function ScoreBar({
         aria-valuemin="0"
         aria-valuemax="100"
       >
-        {/* Skills Covered Segment (Primary / Graphite-Ink) */}
-        <div
-          style={{ width: `${skillsWidth}%` }}
-          className="bg-primary h-full transition-all duration-500 ease-out"
-          title={`Skills covered: ${skillsWidth.toFixed(1)} pts`}
-        />
+        {/* Skills Covered Segment (Primary / Ink) */}
+        {skillsWidth > 0 && (
+          <div
+            style={{ width: `${skillsWidth}%` }}
+            className="bg-primary h-full transition-all duration-500 ease-out"
+            title={`Skills: ${skillsWidth.toFixed(1)} pts`}
+          />
+        )}
         {/* Text Match Segment (Champagne) */}
-        <div
-          style={{ width: `${textWidth}%` }}
-          className="bg-champagne h-full transition-all duration-500 ease-out"
-          title={`Text match: ${textWidth.toFixed(1)} pts`}
-        />
+        {textWidth > 0 && (
+          <div
+            style={{ width: `${textWidth}%` }}
+            className="bg-champagne h-full transition-all duration-500 ease-out"
+            title={`Text: ${textWidth.toFixed(1)} pts`}
+          />
+        )}
+        {/* Experience Segment (Ink Muted) */}
+        {expWidth > 0 && (
+          <div
+            style={{ width: `${expWidth}%` }}
+            className="bg-ink-muted h-full transition-all duration-500 ease-out"
+            title={`Experience: ${expWidth.toFixed(1)} pts`}
+          />
+        )}
+        {/* Education Segment (Champagne subtle) */}
+        {eduWidth > 0 && (
+          <div
+            style={{ width: `${eduWidth}%` }}
+            className="bg-champagne/40 h-full transition-all duration-500 ease-out"
+            title={`Education: ${eduWidth.toFixed(1)} pts`}
+          />
+        )}
       </div>
       {showLabel && (
-        <div className="flex items-center justify-between text-[13px] text-ink-muted tabular-nums">
+        <div className="flex items-center justify-between text-[13px] text-ink-muted tabular-nums flex-wrap gap-x-2">
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-primary" />
             Skills: {skillsPoints.toFixed(1)}
@@ -48,7 +74,19 @@ export function ScoreBar({
             <span className="w-2 h-2 rounded-full bg-champagne" />
             Text: {textMatchPoints.toFixed(1)}
           </span>
-          <span className="font-semibold text-ink">{total.toFixed(1)}%</span>
+          {experiencePoints > 0 && (
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-ink-muted" />
+              Exp: {experiencePoints.toFixed(1)}
+            </span>
+          )}
+          {educationPoints > 0 && (
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-champagne/40" />
+              Edu: {educationPoints.toFixed(1)}
+            </span>
+          )}
+          <span className="font-semibold text-ink ml-auto">{total.toFixed(1)}%</span>
         </div>
       )}
     </div>

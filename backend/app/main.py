@@ -34,6 +34,13 @@ async def lifespan(app: FastAPI):
                     logger.info("Adding missing column review_stage to applications table...")
                     conn.execute(text("ALTER TABLE applications ADD COLUMN review_stage VARCHAR(50) DEFAULT 'New' NOT NULL"))
                     conn.commit()
+
+            if "jobs" in inspector.get_table_names():
+                job_columns = [col["name"] for col in inspector.get_columns("jobs")]
+                if "custom_weights" not in job_columns:
+                    logger.info("Adding missing column custom_weights to jobs table...")
+                    conn.execute(text("ALTER TABLE jobs ADD COLUMN custom_weights JSON NULL"))
+                    conn.commit()
     except Exception as e:
         logger.warning("Schema migration notice: %s", e)
 

@@ -2,7 +2,7 @@
 Comprehensive Skills Taxonomy for Technical Screening.
 Maps canonical skill names to recognized aliases, acronyms, and variations.
 """
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Optional
 import re
 
 SKILLS_TAXONOMY: Dict[str, List[str]] = {
@@ -118,3 +118,50 @@ def normalize_skill_name(raw_name: str) -> str:
             elif raw_lower == alias.lower():
                 return canonical
     return raw_name.strip().title()
+
+
+# Equivalent / Complementary Skill Clusters for Stronger Matching
+EQUIVALENT_SKILL_FAMILIES: Dict[str, Set[str]] = {
+    "React": {"Next.js", "Vue.js", "Angular", "Svelte"},
+    "Next.js": {"React"},
+    "TypeScript": {"JavaScript"},
+    "JavaScript": {"TypeScript"},
+    "PostgreSQL": {"MySQL", "SQLite", "SQL", "Oracle Database"},
+    "MySQL": {"PostgreSQL", "SQLite", "SQL"},
+    "SQL": {"PostgreSQL", "MySQL", "SQLite"},
+    "FastAPI": {"Flask", "Django"},
+    "Django": {"FastAPI", "Flask"},
+    "Flask": {"FastAPI", "Django"},
+    "AWS": {"Google Cloud", "Azure"},
+    "Google Cloud": {"AWS", "Azure"},
+    "Azure": {"AWS", "Google Cloud"},
+    "Docker": {"Kubernetes"},
+    "Kubernetes": {"Docker"},
+    "PyTorch": {"TensorFlow"},
+    "TensorFlow": {"PyTorch"},
+    "REST API": {"GraphQL", "gRPC"},
+    "GraphQL": {"REST API", "gRPC"},
+    "MongoDB": {"DynamoDB", "Cassandra", "Firebase", "Redis"},
+    "Tailwind CSS": {"CSS", "Bootstrap"},
+    "CSS": {"Tailwind CSS", "Bootstrap"},
+    "Pandas": {"NumPy", "Apache Spark"},
+    "NumPy": {"Pandas"},
+}
+
+
+def get_equivalent_skill_match(required_skill: str, candidate_skills: List[str]) -> Optional[str]:
+    """
+    Checks if a candidate possesses a functionally equivalent skill to the requirement.
+    For instance, if PostgreSQL is required and candidate has MySQL, returns 'MySQL'.
+    """
+    canonical_req = normalize_skill_name(required_skill)
+    equivalents = EQUIVALENT_SKILL_FAMILIES.get(canonical_req, set())
+    if not equivalents:
+        return None
+
+    cand_canonical_set = {normalize_skill_name(s) for s in candidate_skills}
+    for eq in equivalents:
+        if eq in cand_canonical_set:
+            return eq
+    return None
+

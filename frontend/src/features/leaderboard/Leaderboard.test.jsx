@@ -27,8 +27,12 @@ vi.mock('../../hooks', () => ({
           final_score: 95.0,
           keyword_score: 100.0,
           tfidf_score: 87.5,
+          experience_years: 6.5,
+          seniority_level: 'Senior',
+          education_level: "Master's",
           matched_skills: ['Python', 'FastAPI'],
           missing_skills: [],
+          equivalent_skills: { FastAPI: 'Flask' },
           notes: [
             {
               note_id: 1,
@@ -73,6 +77,10 @@ vi.mock('../../hooks', () => ({
     isPending: false,
   }),
   useAddApplicationNote: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useUpdateJobWeights: () => ({
     mutateAsync: vi.fn().mockResolvedValue({}),
     isPending: false,
   }),
@@ -144,5 +152,41 @@ describe('Leaderboard Page', () => {
     fireEvent.keyDown(window, { key: 'ArrowUp' });
     const sarahEmails = screen.getAllByText('sarah@example.com');
     expect(sarahEmails.length).toBeGreaterThan(0);
+  });
+
+  it('renders recognized experience, seniority, education, and equivalent skills', () => {
+    render(
+      <MemoryRouter>
+        <LeaderboardPage />
+      </MemoryRouter>
+    );
+
+    // Candidate table should show 6.5 yrs, Senior, Master's
+    expect(screen.getAllByText(/6.5 yrs/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Senior/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Master's/).length).toBeGreaterThan(0);
+    expect(screen.getByText('+1 equiv skill')).toBeInTheDocument();
+  });
+
+  it('opens scoring weights tuner dialog and selects a preset', () => {
+    render(
+      <MemoryRouter>
+        <LeaderboardPage />
+      </MemoryRouter>
+    );
+
+    const weightsBtn = screen.getByRole('button', { name: /Weights/i });
+    fireEvent.click(weightsBtn);
+
+    expect(screen.getByText('Recruiter Scoring Weights & Tuner')).toBeInTheDocument();
+    expect(screen.getByText('Skills-First')).toBeInTheDocument();
+    expect(screen.getByText('Seniority-First')).toBeInTheDocument();
+
+    // Click Skills-First preset
+    fireEvent.click(screen.getByText('Skills-First'));
+    expect(screen.getByText('Apply to rankings')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Apply to rankings'));
+    expect(screen.queryByText('Recruiter Scoring Weights & Tuner')).not.toBeInTheDocument();
   });
 });
