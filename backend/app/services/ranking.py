@@ -88,8 +88,18 @@ def get_job_rankings(
         edu_data = extract_education(raw_resume)
         edu_score = compute_education_score(edu_data, job.description)
 
-        # 3. Equivalent Skills Mapping
+        # 3. Equivalent Skills Mapping & Candidate Skill Fallback
         cand_all_skills = cand.extracted_skills if cand and cand.extracted_skills else []
+        if not matched_skills and cand_all_skills and job.required_skills:
+            matched_skills = [
+                req for req in job.required_skills
+                if any(cand_s.lower() == req.lower() for cand_s in cand_all_skills)
+            ]
+            missing_skills = [
+                req for req in job.required_skills
+                if req not in matched_skills
+            ]
+
         eq_skills = {}
         for req in (job.required_skills or []):
             if req not in matched_skills:
@@ -105,15 +115,19 @@ def get_job_rankings(
         )
 
         # 5. Composite Final Score using configured weights
+        calculated_composite = round(
+            (norm_w_skills * effective_kw_score)
+            + (norm_w_text * tfidf_score)
+            + (norm_w_exp * exp_score)
+            + (norm_w_edu * edu_score),
+            2
+        )
+        calculated_composite = max(0.0, min(100.0, calculated_composite))
+
         if match and app.processing_status == "COMPLETED":
-            final_score = round(
-                (norm_w_skills * effective_kw_score)
-                + (norm_w_text * tfidf_score)
-                + (norm_w_exp * exp_score)
-                + (norm_w_edu * edu_score),
-                2
-            )
-            final_score = max(0.0, min(100.0, final_score))
+            final_score = calculated_composite
+        elif calculated_composite > 0:
+            final_score = calculated_composite
         else:
             final_score = base_final
 

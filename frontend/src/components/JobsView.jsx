@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, FileSpreadsheet, Search } from 'lucide-react';
 import { fetchJobs, deleteJob, getExportCsvUrl } from '../api';

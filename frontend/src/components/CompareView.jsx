@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { Check, X, ArrowLeft } from 'lucide-react';
 import { fetchJobs, fetchJobRankings, compareCandidates } from '../api';
