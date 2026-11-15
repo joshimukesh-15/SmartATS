@@ -168,7 +168,7 @@ export default function AnalyticsView({ selectedJobId }) {
                     );
                   })
                 ) : (
-                  <p className="text-xs text-[#8A8477] italic font-mono">No matching records available.</p>
+                  <p className="text-xs text-[#8A8477] font-mono">No matching records available.</p>
                 )}
               </div>
             </div>

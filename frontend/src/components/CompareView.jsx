@@ -239,7 +239,7 @@ export default function CompareView({
                               REQUIRED
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F6F3FB] text-[#6D59A8] border border-[#DDD6F3]">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#F0F9FF] text-[#0369A1] border border-[#BAE6FD]">
                               PREFERRED
                             </span>
                           )}

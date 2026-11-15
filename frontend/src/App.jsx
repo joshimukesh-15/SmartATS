@@ -96,11 +96,11 @@ export default function App() {
             <span className="text-[#8A8477] not-italic text-xs font-sans">&mdash; Explainable Hybrid Screening System</span>
           </div>
           <div className="flex items-center space-x-3 font-mono text-[11px] text-[#8A8477]">
-            <span>Deterministic Keyword 60%</span>
+            <span>Explainable Screening</span>
             <span>&bull;</span>
-            <span>TF-IDF Cosine 40%</span>
+            <span>Private & Local</span>
             <span>&bull;</span>
-            <span>React 19.3</span>
+            <span>v1.0 Studio</span>
           </div>
         </div>
       </footer>

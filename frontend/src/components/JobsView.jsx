@@ -155,7 +155,7 @@ export default function JobsView({ onSelectJobForRankings, setActiveTab }) {
                 {/* Preferred Skills */}
                 {job.preferred_skills && job.preferred_skills.length > 0 && (
                   <div className="space-y-1.5">
-                    <span className="text-[10px] uppercase font-mono font-semibold text-[#6D59A8]">
+                    <span className="text-[10px] uppercase font-mono font-semibold text-[#0369A1]">
                       Preferred Qualifications ({job.preferred_skills.length})
                     </span>
                     <div className="flex flex-wrap gap-1">

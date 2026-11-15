@@ -72,7 +72,7 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
             Objective resume screening, explained by design.
           </h1>
           <p className="text-sm text-[#B8B2A7] leading-relaxed font-sans max-w-xl">
-            SmartATS eliminates arbitrary AI hallucinations through a verifiable hybrid matching model: 60% deterministic required skill coverage combined with 40% TF-IDF lexical cosine similarity.
+            SmartATS eliminates arbitrary AI hallucinations through a verifiable screening model: deterministic required skill verification combined with contextual experience analysis.
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-3">
             <button
@@ -98,7 +98,7 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
         {kpis.map((kpi, idx) => (
           <div
             key={idx}
-            className="bg-white border border-[#E5DFD5] rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between"
+            className="bg-white border border-[#E5DFD5] rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between hover:-translate-y-0.5 transition-all duration-300"
           >
             <span className="text-[11px] uppercase tracking-wider font-mono text-[#8A8477]">
               {kpi.label}

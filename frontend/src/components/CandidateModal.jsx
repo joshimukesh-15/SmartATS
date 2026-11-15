@@ -191,7 +191,7 @@ export default function CandidateModal({ candidate, onClose }) {
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-[#8A8477] italic">No mandatory skills identified</span>
+                  <span className="text-xs text-[#8A8477]">No mandatory skills identified</span>
                 )}
               </div>
             </div>
@@ -221,7 +221,7 @@ export default function CandidateModal({ candidate, onClose }) {
             {/* Preferred Skills */}
             {candidate.preferred_matched_skills && candidate.preferred_matched_skills.length > 0 && (
               <div className="space-y-1.5">
-                <div className="flex items-center space-x-1.5 text-xs font-semibold text-[#6D59A8] font-mono">
+                <div className="flex items-center space-x-1.5 text-xs font-semibold text-[#0369A1] font-mono">
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>PREFERRED QUALIFICATIONS ({candidate.preferred_matched_skills.length})</span>
                 </div>
@@ -229,7 +229,7 @@ export default function CandidateModal({ candidate, onClose }) {
                   {candidate.preferred_matched_skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 rounded text-xs font-medium bg-[#F6F3FB] text-[#6D59A8] border border-[#DDD6F3]"
+                      className="px-2.5 py-1 rounded text-xs font-medium bg-[#F0F9FF] text-[#0369A1] border border-[#BAE6FD]"
                     >
                       + {skill}
                     </span>

@@ -29,21 +29,21 @@ export default function Navbar({ activeTab, setActiveTab }) {
             <button
               onClick={() => setActiveTab('landing')}
               title="Return to Product Landing Page"
-              className="flex items-center space-x-3 text-left focus:outline-none"
+              className="flex items-center space-x-3 text-left focus:outline-none group"
             >
-              <div className="w-9 h-9 rounded-md bg-[#1A1915] flex items-center justify-center text-[#FAF8F5] shadow-xs">
-                <span className="font-serif italic text-lg font-bold">S</span>
+              <div className="w-9 h-9 rounded-md bg-[#141413] group-hover:bg-[#2B2A27] flex items-center justify-center text-[#FAF8F5] shadow-xs transition-colors">
+                <span className="font-serif text-lg font-bold">S</span>
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-serif text-xl font-bold tracking-tight text-[#1A1915]">
+                  <span className="font-serif text-xl font-bold tracking-tight text-[#141413]">
                     SmartATS
                   </span>
-                  <span className="text-[10px] uppercase font-mono font-medium tracking-wider px-2 py-0.5 rounded border border-[#D6CEBF] bg-[#F3EFEA] text-[#59554D]">
+                  <span className="text-[10px] uppercase font-mono font-medium tracking-wider px-2 py-0.5 rounded border border-[#D4CCC0] bg-[#F3EFEA] text-[#524E46]">
                     Studio
                   </span>
                 </div>
-                <p className="text-[11px] font-sans text-[#8A8477]">
+                <p className="text-[11px] font-sans text-[#857F74]">
                   Deterministic Screening System
                 </p>
               </div>
@@ -60,10 +60,10 @@ export default function Navbar({ activeTab, setActiveTab }) {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all ${
+                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all active:scale-[0.98] ${
                       isActive
-                        ? 'bg-[#1A1915] text-[#FAF8F5] shadow-xs'
-                        : 'text-[#59554D] hover:text-[#1A1915] hover:bg-[#F3EFEA]'
+                        ? 'bg-[#141413] text-[#FAF8F5] shadow-xs'
+                        : 'text-[#524E46] hover:text-[#141413] hover:bg-[#F3EFEA]'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -77,7 +77,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
             <button
               onClick={() => setActiveTab('landing')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-semibold border border-[#D6CEBF] bg-white hover:bg-[#F3EFEA] text-[#1A1915] transition shadow-2xs"
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border border-[#D4CCC0] bg-white hover:bg-[#F3EFEA] active:scale-[0.98] text-[#141413] transition shadow-xs focus:outline-none focus:ring-2 focus:ring-[#CC5A36]"
             >
               <Globe className="w-3.5 h-3.5 text-[#CC5A36]" />
               <span className="hidden sm:inline">Landing Page</span>

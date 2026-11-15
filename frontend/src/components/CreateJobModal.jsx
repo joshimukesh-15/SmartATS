@@ -209,7 +209,7 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
 
           {/* Preferred Skills */}
           <div>
-            <label htmlFor="pref-skills-input" className="block text-[11px] font-mono uppercase tracking-wider text-[#6D59A8] mb-1.5">
+            <label htmlFor="pref-skills-input" className="block text-[11px] font-mono uppercase tracking-wider text-[#0369A1] mb-1.5">
               Preferred Qualifications (Optional)
             </label>
             <input

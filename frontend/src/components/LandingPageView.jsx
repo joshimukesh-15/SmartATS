@@ -140,9 +140,9 @@ export default function LandingPageView({ onLaunchApp }) {
   return (
     <div className="bg-[#FAF8F5] text-[#141413] min-h-screen font-sans selection:bg-[#CC5A36] selection:text-white">
       
-      {/* Floating Navigation Bar */}
+      {/* Floating Navigation Bar (Taste skill clean top bar) */}
       <div className="sticky top-4 z-50 max-w-5xl mx-auto px-4">
-        <header className="bg-white/95 backdrop-blur border border-[#E5DFD5] rounded-full px-5 py-2.5 flex items-center justify-between shadow-xs">
+        <header className="bg-white/90 backdrop-blur-md border border-[#E5DFD5] rounded-full px-5 py-2.5 flex items-center justify-between shadow-xs transition-editorial">
           <div className="flex items-center space-x-2.5">
             <div className="w-7 h-7 rounded-full bg-[#141413] flex items-center justify-center text-[#FAF8F5]">
               <span className="font-serif font-bold text-sm">S</span>
@@ -169,11 +169,11 @@ export default function LandingPageView({ onLaunchApp }) {
         </header>
       </div>
 
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+      {/* Hero Section (data-enter, one section per screen bar) */}
+      <section data-enter className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
         
         {/* Category Indicator */}
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-[#D4CCC0] bg-white text-[11px] font-mono text-[#524E46] mb-6">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-[#D4CCC0] bg-white text-[11px] font-mono text-[#524E46] mb-6 shadow-2xs">
           <span className="w-1.5 h-1.5 rounded-full bg-[#CC5A36]"></span>
           <span>Transparent Resume Screening</span>
         </div>
@@ -196,14 +196,14 @@ export default function LandingPageView({ onLaunchApp }) {
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={onLaunchApp}
-            className="w-full sm:w-auto px-6 py-3 bg-[#CC5A36] hover:bg-[#B84F2E] active:scale-[0.98] text-white rounded-md text-sm font-semibold tracking-wide transition shadow-xs flex items-center justify-center space-x-2 focus:outline-none focus:ring-2 focus:ring-[#CC5A36]"
+            className="w-full sm:w-auto px-6 py-3 bg-[#CC5A36] hover:bg-[#B84F2E] active:scale-[0.98] text-white rounded-md text-sm font-semibold tracking-wide transition shadow-xs flex items-center justify-center space-x-2 focus:outline-none focus:ring-2 focus:ring-[#CC5A36] focus:ring-offset-2"
           >
             <span>Launch Recruiter Studio</span>
             <ArrowRight className="w-4 h-4" />
           </button>
           <a
             href="#how-it-works"
-            className="w-full sm:w-auto px-5 py-3 bg-white hover:bg-[#F3EFEA] text-[#141413] border border-[#D4CCC0] rounded-md text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-[#141413]"
+            className="w-full sm:w-auto px-5 py-3 bg-white hover:bg-[#F3EFEA] text-[#141413] border border-[#D4CCC0] rounded-md text-sm font-semibold transition active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#141413]"
           >
             Explore How It Works
           </a>
@@ -214,130 +214,152 @@ export default function LandingPageView({ onLaunchApp }) {
           Tested across multiple engineering roles with 100% extraction accuracy and zero duplicates
         </div>
 
-        {/* Interactive Candidate Evaluation Preview */}
-        <div className="mt-14 max-w-4xl mx-auto bg-white border border-[#E5DFD5] rounded-xl p-6 sm:p-8 shadow-xs text-left">
+        {/* Interactive Desktop Application Frame (Linear / Figma / x.ai caliber) */}
+        <div className="mt-14 max-w-4xl mx-auto bg-white border border-[#D4CCC0] rounded-xl shadow-md overflow-hidden text-left transition-all duration-300 hover:shadow-lg">
           
-          {/* Header with Candidate Switcher */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-[#F3EFEA] gap-4">
-            <div>
-              <div className="text-[11px] uppercase font-mono tracking-wider text-[#857F74]">
-                Target Role: Senior Backend Engineer
+          {/* App Window Chrome Header */}
+          <div className="bg-[#FAF8F5] border-b border-[#E5DFD5] px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="flex space-x-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#E5DFD5] border border-[#D4CCC0]"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#E5DFD5] border border-[#D4CCC0]"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#E5DFD5] border border-[#D4CCC0]"></span>
               </div>
-              <div className="flex items-center space-x-3 mt-1">
-                <h3 className="font-serif text-2xl font-bold text-[#141413]">
-                  {currentCand.name}
-                </h3>
-                <span className="text-xs text-[#524E46] font-medium">
-                  {currentCand.title}
-                </span>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${currentCand.statusColor}`}>
-                  {currentCand.status}
-                </span>
-              </div>
-            </div>
-
-            {/* Candidate Selector Switcher */}
-            <div className="flex bg-[#FAF8F5] border border-[#E5DFD5] p-1 rounded-md">
-              {demoCandidates.map((cand, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedDemoCandidate(idx)}
-                  className={`px-3 py-1.5 rounded text-xs font-medium transition ${
-                    selectedDemoCandidate === idx
-                      ? 'bg-[#141413] text-white shadow-xs'
-                      : 'text-[#524E46] hover:text-[#141413]'
-                  }`}
-                >
-                  Candidate {idx + 1}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Clean Metric Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-            <div className="p-4 bg-[#FAF8F5] rounded-lg border border-[#E5DFD5]">
-              <span className="text-[#857F74] text-xs font-medium block">Required Skills</span>
-              <span className="font-serif text-3xl font-bold text-[#1E7E4E] block mt-1">
-                {currentCand.skillsMatched} of {currentCand.skillsTotal}
-              </span>
-              <span className="text-xs text-[#524E46] mt-1 block">
-                Mandatory qualifications met
+              <span className="text-[11px] font-mono text-[#857F74] pl-2 hidden sm:inline">
+                smartats-studio://pipeline/senior-backend-engineer
               </span>
             </div>
-
-            <div className="p-4 bg-[#FAF8F5] rounded-lg border border-[#E5DFD5]">
-              <span className="text-[#857F74] text-xs font-medium block">Experience Match</span>
-              <span className="font-serif text-2xl font-bold text-[#141413] block mt-1.5">
-                {currentCand.relevanceBadge}
-              </span>
-              <span className="text-xs text-[#524E46] mt-1 block">
-                Relevant engineering context
-              </span>
-            </div>
-
-            <div className="p-4 bg-white border-2 border-[#141413] rounded-lg">
-              <span className="text-[#857F74] text-xs font-medium block">Overall Match</span>
-              <span className="font-serif text-3xl font-bold text-[#141413] block mt-1">
-                {currentCand.overallScore}%
-              </span>
-              <span className="text-xs text-[#CC5A36] font-semibold mt-1 block">
-                Rank #{currentCand.rank} Recommendation
+            <div className="flex items-center space-x-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1E7E4E] animate-pulse"></span>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#1E7E4E] font-semibold">
+                Deterministic Pipeline Active
               </span>
             </div>
           </div>
 
-          {/* Competency Gap Analysis */}
-          <div className="space-y-3.5 text-xs border-t border-[#F3EFEA] pt-5">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <span className="text-xs font-semibold text-[#1E7E4E] min-w-[150px]">
-                Matched Required Skills:
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {currentCand.matchedSkills.map((s, i) => (
-                  <span key={i} className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-[#EFFBF4] text-[#1E7E4E] border border-[#C2ECD4] font-medium text-xs">
-                    <Check className="w-3 h-3" />
-                    <span>{s}</span>
+          <div className="p-6 sm:p-8">
+            {/* Header with Candidate Switcher */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-[#F3EFEA] gap-4">
+              <div>
+                <div className="text-[11px] uppercase font-mono tracking-wider text-[#857F74]">
+                  Target Role: Senior Backend Engineer
+                </div>
+                <div className="flex items-center space-x-3 mt-1">
+                  <h3 className="font-serif text-2xl font-bold text-[#141413]">
+                    {currentCand.name}
+                  </h3>
+                  <span className="text-xs text-[#524E46] font-medium">
+                    {currentCand.title}
                   </span>
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${currentCand.statusColor}`}>
+                    {currentCand.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Candidate Selector Switcher */}
+              <div className="flex bg-[#FAF8F5] border border-[#E5DFD5] p-1 rounded-md">
+                {demoCandidates.map((cand, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedDemoCandidate(idx)}
+                    className={`px-3 py-1.5 rounded text-xs font-medium transition active:scale-[0.98] ${
+                      selectedDemoCandidate === idx
+                        ? 'bg-[#141413] text-white shadow-xs'
+                        : 'text-[#524E46] hover:text-[#141413]'
+                    }`}
+                  >
+                    Candidate {idx + 1}
+                  </button>
                 ))}
               </div>
             </div>
 
-            {currentCand.missingSkills.length > 0 && (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
-                <span className="text-xs font-semibold text-[#B9382C] min-w-[150px]">
-                  Missing Required Skills:
+            {/* Clean Metric Cards with Subtle Hover Lift */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+              <div className="p-4 bg-[#FAF8F5] rounded-lg border border-[#E5DFD5] transition-transform duration-300 hover:-translate-y-0.5">
+                <span className="text-[#857F74] text-xs font-medium block">Required Skills</span>
+                <span className="font-serif text-3xl font-bold text-[#1E7E4E] block mt-1">
+                  {currentCand.skillsMatched} of {currentCand.skillsTotal}
+                </span>
+                <span className="text-xs text-[#524E46] mt-1 block">
+                  Mandatory qualifications met
+                </span>
+              </div>
+
+              <div className="p-4 bg-[#FAF8F5] rounded-lg border border-[#E5DFD5] transition-transform duration-300 hover:-translate-y-0.5">
+                <span className="text-[#857F74] text-xs font-medium block">Experience Match</span>
+                <span className="font-serif text-2xl font-bold text-[#141413] block mt-1.5">
+                  {currentCand.relevanceBadge}
+                </span>
+                <span className="text-xs text-[#524E46] mt-1 block">
+                  Relevant engineering context
+                </span>
+              </div>
+
+              <div className="p-4 bg-white border-2 border-[#141413] rounded-lg transition-transform duration-300 hover:-translate-y-0.5 shadow-xs">
+                <span className="text-[#857F74] text-xs font-medium block">Overall Match</span>
+                <span className="font-serif text-3xl font-bold text-[#141413] block mt-1">
+                  {currentCand.overallScore}%
+                </span>
+                <span className="text-xs text-[#CC5A36] font-semibold mt-1 block">
+                  Rank #{currentCand.rank} Recommendation
+                </span>
+              </div>
+            </div>
+
+            {/* Competency Gap Analysis */}
+            <div className="space-y-3.5 text-xs border-t border-[#F3EFEA] pt-5">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <span className="text-xs font-semibold text-[#1E7E4E] min-w-[150px]">
+                  Matched Required Skills:
                 </span>
                 <div className="flex flex-wrap gap-1.5">
-                  {currentCand.missingSkills.map((s, i) => (
-                    <span key={i} className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-[#FDF1F0] text-[#B9382C] border border-[#F5CBC8] font-medium text-xs">
-                      <X className="w-3 h-3" />
+                  {currentCand.matchedSkills.map((s, i) => (
+                    <span key={i} className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-[#EFFBF4] text-[#1E7E4E] border border-[#C2ECD4] font-medium text-xs">
+                      <Check className="w-3 h-3" />
                       <span>{s}</span>
                     </span>
                   ))}
                 </div>
               </div>
-            )}
 
-            {currentCand.preferredSkills.length > 0 && (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
-                <span className="text-xs font-semibold text-[#6D59A8] min-w-[150px]">
-                  Bonus Qualifications:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {currentCand.preferredSkills.map((s, i) => (
-                    <span key={i} className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-[#F6F3FB] text-[#6D59A8] border border-[#DDD6F3] font-medium text-xs">
-                      <Plus className="w-3 h-3" />
-                      <span>{s}</span>
-                    </span>
-                  ))}
+              {currentCand.missingSkills.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
+                  <span className="text-xs font-semibold text-[#B9382C] min-w-[150px]">
+                    Missing Required Skills:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {currentCand.missingSkills.map((s, i) => (
+                      <span key={i} className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-[#FDF1F0] text-[#B9382C] border border-[#F5CBC8] font-medium text-xs">
+                        <X className="w-3 h-3" />
+                        <span>{s}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="mt-4 p-3.5 bg-[#FAF8F5] rounded-lg border border-[#E5DFD5] text-xs text-[#524E46] leading-relaxed">
-              <strong className="text-[#141413] font-semibold">Recruiter Summary: </strong>
-              {currentCand.summary}
+              {currentCand.preferredSkills.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
+                  <span className="text-xs font-semibold text-[#0369A1] min-w-[150px]">
+                    Bonus Qualifications:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {currentCand.preferredSkills.map((s, i) => (
+                      <span key={i} className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md bg-[#F0F9FF] text-[#0369A1] border border-[#BAE6FD] font-medium text-xs">
+                        <Plus className="w-3 h-3" />
+                        <span>{s}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4 p-3.5 bg-[#FAF8F5] rounded-lg border border-[#E5DFD5] text-xs text-[#524E46] leading-relaxed">
+                <strong className="text-[#141413] font-semibold">Recruiter Summary: </strong>
+                {currentCand.summary}
+              </div>
             </div>
           </div>
 
@@ -380,7 +402,7 @@ export default function LandingPageView({ onLaunchApp }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Legacy ATS */}
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-7 space-y-4">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-7 space-y-4 hover:-translate-y-0.5 transition-all duration-300">
             <div className="flex items-center space-x-2 text-[#B9382C] text-xs font-semibold uppercase tracking-wider">
               <AlertCircle className="w-4 h-4" />
               <span>Traditional Keyword Filters & Black Box AI</span>
@@ -402,7 +424,7 @@ export default function LandingPageView({ onLaunchApp }) {
           </div>
 
           {/* SmartATS Approach */}
-          <div className="bg-white border-2 border-[#141413] rounded-xl p-7 space-y-4">
+          <div className="bg-white border-2 border-[#141413] rounded-xl p-7 space-y-4 hover:-translate-y-0.5 transition-all duration-300 shadow-xs">
             <div className="flex items-center space-x-2 text-[#1E7E4E] text-xs font-semibold uppercase tracking-wider">
               <CheckCircle2 className="w-4 h-4" />
               <span>The SmartATS Explainable Standard</span>
@@ -437,7 +459,7 @@ export default function LandingPageView({ onLaunchApp }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-3 shadow-xs">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-3 shadow-xs hover:-translate-y-0.5 transition-all duration-300">
             <span className="text-xs text-[#CC5A36] font-semibold tracking-wider block">01 / DEDUPLICATION</span>
             <h3 className="font-serif text-lg font-bold text-[#141413]">Zero duplicate reviews</h3>
             <p className="text-xs text-[#524E46] leading-relaxed [text-wrap:pretty]">
@@ -445,7 +467,7 @@ export default function LandingPageView({ onLaunchApp }) {
             </p>
           </div>
 
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-3 shadow-xs">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-3 shadow-xs hover:-translate-y-0.5 transition-all duration-300">
             <span className="text-xs text-[#CC5A36] font-semibold tracking-wider block">02 / EXPLAINABILITY</span>
             <h3 className="font-serif text-lg font-bold text-[#141413]">Transparent reasoning</h3>
             <p className="text-xs text-[#524E46] leading-relaxed [text-wrap:pretty]">
@@ -453,7 +475,7 @@ export default function LandingPageView({ onLaunchApp }) {
             </p>
           </div>
 
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-3 shadow-xs">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-3 shadow-xs hover:-translate-y-0.5 transition-all duration-300">
             <span className="text-xs text-[#CC5A36] font-semibold tracking-wider block">03 / SKILL GAPS</span>
             <h3 className="font-serif text-lg font-bold text-[#141413]">Clear gap analysis</h3>
             <p className="text-xs text-[#524E46] leading-relaxed [text-wrap:pretty]">
@@ -516,19 +538,19 @@ export default function LandingPageView({ onLaunchApp }) {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs hover:-translate-y-0.5 transition-all duration-300">
             <span className="font-serif text-3xl font-bold text-[#141413] block">100%</span>
             <span className="text-xs text-[#857F74] mt-1 block">Contact Extraction</span>
           </div>
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs hover:-translate-y-0.5 transition-all duration-300">
             <span className="font-serif text-3xl font-bold text-[#141413] block">99%</span>
             <span className="text-xs text-[#857F74] mt-1 block">Skill Recognition</span>
           </div>
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs hover:-translate-y-0.5 transition-all duration-300">
             <span className="font-serif text-3xl font-bold text-[#141413] block">3.8ms</span>
             <span className="text-xs text-[#857F74] mt-1 block">Speed per Resume</span>
           </div>
-          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-5 text-center shadow-xs hover:-translate-y-0.5 transition-all duration-300">
             <span className="font-serif text-3xl font-bold text-[#141413] block">0</span>
             <span className="text-xs text-[#857F74] mt-1 block">Duplicate Errors</span>
           </div>
