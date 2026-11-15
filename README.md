@@ -5,8 +5,8 @@
 [![React 19](https://img.shields.io/badge/React-19.3-61dafb.svg?logo=react)](https://react.dev)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4.0-38bdf8.svg?logo=tailwindcss)](https://tailwindcss.com)
 [![Backend Tests](https://img.shields.io/badge/backend%20tests-59%2F59%20passing-brightgreen.svg)]()
-[![Frontend Tests](https://img.shields.io/badge/frontend%20tests-31%2F31%20passing-brightgreen.svg)]()
-[![Design System](https://img.shields.io/badge/Design_System-Luxury_Editorial_B2B-7B1E3A.svg)]()
+[![Frontend Tests](https://img.shields.io/badge/frontend%20tests-41%2F41%20passing-brightgreen.svg)]()
+[![Design System](https://img.shields.io/badge/Design_System-Quiet_Luxury_B2B-14141A.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Explainable Recruiter Decision Support Platform**  
@@ -59,19 +59,21 @@ SmartATS is an enterprise resume-screening and candidate-ranking platform engine
 
 ## 3. Visual Design System & Color Tokens
 
-SmartATS adheres to a quiet, data-first B2B design language built for talent partners and hiring managers. Serif typography, all-caps eyebrows, and saturated red/green/amber tiers are strictly avoided. All numbers use `tabular-nums` alignment, and all UI text meets or exceeds the strict 13px accessibility floor.
+SmartATS adheres to a quiet luxury, data-first B2B design language built for talent partners and hiring managers. Serif typography, all-caps eyebrows, and saturated red/green/amber tiers are strictly avoided. All numbers use `tabular-nums` alignment, and all UI text meets or exceeds the strict 13px accessibility floor.
+
+### Color Tokens
 
 ```
 Light Mode Tokens:
   ├── Canvas:                  #F7F6F3 (Warm Architectural Paper)
-  ├── Surface:                 #FFFFFF (Pure Surface)
+  ├── Surface:                 #FFFFFF (Pure Elevated Surface)
   ├── Surface-Alt:             #F0EEEA (Subtle Tonal Tint)
-  ├── Line / Border:           #E3E0DA (Hairline Structure)
-  ├── Ink (Primary Text):      #14141A (Graphite-Ink)
-  ├── Ink-Muted:               #62626B (Accessible Secondary Ink)
+  ├── Line / Border:           #E3E0DA (Hairline Divider Structure)
+  ├── Ink (Primary Text):      #14141A (Graphite-Ink, AAA Contrast)
+  ├── Ink-Muted:               #62626B (Accessible Secondary Ink, AA Contrast)
   ├── Ink-Subtle:              #8A8A93 (Tertiary Labeling)
   ├── Primary:                 #14141A (On-Primary: #FFFFFF)
-  ├── Champagne (Accent):      #B8963E (Text Match & Highlight)
+  ├── Champagne (Accent):      #B8963E (Text Match & Precision Highlight)
   ├── Champagne-Soft:          #F4ECD8 (Tonal Chip Background)
   └── Danger:                  #B42318 (Destructive Actions Only)
 
@@ -87,19 +89,64 @@ Dark Mode Tokens (via .dark class on <html>):
   ├── Champagne (Accent):      #D4B15A
   ├── Champagne-Soft:          #2A2412
   └── Danger:                  #B42318
-
-Two-Segment Score System (Everywhere):
-  ├── Primary Segment:         Skills Covered Points (0.60 × Coverage %)
-  └── Champagne Segment:       Text Match Points (0.40 × Similarity %)
-  Note: No red/green/amber tiers are used. Both bars compose the 100% progress.
 ```
 
+### Two-Segment Score Progression
+
+```
+Dual-Track Score Decomposition:
+  ├── Primary Segment:         Skills Covered Points (0.60 × Coverage %)
+  └── Champagne Segment:       Text Match Points (0.40 × Similarity %)
+  Note: Saturated traffic-light tiers (red/green/amber) are purged across the app. Both segments compose the 100% total progress.
+```
+
+### Geist Type Scale & Hierarchy
+
+| Role | Font Size | Weight | Line Height | Tracking | Tailwind Utility |
+|---|---|---|---|---|---|
+| **Page Title** | 30px | 600 (`font-semibold`) | 1.15 | `-0.03em` | `text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]` |
+| **Section Title** | 22px | 600 (`font-semibold`) | 1.25 | `-0.02em` | `text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25]` |
+| **Card / Panel Title** | 17px | 600 (`font-semibold`) | 1.35 | normal | `text-[17px] font-semibold leading-[1.35]` |
+| **Body Text** | 15px | 400 (`font-normal`) | 1.60 | normal | `text-[15px] leading-[1.6]` |
+| **Secondary / Small** | 13px | 400 / 500 | 1.50 | normal | `text-[13px] leading-[1.5]` (Strict 13px floor) |
+| **Interactive Labels** | 13px–15px | 500 (`font-medium`) | 1.40 | normal | `font-medium` |
+| **Numeric Figures** | Any | 500 / 600 | normal | normal | `tabular-nums` applied universally |
+
+### Elevation & Depth Hierarchy
+
+| Elevation Token | Box Shadow Values | Purpose |
+|---|---|---|
+| `--shadow-xs` | `0 1px 2px rgba(20, 20, 26, 0.04)` | Subtle panel boundaries, chips, stat strips |
+| `--shadow-sm` | `0 1px 2px rgba(20, 20, 26, 0.05), 0 4px 12px -2px rgba(20, 20, 26, 0.06)` | Standard cards, CandidateDetailPanel, popovers |
+| `--shadow-md` | `0 2px 4px rgba(20, 20, 26, 0.04), 0 12px 32px -8px rgba(20, 20, 26, 0.12)` | Floating dropdowns, context menus, command palette |
+| `--shadow-lg` | `0 24px 64px -16px rgba(20, 20, 26, 0.28)` | Dialog modals, drawer slide-overs, floating selection bar |
+| **Dark Inset** | `inset 0 1px 0 rgba(255, 255, 255, 0.04)` | 1px top edge highlight on panels in dark mode |
+
+### Motion & Interaction Guidelines
+
+- **Primary Timing Curve**: `ease-out-expo` (`cubic-bezier(0.16, 1, 0.3, 1)`) for snappy yet natural movement.
+- **Duration Budget**:
+  - `150ms`: Hover transitions, button clicks, and micro-interactions.
+  - `250ms`: Accordion drawers, tabs, and panel slide-overs.
+  - `350ms`: Candidate list layout re-ordering on skill toggles.
+  - `500ms–600ms`: Animated SVG score ring, score count-ups, and hero section entrances.
+- **Micro-Interactions**:
+  - Buttons: tactile `active:scale-[0.98]` physical compression.
+  - Link Hover: hairline underline drawing from left to right.
+  - Accordion: rotating chevrons with `transition-transform duration-250 ease-out`.
+- **Accessibility & Motion Preference**:
+  - All motion queries strictly respect `@media (prefers-reduced-motion: reduce)`.
+  - When reduced motion is requested, spatial transforms (`translateY`, `scale`) are disabled in favor of subtle opacity-only transitions or instant state changes.
+  - Visible focus indicators (`2px solid var(--primary)` with `2px offset`) are guaranteed on all interactive controls.
+
 ### Design Primitives & Controls
-- **Typography**: Single unified font family: **Geist** (`400`, `500`, `600`, `700`). All numerical scores rendered with `tabular-nums`.
-- **Radii**: `14px` for structural panels (`panel`, `stat-strip`), `10px` for interactive controls (`button`, `input`, `select`).
-- **Panels**: `1px` line border with zero drop-shadow for a calm, quiet layout.
-- **Focus Rings**: `2px solid var(--primary)` with `2px offset` on every interactive control.
-- **Motion Budget**: One hero entrance, score-bar fills, list re-ordering, and native dialogs. Fully respects `prefers-reduced-motion`.
+
+- **`Avatar` (`frontend/src/components/ui/Avatar.jsx`)**: Circular 32px token with deterministic subtle ink/champagne tinting based on name initials, with image error fallback.
+- **`Kbd` (`frontend/src/components/ui/Kbd.jsx`)**: 13px keyboard shortcut key cap with `surface-alt` background, 1px line border, and `rounded-[6px]`.
+- **`ProductFrame` (`frontend/src/components/landing/ProductFrame.jsx`)**: Browser chrome preview frame with 3 window controls, centered secure address bar, and elevation shadow.
+- **`SelectionBar` (`frontend/src/features/leaderboard/SelectionBar.jsx`)**: 40px floating graphite pill with `shadow-lg` for multi-candidate comparison workflows.
+- **`ScoreBar` (`frontend/src/components/ui/ScoreBar.jsx`)**: Accessible dual-track score progress bar with ARIA attributes and custom segmented widths.
+- **`Radii Scale`**: `rounded-[24px]` for hero and CTA containers, `rounded-[14px]` for structural panels, `rounded-[10px]` for interactive controls, `rounded-[8px]` for tags and chips.
 
 ---
 

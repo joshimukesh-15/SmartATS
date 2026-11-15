@@ -5,10 +5,12 @@ export function useLeaderboardKeyboard({ candidatesCount, setSelectedIndex }) {
     const handleKeyDown = (e) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
 
-      if (e.key === 'ArrowDown') {
+      if (e.ctrlKey || e.metaKey) return;
+
+      if (e.key === 'ArrowDown' || e.key === 'j' || e.key === 'J') {
         e.preventDefault();
         setSelectedIndex((prev) => Math.min(prev + 1, candidatesCount - 1));
-      } else if (e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowUp' || e.key === 'k' || e.key === 'K') {
         e.preventDefault();
         setSelectedIndex((prev) => Math.max(prev - 1, 0));
       }

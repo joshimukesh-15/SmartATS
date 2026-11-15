@@ -36,7 +36,7 @@ export const IconButton = forwardRef(function IconButton(
       type={type}
       aria-label={ariaLabel}
       disabled={disabled}
-      className={`inline-flex items-center justify-center rounded-[10px] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${variantClass} ${sizeClass} ${className}`}
+      className={`inline-flex items-center justify-center rounded-[10px] transition-all duration-150 active:scale-[0.98] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${variantClass} ${sizeClass} ${className}`}
       {...props}
     >
       {children}

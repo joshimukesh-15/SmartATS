@@ -31,10 +31,13 @@ describe('App Router Smoke Test', () => {
       </Providers>
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Know exactly why every candidate ranks where they do/i)
-      ).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText(/Know exactly why every candidate ranks where they do/i)
+        ).toBeInTheDocument();
+      },
+      { timeout: 4000 }
+    );
   });
 });

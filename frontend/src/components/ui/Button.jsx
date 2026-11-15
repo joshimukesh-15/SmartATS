@@ -37,7 +37,7 @@ export const Button = forwardRef(function Button(
       ref={ref}
       type={type}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center font-medium rounded-[10px] transition-colors select-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${variantClass} ${sizeClass} ${className}`}
+      className={`inline-flex items-center justify-center font-medium rounded-[10px] transition-all duration-150 active:scale-[0.98] select-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${variantClass} ${sizeClass} ${className}`}
       {...props}
     >
       {loading ? (

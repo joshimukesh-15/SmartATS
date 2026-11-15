@@ -65,7 +65,11 @@ export default function CandidateDetailPanel({
   const strokeDashoffset = circumference * (1 - Math.min(Math.max(displayScore, 0), 100) / 100);
 
   return (
-    <div className="sticky top-20 rounded-[14px] border border-line bg-surface p-5 sm:p-6 shadow-sm space-y-5 animate-fadeIn">
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      className="sticky top-20 rounded-[14px] border border-line bg-surface p-5 sm:p-6 shadow-sm space-y-5 animate-fadeIn"
+    >
       {/* 1. Header with Avatar, Name, Rank Badge */}
       <div className="flex items-start justify-between gap-4 pb-4 border-b border-line">
         <div className="flex items-center gap-3">
