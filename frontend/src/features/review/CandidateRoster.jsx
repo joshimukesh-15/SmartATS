@@ -21,7 +21,7 @@ export default function CandidateRoster({
       {/* Search & Stage Filter Strip */}
       <div className="space-y-3">
         <div className="relative">
-          <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-ink-subtle absolute left-3 top-1/2 -translate-y-1/2" strokeWidth={1.75} />
           <input
             type="text"
             placeholder="Search applicants..."
@@ -50,7 +50,8 @@ export default function CandidateRoster({
                     : 'border-line bg-surface hover:bg-surface-alt text-ink-muted'
                 }`}
               >
-                {stage} ({count})
+                <span>{stage}</span>{' '}
+                <span className="tabular-nums">({count})</span>
               </button>
             );
           })}
@@ -58,7 +59,7 @@ export default function CandidateRoster({
       </div>
 
       {/* Candidate List Cards */}
-      <Panel className="p-2 max-h-[calc(100vh-16rem)] overflow-y-auto divide-y divide-line/40">
+      <Panel className="p-3 max-h-[calc(100vh-16rem)] overflow-y-auto divide-y divide-line/40">
         {filteredCandidates.length === 0 ? (
           <div className="p-6 text-center text-ink-muted text-[13px]">
             No candidates match the filter.
@@ -85,12 +86,12 @@ export default function CandidateRoster({
                       <span className="text-[13px] tabular-nums font-semibold text-ink-muted">
                         #{candidate.rank || idx + 1}
                       </span>
-                      <span className="text-[14px] font-medium text-ink truncate">
+                      <span className="text-[15px] font-medium text-ink truncate">
                         {cleanCandidateName(candidate.candidate_name)}
                       </span>
                     </div>
                     <div className="text-[13px] text-ink-muted mt-0.5 flex items-center gap-1.5 truncate">
-                      <span>{candidate.experience_years || 0} yrs exp</span>
+                      <span className="tabular-nums">{candidate.experience_years || 0} yrs exp</span>
                       <span>·</span>
                       <span>{candidate.seniority_level || 'Mid-Level'}</span>
                     </div>

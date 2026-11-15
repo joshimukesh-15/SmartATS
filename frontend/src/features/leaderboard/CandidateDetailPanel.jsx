@@ -122,7 +122,7 @@ export default function CandidateDetailPanel({
               : 'primary'
           }
           size="sm"
-          leftIcon={<GitCompare className="w-3.5 h-3.5" />}
+          leftIcon={<GitCompare className="w-4 h-4" strokeWidth={1.75} />}
           onClick={() => onToggleCompare(candidate.application_id)}
         >
           {selectedForCompare.includes(candidate.application_id)

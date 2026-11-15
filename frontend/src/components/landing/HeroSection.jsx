@@ -100,7 +100,7 @@ export default function HeroSection({ onEnterApp }) {
                             : 'bg-surface-alt text-ink border-line hover:border-ink-subtle'
                         }`}
                       >
-                        {active && <Check className="w-3.5 h-3.5" />}
+                        {active && <Check className="w-4 h-4" strokeWidth={1.75} />}
                         <span>{skill}</span>
                       </button>
                     );

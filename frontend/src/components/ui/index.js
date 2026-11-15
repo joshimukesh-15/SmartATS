@@ -16,3 +16,5 @@ export * from './EmptyState';
 export * from './ScoreBar';
 export * from './ScoreValue';
 export * from './ThemeToggle';
+export * from './Avatar';
+export * from './Kbd';

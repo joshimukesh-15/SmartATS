@@ -93,51 +93,51 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
                 >
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <LayoutDashboard className="w-4 h-4 text-ink-muted" />
+                    <LayoutDashboard className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Overview</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/jobs'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <Briefcase className="w-4 h-4 text-ink-muted" />
+                    <Briefcase className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Job Openings</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/upload'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <UploadCloud className="w-4 h-4 text-ink-muted" />
+                    <UploadCloud className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Upload Resumes</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/leaderboard'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <Award className="w-4 h-4 text-ink-muted" />
+                    <Award className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Leaderboard</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/compare'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <GitCompare className="w-4 h-4 text-ink-muted" />
+                    <GitCompare className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Compare Candidates</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/analytics'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <BarChart3 className="w-4 h-4 text-ink-muted" />
+                    <BarChart3 className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Analytics</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <Globe className="w-4 h-4 text-ink-muted" />
+                    <Globe className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Landing Page</span>
                   </Command.Item>
                 </Command.Group>
@@ -153,30 +153,30 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
                         if (onCreateJobOpen) onCreateJobOpen();
                       })
                     }
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <Plus className="w-4 h-4 text-ink-muted" />
+                    <Plus className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Create new job opening</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/upload'))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <UploadCloud className="w-4 h-4 text-ink-muted" />
+                    <UploadCloud className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Upload resumes</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(toggleTheme)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <Sun className="w-4 h-4 text-ink-muted" />
+                    <Sun className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Toggle light / dark theme</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => setShowShortcuts(true))}
-                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none"
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
                   >
-                    <Keyboard className="w-4 h-4 text-ink-muted" />
+                    <Keyboard className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Keyboard shortcuts</span>
                     <kbd className="ml-auto text-[13px] px-1.5 py-0.5 rounded-[4px] border border-line bg-surface-alt text-ink-muted">
                       ?

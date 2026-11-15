@@ -58,9 +58,9 @@ export default function FAQSection() {
                     <span>{faq.q}</span>
                     <span className="p-1 rounded-[6px] text-ink-muted shrink-0">
                       {isOpen ? (
-                        <Minus className="w-4 h-4 text-champagne" />
+                        <Minus className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                       ) : (
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4" strokeWidth={1.75} />
                       )}
                     </span>
                   </button>

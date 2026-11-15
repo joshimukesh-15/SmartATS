@@ -64,7 +64,7 @@ export function Dialog({
                 aria-label="Close dialog"
                 className="p-1 rounded-[6px] text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" strokeWidth={1.75} />
               </button>
             )}
           </div>

@@ -18,17 +18,17 @@ export default function ReviewSkillsTab({ candidate, activeJob }) {
             <span className="font-medium text-ink">{req}</span>
             <div>
               {isMatched ? (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-champagne" />
+                <Badge variant="secondary" className="flex items-center gap-1.5 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                   <span>Matched</span>
                 </Badge>
               ) : equivalent ? (
-                <Badge variant="champagne" className="flex items-center gap-1">
+                <Badge variant="champagne" className="flex items-center gap-1.5 font-medium">
                   <span>{equivalent} (Equiv · 75%)</span>
                 </Badge>
               ) : (
-                <Badge variant="outline" className="flex items-center gap-1 text-ink-subtle">
-                  <Minus className="w-3.5 h-3.5" />
+                <Badge variant="outline" className="flex items-center gap-1.5 text-ink-subtle font-medium">
+                  <Minus className="w-4 h-4" strokeWidth={1.75} />
                   <span>Missing</span>
                 </Badge>
               )}

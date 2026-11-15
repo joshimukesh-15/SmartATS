@@ -170,19 +170,19 @@ export default function JobsPage() {
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
         <div>
-          <h1 className="text-[28px] sm:text-[32px] font-semibold text-ink tracking-tight">
+          <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
             Job Openings
           </h1>
-          <p className="text-[14px] text-ink-muted mt-1">
+          <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
             Specify mandatory competencies, inspect job description quality, and track candidate pipeline volume.
           </p>
         </div>
         <Button
           variant="primary"
           size="sm"
-          leftIcon={<Plus className="w-3.5 h-3.5" />}
+          leftIcon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
           onClick={() => {
             setDraftQuality(null);
             setIsCreateOpen(true);
@@ -196,7 +196,7 @@ export default function JobsPage() {
       <div className="flex items-center gap-4 max-w-sm">
         <Input
           placeholder="Filter openings or skills..."
-          leftIcon={<Search className="w-4 h-4 text-ink-muted" />}
+          leftIcon={<Search className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -276,7 +276,7 @@ export default function JobsPage() {
                       className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[13px] font-medium border border-line bg-surface hover:bg-surface-alt transition-colors cursor-pointer"
                       title="Inspect job description quality"
                     >
-                      <ShieldCheck className="w-3.5 h-3.5 text-champagne" />
+                      <ShieldCheck className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                       <span>Check JD</span>
                     </button>
                   </TableCell>
@@ -288,7 +288,7 @@ export default function JobsPage() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        rightIcon={<ArrowUpRight className="w-3.5 h-3.5" />}
+                        rightIcon={<ArrowUpRight className="w-4 h-4" strokeWidth={1.75} />}
                         onClick={() => navigate(`/studio/leaderboard/${job.job_id}`)}
                       >
                         Open leaderboard
@@ -299,7 +299,7 @@ export default function JobsPage() {
                         aria-label="Delete opening"
                         onClick={() => handleDelete(job)}
                       >
-                        <Trash2 className="w-3.5 h-3.5 text-ink-muted hover:text-danger" />
+                        <Trash2 className="w-4 h-4 text-ink-muted hover:text-danger" strokeWidth={1.75} />
                       </IconButton>
                     </div>
                   </TableCell>
@@ -339,7 +339,7 @@ export default function JobsPage() {
                 disabled={checkQualityMutation.isPending}
                 className="text-[13px] text-primary font-medium hover:underline inline-flex items-center gap-1 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-champagne" />
+                <Sparkles className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                 <span>Run Quality Check</span>
               </button>
             </div>
@@ -358,7 +358,7 @@ export default function JobsPage() {
               <div className="flex items-center justify-between font-medium">
                 <span className="text-ink">Description Quality:</span>
                 <span
-                  className={`px-2 py-0.5 rounded-[6px] font-semibold ${
+                  className={`px-2 py-0.5 rounded-[6px] font-semibold tabular-nums ${
                     draftQuality.overall_score >= 80
                       ? 'bg-champagne-soft text-ink border border-champagne/40'
                       : 'bg-surface text-ink border border-line'
@@ -373,7 +373,7 @@ export default function JobsPage() {
                 <div className="space-y-1.5 pt-1 border-t border-line">
                   {draftQuality.issues.slice(0, 3).map((issue, idx) => (
                     <div key={idx} className="flex items-start gap-1.5 text-ink">
-                      <AlertTriangle className="w-3.5 h-3.5 text-champagne mt-0.5 shrink-0" />
+                      <AlertTriangle className="w-4 h-4 text-champagne mt-0.5 shrink-0" strokeWidth={1.75} />
                       <div>
                         <span className="font-semibold">{issue.title}:</span>{' '}
                         <span className="text-ink-muted">{issue.suggestion}</span>
@@ -507,7 +507,7 @@ export default function JobsPage() {
                       >
                         <div className="flex items-center justify-between font-semibold text-ink">
                           <span className="flex items-center gap-1.5">
-                            <AlertTriangle className="w-3.5 h-3.5 text-champagne" />
+                            <AlertTriangle className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                             {issue.title}
                           </span>
                           <span className="text-[13px] font-normal uppercase text-ink-muted text-opacity-80">

@@ -11,12 +11,12 @@ export default function LeaderboardHeader({
   onOpenWeights,
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
       <div>
-        <h1 className="text-[28px] sm:text-[32px] font-semibold text-ink tracking-tight">
+        <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
           Leaderboard
         </h1>
-        <p className="text-[14px] text-ink-muted mt-1">
+        <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
           Explainable candidate rankings with multi-pillar scoring, configurable weights, and pipeline review.
         </p>
       </div>
@@ -38,7 +38,7 @@ export default function LeaderboardHeader({
         <Button
           variant="secondary"
           size="sm"
-          leftIcon={<SlidersHorizontal className="w-3.5 h-3.5" />}
+          leftIcon={<SlidersHorizontal className="w-4 h-4" strokeWidth={1.75} />}
           onClick={onOpenWeights}
           className="relative"
         >
@@ -54,7 +54,7 @@ export default function LeaderboardHeader({
             download
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[10px] border border-line bg-surface hover:bg-surface-alt text-[13px] font-medium text-ink transition-colors cursor-pointer select-none"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-ink-muted" />
+            <FileSpreadsheet className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
             <span>Export CSV</span>
           </a>
         )}

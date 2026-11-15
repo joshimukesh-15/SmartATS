@@ -18,7 +18,7 @@ export function Tag({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[13px] font-medium transition-colors select-none ${variantClass} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] text-[13px] font-medium transition-colors select-none ${variantClass} ${className}`}
       {...props}
     >
       {leftIcon}
@@ -40,7 +40,7 @@ export function Tag({
 export function Badge({ children, variant = 'default', className = '', ...props }) {
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-[6px] text-[13px] font-medium select-none ${
+      className={`inline-flex items-center px-2 py-0.5 rounded-[8px] text-[13px] font-medium select-none ${
         VARIANTS[variant] || VARIANTS.default
       } ${className}`}
       {...props}

@@ -49,8 +49,8 @@ export default function OverviewPage() {
   if (analyticsError) {
     return (
       <Panel className="p-8 text-center space-y-4">
-        <h3 className="text-[17px] font-semibold text-ink">Failed to load overview data</h3>
-        <p className="text-[14px] text-ink-muted">
+        <h3 className="text-[17px] font-semibold text-ink leading-[1.35]">Failed to load overview data</h3>
+        <p className="text-[15px] leading-[1.6] text-ink-muted">
           An error occurred while fetching system statistics.
         </p>
         <Button variant="secondary" onClick={() => refetchAnalytics()}>
@@ -141,12 +141,12 @@ export default function OverviewPage() {
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
         <div>
-          <h1 className="text-[28px] sm:text-[32px] font-semibold text-ink tracking-tight">
+          <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
             Overview
           </h1>
-          <p className="text-[14px] text-ink-muted mt-1">
+          <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
             Recruitment pipeline metrics, applicant review stages, and candidate fit benchmarks.
           </p>
         </div>
@@ -154,7 +154,7 @@ export default function OverviewPage() {
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<UploadCloud className="w-3.5 h-3.5" />}
+            leftIcon={<UploadCloud className="w-4 h-4" strokeWidth={1.75} />}
             onClick={() => navigate('/studio/upload')}
           >
             Upload resumes
@@ -162,7 +162,7 @@ export default function OverviewPage() {
           <Button
             variant="primary"
             size="sm"
-            leftIcon={<Plus className="w-3.5 h-3.5" />}
+            leftIcon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
             onClick={() => navigate('/studio/jobs')}
           >
             Manage jobs
@@ -174,11 +174,11 @@ export default function OverviewPage() {
       <StatStrip items={statItems} />
 
       {/* 2. Hiring Pipeline Funnel (Properly placed as central pipeline section) */}
-      <Panel className="p-6 space-y-4">
+      <Panel className="p-5 sm:p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-[16px] font-semibold text-ink">Applicant Review Pipeline</h2>
-            <p className="text-[13px] text-ink-muted mt-0.5">
+            <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Applicant Review Pipeline</h2>
+            <p className="text-[13px] leading-[1.5] text-ink-muted mt-0.5">
               Current candidate progress across review stages. Click a stage to inspect applicants.
             </p>
           </div>
@@ -189,7 +189,7 @@ export default function OverviewPage() {
               className="text-[13px] text-ink-muted hover:text-ink flex items-center gap-1 cursor-pointer font-medium"
             >
               <span>View Leaderboard</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight className="w-4 h-4" strokeWidth={1.75} />
             </button>
           )}
         </div>
@@ -204,14 +204,14 @@ export default function OverviewPage() {
               }
               className={`p-4 rounded-[10px] bg-surface-alt/40 border border-line border-l-4 ${item.borderTone} hover:bg-surface-alt transition-colors cursor-pointer space-y-1.5`}
             >
-              <div className="flex items-center justify-between text-[13px]">
+              <div className="flex items-center justify-between text-[13px] font-medium">
                 <span className="font-semibold text-ink">{item.stage}</span>
-                <span className="text-[13px] text-ink-muted opacity-60">0{idx + 1}</span>
+                <span className="text-[13px] text-ink-muted opacity-60 tabular-nums">0{idx + 1}</span>
               </div>
               <div className="text-[26px] font-semibold text-ink tabular-nums leading-none">
                 {item.count}
               </div>
-              <div className="text-[13px] text-ink-muted truncate">{item.desc}</div>
+              <div className="text-[13px] leading-[1.5] text-ink-muted truncate">{item.desc}</div>
             </div>
           ))}
         </div>
@@ -220,9 +220,9 @@ export default function OverviewPage() {
       {/* 3. 2-Column Grid: Score Distribution + Top Candidates */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Score Distribution */}
-        <Panel className="p-6 space-y-6">
+        <Panel className="p-5 sm:p-6 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-[16px] font-semibold text-ink">Score distribution</h2>
+            <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Score distribution</h2>
             <span className="text-[13px] text-ink-muted tabular-nums">
               {evaluatedCount} {evaluatedCount === 1 ? 'evaluation' : 'evaluations'}
             </span>
@@ -254,30 +254,30 @@ export default function OverviewPage() {
               <div className="flex items-center justify-between text-[13px] text-ink-muted pt-1">
                 <span className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-                  80%–100% ({highTier})
+                  <span className="tabular-nums">80%–100% ({highTier})</span>
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-champagne" />
-                  60%–79% ({midTier})
+                  <span className="tabular-nums">60%–79% ({midTier})</span>
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-line" />
-                  &lt;60% ({lowTier})
+                  <span className="tabular-nums">&lt;60% ({lowTier})</span>
                 </span>
               </div>
             </div>
           )}
 
-          <div className="pt-2 text-[13px] text-ink-muted leading-relaxed">
+          <div className="pt-2 text-[13px] leading-[1.6] text-ink-muted">
             Composite rankings balance deterministic skill coverage (60%) with lexical document
             similarity (40%).
           </div>
         </Panel>
 
         {/* Top Candidates List */}
-        <Panel className="p-6 space-y-4">
+        <Panel className="p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-[16px] font-semibold text-ink">Top candidates</h2>
+            <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Top candidates</h2>
             {defaultJobId && (
               <button
                 type="button"
@@ -285,7 +285,7 @@ export default function OverviewPage() {
                 className="text-[13px] text-ink-muted hover:text-ink flex items-center gap-1 cursor-pointer font-medium"
               >
                 <span>View all</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4" strokeWidth={1.75} />
               </button>
             )}
           </div>
@@ -317,14 +317,14 @@ export default function OverviewPage() {
                     className="py-3 flex items-center justify-between gap-4 first:pt-0 last:pb-0"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="w-6 h-6 rounded-[6px] bg-surface-alt border border-line text-[13px] font-semibold flex items-center justify-center text-ink shrink-0">
+                      <span className="w-6 h-6 rounded-[6px] bg-surface-alt border border-line text-[13px] font-semibold flex items-center justify-center text-ink shrink-0 tabular-nums">
                         {candidate.rank || idx + 1}
                       </span>
                       <div className="min-w-0">
-                        <div className="text-[14px] font-semibold text-ink truncate">
+                        <div className="text-[15px] font-semibold text-ink truncate leading-[1.4]">
                           {cleanCandidateName(candidate.candidate_name)}
                         </div>
-                        <div className="text-[13px] text-ink-muted flex items-center gap-2 truncate">
+                        <div className="text-[13px] leading-[1.5] text-ink-muted flex items-center gap-2 truncate">
                           <span>{candidate.candidate_email || 'Verified application'}</span>
                           <span className="text-ink-subtle">·</span>
                           <span className="font-medium text-ink">{stage}</span>

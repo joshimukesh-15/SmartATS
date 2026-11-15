@@ -23,7 +23,7 @@ export default function CTASection({ onEnterApp }) {
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-[10px] bg-on-primary text-primary font-semibold text-[15px] hover:bg-on-primary/90 active:bg-on-primary/80 transition-colors cursor-pointer select-none"
             >
               <span>Open the studio</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4" strokeWidth={1.75} />
             </button>
           </div>
         </div>

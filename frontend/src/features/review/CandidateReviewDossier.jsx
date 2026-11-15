@@ -29,35 +29,35 @@ export default function CandidateReviewDossier({
 }) {
   if (!candidate || !breakdown) {
     return (
-      <Panel className="p-12 text-center text-ink-muted text-[13px]">
+      <Panel className="p-8 sm:p-12 text-center text-ink-muted text-[13px]">
         Select a candidate from the roster on the left to view their detailed review dossier.
       </Panel>
     );
   }
 
   return (
-    <Panel className="p-6 space-y-6">
+    <Panel className="p-5 sm:p-6 space-y-6">
       {/* Executive Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-line">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-line">
         <div className="space-y-1.5 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold">
+            <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold tabular-nums">
               Rank #{candidate.rank || 1}
             </span>
-            <h2 className="text-[20px] font-semibold text-ink truncate">
+            <h2 className="text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25] truncate">
               {cleanCandidateName(candidate.candidate_name)}
             </h2>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-muted">
             <span className="flex items-center gap-1">
-              <Briefcase className="w-3.5 h-3.5 text-ink-subtle" />
-              {candidate.experience_years || 0} yrs exp (
+              <Briefcase className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+              <span className="tabular-nums">{candidate.experience_years || 0} yrs exp</span> (
               {candidate.seniority_level || 'Junior / Entry'})
             </span>
             <span>·</span>
             <span className="flex items-center gap-1">
-              <GraduationCap className="w-3.5 h-3.5 text-ink-subtle" />
+              <GraduationCap className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
               {candidate.education_degree ||
                 candidate.education_level ||
                 'Degree'}
@@ -66,8 +66,8 @@ export default function CandidateReviewDossier({
               <>
                 <span>·</span>
                 <span className="flex items-center gap-1 truncate">
-                  <Mail className="w-3.5 h-3.5 text-ink-subtle" />
-                  {candidate.candidate_email}
+                  <Mail className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+                  <span>{candidate.candidate_email}</span>
                 </span>
               </>
             )}
@@ -75,8 +75,8 @@ export default function CandidateReviewDossier({
               <>
                 <span>·</span>
                 <span className="flex items-center gap-1">
-                  <Phone className="w-3.5 h-3.5 text-ink-subtle" />
-                  {candidate.candidate_phone}
+                  <Phone className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+                  <span className="tabular-nums">{candidate.candidate_phone}</span>
                 </span>
               </>
             )}
@@ -124,7 +124,8 @@ export default function CandidateReviewDossier({
                 : 'text-ink-muted hover:text-ink'
             }`}
           >
-            Required Skills ({activeJob?.required_skills?.length || 0})
+            Required Skills (
+            <span className="tabular-nums">{activeJob?.required_skills?.length || 0}</span>)
           </button>
           <button
             type="button"
@@ -136,9 +137,10 @@ export default function CandidateReviewDossier({
             }`}
           >
             Notes & Activity (
-            {(candidate.notes?.length || 0) +
-              (candidate.status_history?.length || 0)}
-            )
+            <span className="tabular-nums">
+              {(candidate.notes?.length || 0) +
+                (candidate.status_history?.length || 0)}
+            </span>)
           </button>
         </div>
 
@@ -169,13 +171,13 @@ export default function CandidateReviewDossier({
         <Button
           variant="secondary"
           size="sm"
-          leftIcon={<GitCompare className="w-3.5 h-3.5" />}
+          leftIcon={<GitCompare className="w-4 h-4" strokeWidth={1.75} />}
           onClick={() => onCompareCandidate(candidate.application_id)}
         >
           Compare Candidate
         </Button>
         <span className="text-[13px] text-ink-subtle">
-          Application ID: {candidate.application_id}
+          Application ID: <span className="tabular-nums">{candidate.application_id}</span>
         </span>
       </div>
     </Panel>

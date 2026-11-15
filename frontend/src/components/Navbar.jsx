@@ -54,7 +54,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
             aria-label="Open navigation menu"
             className="p-1.5 rounded-[8px] border border-line text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-5 h-5" strokeWidth={1.75} />
           </button>
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
                       : 'text-ink-muted hover:text-ink hover:bg-surface-alt/50'
                   }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0" />
+                  <Icon className="w-4 h-4 shrink-0" strokeWidth={1.75} />
                   <span>{item.label}</span>
                 </NavLink>
               );
@@ -93,9 +93,9 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
             <NavLink
               to="/"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] text-ink-muted hover:text-ink transition-colors"
+              className="flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] text-ink-muted hover:text-ink transition-colors font-medium"
             >
-              <Globe className="w-4 h-4" />
+              <Globe className="w-4 h-4" strokeWidth={1.75} />
               <span>Website</span>
             </NavLink>
             <div className="pt-2">
@@ -138,7 +138,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
                       : 'text-ink-muted hover:text-ink hover:bg-surface-alt/60'
                   }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0" />
+                  <Icon className="w-4 h-4 shrink-0" strokeWidth={1.75} />
                   <span>{item.label}</span>
                 </NavLink>
               );
@@ -150,9 +150,9 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
         <div className="pt-4 border-t border-line space-y-1">
           <NavLink
             to="/"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-[13px] text-ink-muted hover:text-ink hover:bg-surface-alt/60 transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-[13px] text-ink-muted hover:text-ink hover:bg-surface-alt/60 transition-colors font-medium"
           >
-            <Globe className="w-4 h-4" />
+            <Globe className="w-4 h-4" strokeWidth={1.75} />
             <span>Public Site</span>
           </NavLink>
           <div className="pt-1">

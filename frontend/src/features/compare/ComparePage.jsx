@@ -103,12 +103,12 @@ export default function ComparePage() {
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
         <div>
-          <h1 className="text-[28px] sm:text-[32px] font-semibold text-ink tracking-tight">
+          <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
             Candidate Comparison
           </h1>
-          <p className="text-[14px] text-ink-muted mt-1">
+          <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
             Side-by-side technical skill verification matrix and fit differential.
           </p>
         </div>
@@ -129,7 +129,7 @@ export default function ComparePage() {
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<Printer className="w-3.5 h-3.5" />}
+            leftIcon={<Printer className="w-4 h-4" strokeWidth={1.75} />}
             onClick={() => window.print()}
           >
             Print shortlist
@@ -139,10 +139,10 @@ export default function ComparePage() {
 
       {/* Candidate Selector Chips */}
       {candidatesList.length > 0 && (
-        <div className="p-4 rounded-[14px] border border-line bg-surface space-y-2">
+        <div className="p-4 sm:p-6 rounded-[14px] border border-line bg-surface space-y-3">
           <div className="flex items-center justify-between text-[13px] font-medium text-ink">
             <span>Select candidates to compare (up to 5):</span>
-            <span className="text-ink-muted">{selectedAppIds.length} / 5 selected</span>
+            <span className="text-ink-muted tabular-nums">{selectedAppIds.length} / 5 selected</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {candidatesList.map((cand) => {
@@ -190,7 +190,7 @@ export default function ComparePage() {
         </div>
       ) : comparedCandidates.length < 2 ? (
         <EmptyState
-          icon={<Users className="w-5 h-5" />}
+          icon={<Users className="w-5 h-5" strokeWidth={1.75} />}
           title="Select at least 2 candidates"
           description="Choose 2 to 5 candidates above to compare competency coverage side by side."
         />
@@ -216,7 +216,7 @@ export default function ComparePage() {
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-[13px] font-semibold text-ink-muted">
+                          <span className="text-[13px] font-semibold text-ink-muted tabular-nums">
                             Rank #{cand.rank || '—'}
                           </span>
                           {isWinner && (
@@ -225,12 +225,16 @@ export default function ComparePage() {
                             </span>
                           )}
                         </div>
-                        <div className="font-semibold text-ink text-[15px] truncate">
+                        <div className="font-semibold text-ink text-[15px] truncate leading-[1.4]">
                           {cleanCandidateName(cand.candidate_name)}
                         </div>
                         {(cand.experience_years !== undefined || cand.education_level) && (
-                          <div className="text-[13px] text-ink-muted truncate">
-                            {cand.experience_years !== undefined ? `${cand.experience_years} yrs` : ''}
+                          <div className="text-[13px] leading-[1.5] text-ink-muted truncate">
+                            {cand.experience_years !== undefined ? (
+                              <span className="tabular-nums">{cand.experience_years} yrs</span>
+                            ) : (
+                              ''
+                            )}
                             {cand.seniority_level ? ` · ${cand.seniority_level}` : ''}
                             {cand.education_level && cand.education_level !== 'Unspecified'
                               ? ` · ${cand.education_level}`
@@ -240,7 +244,7 @@ export default function ComparePage() {
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
                             <ScoreValue score={breakdown.finalScore} size="md" />
-                            <span className="text-[13px] text-ink-muted">
+                            <span className="text-[13px] text-ink-muted tabular-nums">
                               {breakdown.skillsCoveredPercent.toFixed(0)}% skills
                             </span>
                           </div>
@@ -270,7 +274,7 @@ export default function ComparePage() {
                 {comparedCandidates.map((cand) => (
                   <td
                     key={cand.application_id}
-                    className="px-5 py-3 text-center text-[13px] text-ink font-medium"
+                    className="px-5 py-3 text-center text-[13px] text-ink font-medium tabular-nums"
                   >
                     {cand.experience_years !== undefined ? `${cand.experience_years} yrs` : '—'}
                     {cand.seniority_level && (
@@ -313,7 +317,7 @@ export default function ComparePage() {
                       <td className="sticky left-0 bg-surface z-10 px-5 py-3 font-medium text-[13px] border-r border-line">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-ink">{skill}</span>
-                          <span className="text-[13px] text-ink-subtle uppercase">
+                          <span className="text-[13px] text-ink-subtle uppercase font-medium">
                             {isRequired ? 'Req' : 'Opt'}
                           </span>
                         </div>
@@ -336,19 +340,19 @@ export default function ComparePage() {
                           >
                             {hasSkill ? (
                               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-champagne-soft text-ink">
-                                <Check className="w-3.5 h-3.5 text-champagne" />
+                                <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                               </span>
                             ) : equiv ? (
                               <span
                                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-champagne-soft/70 text-ink text-[13px] font-medium border border-champagne/30"
                                 title="Equivalent skill match with 75% credit"
                               >
-                                <Check className="w-3 h-3 text-champagne" />
+                                <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                                 <span>via {equiv}</span>
                               </span>
                             ) : (
                               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-surface-alt text-ink-subtle">
-                                <Minus className="w-3.5 h-3.5" />
+                                <Minus className="w-4 h-4" strokeWidth={1.75} />
                               </span>
                             )}
                           </td>

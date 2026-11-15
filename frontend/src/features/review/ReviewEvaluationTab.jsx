@@ -90,7 +90,7 @@ export default function ReviewEvaluationTab({ candidate, breakdown }) {
       {candidate.score_explanation && (
         <div className="p-4 rounded-[12px] bg-surface-alt/40 border border-line space-y-2 text-[13px]">
           <div className="font-semibold text-ink flex items-center gap-1.5">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-champagne" />
+            <SlidersHorizontal className="w-4 h-4 text-champagne" strokeWidth={1.75} />
             <span>Transparent Math Formula & Audit</span>
           </div>
           <p className="text-ink-muted leading-relaxed whitespace-pre-line">

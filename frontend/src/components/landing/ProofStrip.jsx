@@ -28,8 +28,8 @@ export default function ProofStrip() {
               <div className="text-[36px] sm:text-[42px] font-semibold text-ink leading-tight tabular-nums tracking-tight">
                 {m.stat}
               </div>
-              <div className="text-[14px] font-medium text-ink">{m.label}</div>
-              <div className="text-[13px] text-ink-muted leading-relaxed">{m.caption}</div>
+              <div className="text-[15px] font-medium text-ink">{m.label}</div>
+              <div className="text-[13px] leading-[1.5] text-ink-muted">{m.caption}</div>
             </div>
           ))}
         </Panel>

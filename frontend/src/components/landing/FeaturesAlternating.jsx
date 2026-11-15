@@ -12,7 +12,7 @@ export default function FeaturesAlternating() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           <div className="lg:col-span-5 space-y-4 text-left">
             <div className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-muted">
-              <Award className="w-4 h-4 text-champagne" />
+              <Award className="w-4 h-4 text-champagne" strokeWidth={1.75} />
               <span>Master-detail leaderboard</span>
             </div>
             <h3 className="text-[28px] sm:text-[34px] font-semibold text-ink tracking-tight leading-tight">
@@ -67,33 +67,33 @@ export default function FeaturesAlternating() {
                 <div className="py-2.5 flex items-center justify-between">
                   <span className="font-medium text-ink">Python & FastAPI</span>
                   <div className="flex gap-8">
-                    <span className="text-ink flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    <span className="text-ink flex items-center gap-1 font-medium">
+                      <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} /> Found
                     </span>
-                    <span className="text-ink flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    <span className="text-ink flex items-center gap-1 font-medium">
+                      <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} /> Found
                     </span>
                   </div>
                 </div>
                 <div className="py-2.5 flex items-center justify-between">
                   <span className="font-medium text-ink">PostgreSQL</span>
                   <div className="flex gap-8">
-                    <span className="text-ink flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    <span className="text-ink flex items-center gap-1 font-medium">
+                      <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} /> Found
                     </span>
-                    <span className="text-ink-muted flex items-center gap-1">
-                      <Minus className="w-3.5 h-3.5" /> Missing
+                    <span className="text-ink-muted flex items-center gap-1 font-medium">
+                      <Minus className="w-4 h-4" strokeWidth={1.75} /> Missing
                     </span>
                   </div>
                 </div>
                 <div className="py-2.5 flex items-center justify-between">
                   <span className="font-medium text-ink">Docker & Kubernetes</span>
                   <div className="flex gap-8">
-                    <span className="text-ink flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    <span className="text-ink flex items-center gap-1 font-medium">
+                      <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} /> Found
                     </span>
-                    <span className="text-ink flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    <span className="text-ink flex items-center gap-1 font-medium">
+                      <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} /> Found
                     </span>
                   </div>
                 </div>
@@ -103,7 +103,7 @@ export default function FeaturesAlternating() {
 
           <div className="lg:col-span-5 space-y-4 text-left order-1 lg:order-2">
             <div className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-muted">
-              <GitCompare className="w-4 h-4 text-champagne" />
+              <GitCompare className="w-4 h-4 text-champagne" strokeWidth={1.75} />
               <span>Candidate comparison</span>
             </div>
             <h3 className="text-[28px] sm:text-[34px] font-semibold text-ink tracking-tight leading-tight">
@@ -120,7 +120,7 @@ export default function FeaturesAlternating() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           <div className="lg:col-span-5 space-y-4 text-left">
             <div className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-muted">
-              <BarChart3 className="w-4 h-4 text-champagne" />
+              <BarChart3 className="w-4 h-4 text-champagne" strokeWidth={1.75} />
               <span>Skill gap analytics</span>
             </div>
             <h3 className="text-[28px] sm:text-[34px] font-semibold text-ink tracking-tight leading-tight">

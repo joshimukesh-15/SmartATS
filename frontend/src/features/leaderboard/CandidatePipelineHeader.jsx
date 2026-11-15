@@ -24,14 +24,14 @@ export default function CandidatePipelineHeader({
   const currentCandidateStage = candidate.review_stage || 'New';
 
   return (
-    <div className="space-y-3 pb-4 border-b border-line">
+    <div className="space-y-4 pb-6 border-b border-line">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold">
+            <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold tabular-nums">
               Rank #{candidate.rank || safeSelectedIndex + 1}
             </span>
-            <h2 className="text-[20px] sm:text-[22px] font-semibold text-ink leading-tight">
+            <h2 className="text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25]">
               {cleanCandidateName(candidate.candidate_name)}
             </h2>
           </div>
@@ -39,8 +39,8 @@ export default function CandidatePipelineHeader({
           <div className="flex items-center gap-2 mt-2 text-[13px] text-ink-muted flex-wrap">
             {candidate.experience_years !== undefined && (
               <span className="inline-flex items-center gap-1 font-medium text-ink">
-                <Briefcase className="w-3.5 h-3.5 text-ink-subtle" />
-                <span>{candidate.experience_years} yrs exp</span>
+                <Briefcase className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+                <span className="tabular-nums">{candidate.experience_years} yrs exp</span>
                 {candidate.seniority_level && (
                   <span className="text-ink-muted">({candidate.seniority_level})</span>
                 )}
@@ -51,7 +51,7 @@ export default function CandidatePipelineHeader({
                 <>
                   <span className="text-ink-subtle">·</span>
                   <span className="inline-flex items-center gap-1 text-ink">
-                    <GraduationCap className="w-3.5 h-3.5 text-ink-subtle" />
+                    <GraduationCap className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
                     <span>{candidate.education_level}</span>
                   </span>
                 </>
@@ -60,7 +60,7 @@ export default function CandidatePipelineHeader({
               <>
                 <span className="text-ink-subtle">·</span>
                 <span className="inline-flex items-center gap-1 text-ink-muted">
-                  <Mail className="w-3.5 h-3.5 text-ink-subtle" />
+                  <Mail className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
                   <span>{candidate.candidate_email}</span>
                 </span>
               </>
@@ -69,8 +69,8 @@ export default function CandidatePipelineHeader({
               <>
                 <span className="text-ink-subtle">·</span>
                 <span className="inline-flex items-center gap-1 text-ink-muted">
-                  <Phone className="w-3.5 h-3.5 text-ink-subtle" />
-                  <span>{candidate.candidate_phone}</span>
+                  <Phone className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+                  <span className="tabular-nums">{candidate.candidate_phone}</span>
                 </span>
               </>
             )}
@@ -86,7 +86,7 @@ export default function CandidatePipelineHeader({
 
       {/* Integrated Horizontal Pipeline Ribbon */}
       <div className="pt-2">
-        <div className="flex items-center justify-between text-[13px] mb-1.5">
+        <div className="flex items-center justify-between text-[13px] mb-2">
           <span className="font-semibold text-ink">Recruitment Stage</span>
           {currentCandidateStage === 'Rejected' ? (
             <button
@@ -100,7 +100,7 @@ export default function CandidatePipelineHeader({
             <button
               type="button"
               onClick={() => onStageButtonClick('Rejected')}
-              className="text-[13px] text-ink-muted hover:text-ink cursor-pointer px-2 py-0.5 rounded-[4px] border border-line hover:bg-surface-alt"
+              className="text-[13px] text-ink-muted hover:text-ink cursor-pointer px-2 py-0.5 rounded-[4px] border border-line hover:bg-surface-alt font-medium"
             >
               Mark Rejected
             </button>
@@ -118,7 +118,7 @@ export default function CandidatePipelineHeader({
                 aria-label={`Advance to stage ${idx + 1}`}
                 onClick={() => onStageButtonClick(s)}
                 disabled={isUpdatingStage}
-                className={`py-1.5 px-2 rounded-[6px] text-[13px] font-medium transition-all cursor-pointer text-center ${
+                className={`py-2 px-2 rounded-[6px] text-[13px] font-medium transition-all cursor-pointer text-center ${
                   isCurrent
                     ? 'bg-primary text-on-primary font-semibold shadow-xs'
                     : 'text-ink-muted hover:text-ink hover:bg-surface'
@@ -132,7 +132,7 @@ export default function CandidatePipelineHeader({
 
         {/* Transition Note Prompt */}
         {showTransitionPrompt && (
-          <div className="mt-2.5 p-3 rounded-[8px] border border-line bg-surface space-y-2 animate-fadeIn">
+          <div className="mt-3 p-3 rounded-[8px] border border-line bg-surface space-y-2 animate-fadeIn">
             <div className="text-[13px] font-medium text-ink flex items-center gap-1.5">
               <span>Move candidate to:</span>
               <span className="font-bold text-primary">{targetStage}</span>

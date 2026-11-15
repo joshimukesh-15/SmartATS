@@ -20,7 +20,7 @@ export const Select = forwardRef(function Select(
         {children}
       </select>
       <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-ink-muted">
-        <ChevronDown className="w-4 h-4" />
+        <ChevronDown className="w-4 h-4" strokeWidth={1.75} />
       </div>
     </div>
   );

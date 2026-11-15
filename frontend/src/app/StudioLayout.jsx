@@ -59,7 +59,7 @@ export default function StudioLayout() {
               onClick={() => setCommandPaletteOpen(true)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] text-ink-muted hover:text-ink transition-colors cursor-pointer select-none"
             >
-              <Search className="w-3.5 h-3.5 text-ink-subtle" />
+              <Search className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
               <span className="hidden sm:inline">Search or command...</span>
               <kbd className="hidden sm:inline px-1.5 py-0.5 text-[13px] rounded-[4px] border border-line bg-surface-alt font-medium text-ink-muted">
                 ⌘K
@@ -70,7 +70,7 @@ export default function StudioLayout() {
               <Button
                 variant="primary"
                 size="sm"
-                leftIcon={<Plus className="w-3.5 h-3.5" />}
+                leftIcon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent('smartats:open-create-job'));
                 }}
@@ -81,7 +81,7 @@ export default function StudioLayout() {
               <Button
                 variant="secondary"
                 size="sm"
-                leftIcon={<UploadCloud className="w-3.5 h-3.5" />}
+                leftIcon={<UploadCloud className="w-4 h-4" strokeWidth={1.75} />}
                 onClick={() => navigate('/studio/upload')}
               >
                 Upload

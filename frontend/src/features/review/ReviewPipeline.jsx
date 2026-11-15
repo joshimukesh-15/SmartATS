@@ -17,16 +17,16 @@ export default function ReviewPipeline({
             <button
               type="button"
               onClick={() => onStageChange('Reviewing', 'Candidate reopened for review')}
-              className="text-[13px] text-primary hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-[13px] text-primary hover:underline flex items-center gap-1 cursor-pointer font-medium"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4" strokeWidth={1.75} />
               <span>Reopen candidate</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={() => onStageChange('Rejected', 'Candidate rejected during review')}
-              className="px-2.5 py-1 rounded-[8px] border border-line bg-surface hover:bg-danger/10 hover:border-danger hover:text-danger text-[13px] text-ink-muted transition-colors cursor-pointer"
+              className="px-2.5 py-1 rounded-[8px] border border-line bg-surface hover:bg-danger/10 hover:border-danger hover:text-danger text-[13px] text-ink-muted transition-colors cursor-pointer font-medium"
             >
               Mark Rejected
             </button>
@@ -58,7 +58,7 @@ export default function ReviewPipeline({
             >
               <div className="text-[13px] leading-tight flex items-center justify-center gap-1.5">
                 {isCompleted && (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-champagne shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" strokeWidth={1.75} />
                 )}
                 <span className="truncate">{s}</span>
               </div>

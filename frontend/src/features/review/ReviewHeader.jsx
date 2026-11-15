@@ -7,12 +7,12 @@ export default function ReviewHeader({
   onSelectJob,
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 border-b border-line">
       <div>
-        <h1 className="text-[22px] font-semibold text-ink tracking-tight">
+        <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
           Candidate Review
         </h1>
-        <p className="text-[13px] text-ink-muted">
+        <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
           Auditable candidate evaluation, multi-factor scoring breakdown, and stage pipeline.
         </p>
       </div>
@@ -31,7 +31,10 @@ export default function ReviewHeader({
               </option>
             ))}
           </select>
-          <ChevronDown className="w-4 h-4 text-ink-muted pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+          <ChevronDown
+            className="w-4 h-4 text-ink-muted pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2"
+            strokeWidth={1.75}
+          />
         </div>
 
         <Link
@@ -39,7 +42,7 @@ export default function ReviewHeader({
           className="px-3.5 py-2 rounded-[10px] border border-line bg-surface hover:bg-surface-alt text-[13px] font-medium text-ink transition-colors flex items-center gap-1.5"
         >
           <span>View Rankings</span>
-          <ArrowRight className="w-3.5 h-3.5 text-ink-subtle" />
+          <ArrowRight className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
         </Link>
       </div>
     </div>

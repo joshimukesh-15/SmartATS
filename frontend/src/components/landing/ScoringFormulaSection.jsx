@@ -80,7 +80,7 @@ export default function ScoringFormulaSection() {
                   <div className="w-2.5 h-2.5 rounded-full bg-line" />
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1 bg-surface border border-line rounded-[6px] text-[13px] text-ink-muted">
-                  <Lock className="w-3 h-3 text-champagne" />
+                  <Lock className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                   <span>smartats.app/studio/leaderboard</span>
                 </div>
                 <div className="w-6" />
@@ -116,7 +116,7 @@ export default function ScoringFormulaSection() {
                             key={idx}
                             className="inline-flex items-center gap-1 text-[13px] px-2 py-0.5 rounded-[4px] bg-champagne-soft text-ink"
                           >
-                            <Check className="w-3 h-3 text-champagne" />
+                            <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} />
                             {s}
                           </span>
                         ))}

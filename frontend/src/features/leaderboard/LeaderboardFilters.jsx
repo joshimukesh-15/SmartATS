@@ -17,12 +17,12 @@ export default function LeaderboardFilters({
   selectedCandidate,
 }) {
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-3 rounded-[12px] bg-surface border border-line">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-6 rounded-[14px] bg-surface border border-line">
       {/* Left: Search input */}
       <div className="w-full lg:w-72">
         <Input
           placeholder="Search candidates or skills..."
-          leftIcon={<Search className="w-4 h-4 text-ink-muted" />}
+          leftIcon={<Search className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -70,7 +70,7 @@ export default function LeaderboardFilters({
               setSortOrder('desc');
             }
           }}
-          className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] ${
+          className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] font-medium ${
             sortBy === 'score' ? 'bg-surface-alt text-ink font-semibold' : 'bg-surface'
           }`}
         >
@@ -86,7 +86,7 @@ export default function LeaderboardFilters({
               setSortOrder('asc');
             }
           }}
-          className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] ${
+          className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] font-medium ${
             sortBy === 'name' ? 'bg-surface-alt text-ink font-semibold' : 'bg-surface'
           }`}
         >
@@ -102,7 +102,7 @@ export default function LeaderboardFilters({
           }
           className="px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] font-medium text-ink transition-colors flex items-center gap-1.5 ml-1"
         >
-          <UserCheck className="w-3.5 h-3.5 text-champagne" />
+          <UserCheck className="w-4 h-4 text-champagne" strokeWidth={1.75} />
           <span>Open Candidate Review</span>
         </Link>
       </div>

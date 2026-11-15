@@ -72,12 +72,12 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8 animate-fadeIn max-w-5xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
         <div>
-          <h1 className="text-[28px] sm:text-[32px] font-semibold text-ink tracking-tight">
+          <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
             Skill Gap Analytics
           </h1>
-          <p className="text-[14px] text-ink-muted mt-1">
+          <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
             Aggregate competency frequency, talent pool coverage, and missing qualification trends.
           </p>
         </div>
@@ -125,10 +125,10 @@ export default function AnalyticsPage() {
           {/* Score & Stage Breakdown */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Score Distribution */}
-            <Panel className="p-6 space-y-6">
+            <Panel className="p-5 sm:p-6 space-y-6">
               <div className="space-y-1">
-                <h2 className="text-[16px] font-semibold text-ink">Score distribution</h2>
-                <p className="text-[13px] text-ink-muted">
+                <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Score distribution</h2>
+                <p className="text-[13px] leading-[1.5] text-ink-muted">
                   Candidate suitability distribution across score tiers.
                 </p>
               </div>
@@ -170,10 +170,10 @@ export default function AnalyticsPage() {
             </Panel>
 
             {/* Stage Distribution */}
-            <Panel className="p-6 space-y-6">
+            <Panel className="p-5 sm:p-6 space-y-6">
               <div className="space-y-1">
-                <h2 className="text-[16px] font-semibold text-ink">Review pipeline stages</h2>
-                <p className="text-[13px] text-ink-muted">
+                <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Review pipeline stages</h2>
+                <p className="text-[13px] leading-[1.5] text-ink-muted">
                   Current applicant progression across hiring stages.
                 </p>
               </div>
@@ -189,10 +189,10 @@ export default function AnalyticsPage() {
                     return (
                       <div
                         key={stage}
-                        className="p-3 rounded-[8px] bg-surface-alt/40 border border-line space-y-1"
+                        className="p-3.5 rounded-[10px] bg-surface-alt/40 border border-line space-y-1"
                       >
                         <div className="text-[13px] font-medium text-ink-muted">{stage}</div>
-                        <div className="text-[20px] font-semibold text-ink tabular-nums leading-none">
+                        <div className="text-[22px] font-semibold text-ink tabular-nums leading-none">
                           {count}
                         </div>
                       </div>
@@ -206,10 +206,10 @@ export default function AnalyticsPage() {
           {/* 2-Column Analytics Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Matched Skills Frequency (Primary Bars) */}
-            <Panel className="p-6 space-y-6">
+            <Panel className="p-5 sm:p-6 space-y-6">
               <div className="space-y-1">
-                <h2 className="text-[16px] font-semibold text-ink">Verified skill coverage</h2>
-                <p className="text-[13px] text-ink-muted">
+                <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Verified skill coverage</h2>
+                <p className="text-[13px] leading-[1.5] text-ink-muted">
                   Percentage of applicants possessing required competencies.
                 </p>
               </div>
@@ -247,10 +247,10 @@ export default function AnalyticsPage() {
             </Panel>
 
             {/* Missing Skills Frequency (Champagne-Soft Bars) */}
-            <Panel className="p-6 space-y-6">
+            <Panel className="p-5 sm:p-6 space-y-6">
               <div className="space-y-1">
-                <h2 className="text-[16px] font-semibold text-ink">Common skill gaps</h2>
-                <p className="text-[13px] text-ink-muted">
+                <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Common skill gaps</h2>
+                <p className="text-[13px] leading-[1.5] text-ink-muted">
                   Competencies most frequently absent in the applicant pool.
                 </p>
               </div>

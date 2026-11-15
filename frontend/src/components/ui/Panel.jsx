@@ -7,7 +7,7 @@ export function Panel({
 }) {
   return (
     <Component
-      className={`rounded-[14px] border border-line ${
+      className={`rounded-[14px] border border-line shadow-xs ${
         subtle ? 'bg-surface-alt' : 'bg-surface'
       } ${className}`}
       {...props}

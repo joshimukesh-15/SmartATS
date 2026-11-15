@@ -155,7 +155,7 @@ export default function LeaderboardPage() {
   );
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-8 animate-fadeIn">
       {/* Top Header & Job Switcher */}
       <LeaderboardHeader
         jobs={jobs}

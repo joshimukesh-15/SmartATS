@@ -32,14 +32,14 @@ export default function CandidateActivityTab({
         </div>
       </form>
 
-      <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+      <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
         {notesList.length === 0 ? (
           <p className="text-[13px] text-ink-muted italic py-1">No notes recorded yet.</p>
         ) : (
           notesList.map((n, i) => (
             <div
               key={n.note_id || i}
-              className="p-3 rounded-[8px] bg-surface border border-line text-[13px] space-y-1"
+              className="p-3.5 rounded-[10px] bg-surface border border-line text-[13px] space-y-1"
             >
               <div className="flex items-center justify-between text-[13px] text-ink-muted">
                 <span className="font-semibold text-ink">{n.author}</span>
@@ -65,7 +65,7 @@ export default function CandidateActivityTab({
           className="flex items-center justify-between w-full text-[13px] font-semibold text-ink hover:text-primary transition-colors cursor-pointer py-1"
         >
           <div className="flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-ink-muted" />
+            <Clock className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
             <span>Status history ({statusHistoryList.length})</span>
           </div>
           <span className="text-[13px] text-ink-muted font-normal">

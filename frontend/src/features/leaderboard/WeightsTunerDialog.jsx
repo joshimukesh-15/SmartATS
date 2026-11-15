@@ -196,7 +196,7 @@ export default function WeightsTunerDialog({
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+            leftIcon={<RotateCcw className="w-4 h-4" strokeWidth={1.75} />}
             onClick={onResetWeights}
           >
             Reset defaults

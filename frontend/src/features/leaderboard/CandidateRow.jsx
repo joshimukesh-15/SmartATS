@@ -44,7 +44,7 @@ export default function CandidateRow({
       {/* Rank */}
       <td className="px-3 py-3 text-center">
         <span
-          className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold ${
+          className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums ${
             idx === 0 ? 'bg-primary text-on-primary' : 'bg-surface-alt text-ink'
           }`}
         >
@@ -54,16 +54,16 @@ export default function CandidateRow({
 
       {/* Candidate Name, Email, Experience & Equiv Skills */}
       <td className="px-4 py-3 min-w-[170px]">
-        <div className="font-semibold text-ink text-[14px]">
+        <div className="font-semibold text-ink text-[15px] leading-[1.4]">
           {cleanCandidateName(candidate.candidate_name)}
         </div>
-        <div className="text-[13px] text-ink-muted truncate">
+        <div className="text-[13px] leading-[1.5] text-ink-muted truncate">
           {candidate.candidate_email || '—'}
         </div>
         {(candidate.experience_years !== undefined || candidate.education_level) && (
-          <div className="flex items-center gap-1.5 mt-0.5 text-[13px] text-ink-muted flex-wrap">
+          <div className="flex items-center gap-1.5 mt-0.5 text-[13px] leading-[1.5] text-ink-muted flex-wrap">
             {candidate.experience_years !== undefined && (
-              <span className="font-medium text-ink">
+              <span className="font-medium text-ink tabular-nums">
                 {candidate.experience_years} yrs
               </span>
             )}
@@ -88,7 +88,7 @@ export default function CandidateRow({
           Object.keys(candidate.equivalent_skills).length > 0 && (
             <div className="mt-1">
               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[13px] bg-champagne-soft text-ink font-medium border border-champagne/30">
-                <span>
+                <span className="tabular-nums">
                   +{Object.keys(candidate.equivalent_skills).length} equiv skill
                 </span>
               </span>
@@ -115,7 +115,7 @@ export default function CandidateRow({
             title="Click to transition applicant pipeline stage"
           >
             <span aria-hidden="true">{stageKey}</span>
-            <ChevronDown className="w-3 h-3 opacity-60 ml-0.5" />
+            <ChevronDown className="w-4 h-4 opacity-60 ml-0.5" strokeWidth={1.75} />
           </button>
 
           {openStageMenuId === candidate.application_id && (
@@ -135,7 +135,7 @@ export default function CandidateRow({
                   }`}
                 >
                   <span>{s}</span>
-                  {stageKey === s && <Check className="w-3 h-3 text-primary" />}
+                  {stageKey === s && <Check className="w-4 h-4 text-primary" strokeWidth={1.75} />}
                 </button>
               ))}
             </div>
