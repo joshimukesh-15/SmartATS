@@ -1,0 +1,99 @@
+{
+  "jobs": [
+    {
+      "job_id": 1,
+      "title": "Senior Python Backend Engineer",
+      "description": "We are seeking an experienced Backend Engineer to build robust RESTful microservices. You will architect distributed systems, manage PostgreSQL databases, and deploy containerized services on AWS using Docker.",
+      "required_skills": ["Python", "FastAPI", "PostgreSQL", "Docker", "AWS"],
+      "preferred_skills": ["Redis", "Kubernetes", "CI/CD", "Git"]
+    },
+    {
+      "job_id": 2,
+      "title": "Full Stack React & Node Developer",
+      "description": "Looking for a versatile Full Stack Developer to design user-centric interfaces in React and TypeScript, while building scalable backend APIs in Node.js and Express with MongoDB.",
+      "required_skills": ["React", "TypeScript", "Node.js", "Express.js", "MongoDB"],
+      "preferred_skills": ["Tailwind CSS", "Next.js", "GraphQL", "Git"]
+    },
+    {
+      "job_id": 3,
+      "title": "Machine Learning Engineer",
+      "description": "Join our AI research team to develop predictive models, NLP pipelines, and data transformations using Python, Scikit-Learn, PyTorch, and SQL on cloud platforms.",
+      "required_skills": ["Python", "Machine Learning", "Scikit-Learn", "Pandas", "SQL"],
+      "preferred_skills": ["PyTorch", "Natural Language Processing", "Docker", "AWS"]
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": 101,
+      "name": "Sarah Jenkins",
+      "email": "sarah.jenkins@example.com",
+      "phone": "(415) 555-0192",
+      "resume_text": "Sarah Jenkins\nsarah.jenkins@example.com | (415) 555-0192 | San Francisco, CA\n\nPROFESSIONAL SUMMARY\nSenior Backend Engineer with 6+ years of building high-throughput APIs and cloud architectures.\n\nTECHNICAL SKILLS\nLanguages: Python, SQL, Bash\nFrameworks: FastAPI, Django, Flask\nDatabases: PostgreSQL, Redis, DynamoDB\nCloud & DevOps: AWS (EC2, S3, RDS), Docker, Kubernetes, CI/CD, Git\n\nEXPERIENCE\nLead Backend Engineer at CloudScale Inc (2021 - Present)\n- Architected core microservices using FastAPI and Python handling 15M daily requests.\n- Optimized PostgreSQL query performance, reducing p99 latency by 45%.\n- Containerized microservices with Docker and orchestrated deployments on AWS ECS.\n\nBackend Developer at DataCore (2018 - 2021)\n- Developed RESTful APIs with Python and Flask.\n- Integrated Redis caching to reduce database read pressure.",
+      "ground_truth_skills": ["Python", "SQL", "Bash", "FastAPI", "Django", "Flask", "PostgreSQL", "Redis", "DynamoDB", "AWS", "Docker", "Kubernetes", "CI/CD", "Git", "REST API"],
+      "job_relevance": { "1": 3, "2": 1, "3": 2 }
+    },
+    {
+      "candidate_id": 102,
+      "name": "Alex Rivera",
+      "email": "alex.rivera@devmail.io",
+      "phone": "(212) 555-8391",
+      "resume_text": "Alex Rivera\nalex.rivera@devmail.io | (212) 555-8391 | New York, NY\n\nSUMMARY\nCreative Full Stack Developer specializing in TypeScript, modern React web applications, and resilient Node.js services.\n\nCORE COMPETENCIES\nFrontend: React, TypeScript, Next.js, Redux, Tailwind CSS, HTML5, CSS3\nBackend: Node.js, Express.js, GraphQL, REST API\nDatabase: MongoDB, PostgreSQL\nTools: Git, Webpack, Jest\n\nEXPERIENCE\nSenior Frontend Engineer at WebCraft (2020 - Present)\n- Built enterprise SaaS dashboards using React 18 and TypeScript with Tailwind CSS.\n- Created backend endpoints using Node.js and Express.js with MongoDB.\n- Implemented GraphQL federation layer across multiple services.",
+      "ground_truth_skills": ["React", "TypeScript", "Next.js", "Redux", "Tailwind CSS", "HTML", "CSS", "Node.js", "Express.js", "GraphQL", "REST API", "MongoDB", "PostgreSQL", "Git", "Unit Testing"],
+      "job_relevance": { "1": 1, "2": 3, "3": 0 }
+    },
+    {
+      "candidate_id": 103,
+      "name": "David Chen",
+      "email": "david.chen@aimail.org",
+      "phone": "(650) 555-4720",
+      "resume_text": "David Chen\ndavid.chen@aimail.org | (650) 555-4720 | Palo Alto, CA\n\nDATA SCIENTIST & ML ENGINEER\nExperienced in supervised learning, NLP algorithms, and data modeling pipelines.\n\nSKILLS\nLanguages: Python, R, SQL\nML/AI: Machine Learning, Scikit-Learn, PyTorch, Pandas, NumPy, Natural Language Processing\nData Tools: Apache Spark, Airflow, Tableau\nDevOps: Docker, AWS, Git\n\nWORK EXPERIENCE\nML Engineer at AI Innovations (2021 - Present)\n- Developed predictive machine learning models using Scikit-Learn and Pandas.\n- Built NLP sentiment analysis models using PyTorch.\n- Processed large-scale tabular datasets using SQL and Python.",
+      "ground_truth_skills": ["Python", "R", "SQL", "Machine Learning", "Scikit-Learn", "PyTorch", "Pandas", "NumPy", "Natural Language Processing", "Apache Spark", "Airflow", "Docker", "AWS", "Git"],
+      "job_relevance": { "1": 2, "2": 0, "3": 3 }
+    },
+    {
+      "candidate_id": 104,
+      "name": "Emily Watson",
+      "email": "emily.watson@techhub.net",
+      "phone": "(312) 555-9014",
+      "resume_text": "Emily Watson\nemily.watson@techhub.net | (312) 555-9014 | Chicago, IL\n\nBACKEND CLOUD DEVELOPER\nSpecialist in Python APIs and PostgreSQL database engineering.\n\nSKILLS\nPython, FastAPI, PostgreSQL, Docker, AWS, Git, Linux, REST API\n\nEXPERIENCE\nBackend Developer at FinServe (2020 - Present)\n- Engineered REST APIs with FastAPI and PostgreSQL.\n- Automated CI/CD pipelines deploying to AWS EC2 using Docker.",
+      "ground_truth_skills": ["Python", "FastAPI", "PostgreSQL", "Docker", "AWS", "Git", "Linux", "REST API", "CI/CD"],
+      "job_relevance": { "1": 3, "2": 1, "3": 1 }
+    },
+    {
+      "candidate_id": 105,
+      "name": "Marcus Brody",
+      "email": "marcus.brody@frontenddev.co",
+      "phone": "(503) 555-3211",
+      "resume_text": "Marcus Brody\nmarcus.brody@frontenddev.co | (503) 555-3211 | Portland, OR\n\nFRONTEND UI SPECIALIST\nPassionate about React component architecture and modern CSS animations.\n\nSKILLS\nReact, TypeScript, Next.js, Tailwind CSS, HTML, CSS, JavaScript, Git\n\nEXPERIENCE\nFrontend Developer at PixelWorks (2019 - Present)\n- Designed interactive React interfaces with TypeScript.\n- Integrated Express.js backend services and GraphQL APIs.",
+      "ground_truth_skills": ["React", "TypeScript", "Next.js", "Tailwind CSS", "HTML", "CSS", "JavaScript", "Git", "Express.js", "GraphQL"],
+      "job_relevance": { "1": 0, "2": 3, "3": 0 }
+    },
+    {
+      "candidate_id": 106,
+      "name": "Dr. Elena Rostova",
+      "email": "elena.rostova@researchlab.edu",
+      "phone": "(617) 555-7788",
+      "resume_text": "Elena Rostova\nelena.rostova@researchlab.edu | (617) 555-7788 | Boston, MA\n\nAI RESEARCH SCIENTIST\nDoctorate in Computational Linguistics. Expertise in NLP and statistical machine learning.\n\nTECHNICAL PROFICIENCIES\nPython, Machine Learning, Scikit-Learn, Pandas, NumPy, Deep Learning, Natural Language Processing, SQL, Git\n\nRESEARCH EXPERIENCE\nPostdoctoral Researcher at BioAI Lab (2021 - Present)\n- Built tabular classification benchmarks using Scikit-Learn and Pandas in Python.\n- Queried scientific literature databases with SQL.",
+      "ground_truth_skills": ["Python", "Machine Learning", "Scikit-Learn", "Pandas", "NumPy", "Deep Learning", "Natural Language Processing", "SQL", "Git"],
+      "job_relevance": { "1": 1, "2": 0, "3": 3 }
+    },
+    {
+      "candidate_id": 107,
+      "name": "Jordan Lee",
+      "email": "jordan.lee@devopsguru.org",
+      "phone": "(206) 555-4329",
+      "resume_text": "Jordan Lee\njordan.lee@devopsguru.org | (206) 555-4329 | Seattle, WA\n\nDEVOPS & INFRASTRUCTURE ENGINEER\nCloud architect with mastery of AWS, Docker, Kubernetes, and Linux.\n\nSKILLS\nAWS, Docker, Kubernetes, Terraform, Linux, CI/CD, Python, Bash, Git\n\nEXPERIENCE\nDevOps Engineer at CloudFoundry (2019 - Present)\n- Automated AWS cloud deployments with Terraform and Docker.",
+      "ground_truth_skills": ["AWS", "Docker", "Kubernetes", "Terraform", "Linux", "CI/CD", "Python", "Bash", "Git"],
+      "job_relevance": { "1": 2, "2": 1, "3": 1 }
+    },
+    {
+      "candidate_id": 108,
+      "name": "Kavita Rao",
+      "email": "kavita.rao@softwareeng.com",
+      "phone": "(408) 555-6677",
+      "resume_text": "Kavita Rao\nkavita.rao@softwareeng.com | (408) 555-6677 | San Jose, CA\n\nFULL STACK SOFTWARE ENGINEER\n5 years hands-on experience developing end-to-end web systems.\n\nSKILLS\nJavaScript, TypeScript, React, Node.js, Express.js, MongoDB, PostgreSQL, Docker, Git\n\nEXPERIENCE\nSoftware Engineer at StartupHQ (2020 - Present)\n- Built scalable APIs using Node.js, Express.js, and MongoDB.\n- Implemented dynamic user screens in React and TypeScript.",
+      "ground_truth_skills": ["JavaScript", "TypeScript", "React", "Node.js", "Express.js", "MongoDB", "PostgreSQL", "Docker", "Git"],
+      "job_relevance": { "1": 2, "2": 3, "3": 1 }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  smartats-db:
+    image: postgres:16-alpine
+    container_name: smartats-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: smartats
+      POSTGRES_PASSWORD: smartatspassword
+      POSTGRES_DB: smartats
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  smartats-app:
+    build: .
+    container_name: smartats-web
+    restart: always
+    depends_on:
+      - smartats-db
+    environment:
+      - DATABASE_URL=postgresql://smartats:smartatspassword@smartats-db:5432/smartats
+      - ENVIRONMENT=production
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/resumes:/app/data/resumes
+
+volumes:
+  postgres_data:

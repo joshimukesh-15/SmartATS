@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-canvas: #FAF8F5;
+    --bg-surface: #FFFFFF;
+    --bg-surface-alt: #F3EFEA;
+    --ink-primary: #141413;
+    --ink-secondary: #524E46;
+    --ink-muted: #857F74;
+    --border-hairline: #E5DFD5;
+    --border-strong: #D4CCC0;
+    --accent-clay: #CC5A36;
+    --accent-clay-hover: #B84F2E;
+    --accent-clay-tint: #FDF3EE;
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--ink-primary);
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    selection-background-color: #CC5A36;
+    selection-color: #FFFFFF;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Newsreader', Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* Copy rules from landing page design: balanced headings, pretty body */
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Base motion curve from landing page design B7 */
+.transition-editorial {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 500ms;
+}
+
+/* Light theme headline gradient per B5 */
+.hero-gradient-text {
+  background: linear-gradient(135deg, #141413 25%, #666666 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Modern Web Guidance: Dialog scroll containment without locking body/html */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgba(20, 20, 19, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+/* Custom table wrapper scroll region */
+.table-wrapper {
+  overflow: auto;
+  max-inline-size: 100%;
+}
+
+/* Custom scrollbars - warm stone tactile feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4CCC0;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B8B0A2;
+}
