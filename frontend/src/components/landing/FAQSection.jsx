@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(0);
@@ -27,52 +27,69 @@ export default function FAQSection() {
     },
   ];
 
+  const toggle = (idx) => {
+    setOpenIndex((prev) => (prev === idx ? -1 : idx));
+  };
+
   return (
-    <section id="faq" className="py-24 sm:py-32 bg-canvas border-t border-line">
-      <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12">
+    <section id="faq" className="py-[72px] lg:py-[128px] bg-canvas border-t border-line">
+      <div className="max-w-[1200px] mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column (Sticky Heading) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4 text-left">
-            <div className="text-[13px] font-medium text-ink-muted">Common questions</div>
-            <h2 className="text-[32px] sm:text-[38px] font-semibold text-ink tracking-tight leading-tight">
+          <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-4 text-left">
+            <div className="text-[13px] font-medium text-ink-muted uppercase tracking-wider">
+              Common questions
+            </div>
+            <h2 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
               Frequently asked questions
             </h2>
-            <p className="text-[16px] text-ink-muted leading-relaxed">
-              Everything you need to know about our deterministic resume evaluation engine and
-              architecture.
+            <p className="text-[15px] leading-[1.6] text-ink-muted">
+              Everything you need to know about our deterministic resume evaluation engine,
+              mathematical scoring formula, and data privacy.
             </p>
           </div>
 
-          {/* Right Column: Accessible Accordion */}
-          <div className="lg:col-span-7 divide-y divide-line border-y border-line text-left">
-            {faqs.map((faq, idx) => {
-              const isOpen = openIndex === idx;
-              return (
-                <div key={idx} className="py-5">
-                  <button
-                    type="button"
-                    onClick={() => setOpenIndex(isOpen ? -1 : idx)}
-                    aria-expanded={isOpen}
-                    className="w-full flex items-center justify-between gap-4 text-left font-medium text-[16px] text-ink transition-colors cursor-pointer select-none"
-                  >
-                    <span>{faq.q}</span>
-                    <span className="p-1 rounded-[6px] text-ink-muted shrink-0">
-                      {isOpen ? (
-                        <Minus className="w-4 h-4 text-champagne" strokeWidth={1.75} />
-                      ) : (
-                        <Plus className="w-4 h-4" strokeWidth={1.75} />
-                      )}
-                    </span>
-                  </button>
+          {/* Right Column: Accessible Accordion with Hairline Dividers */}
+          <div className="lg:col-span-7 text-left">
+            <div className="border-t border-line">
+              {faqs.map((faq, idx) => {
+                const isOpen = openIndex === idx;
+                return (
+                  <div key={idx} className="group">
+                    <button
+                      type="button"
+                      onClick={() => toggle(idx)}
+                      aria-expanded={isOpen}
+                      className="w-full py-5 flex items-center justify-between gap-4 text-left font-medium text-[16px] text-ink hover:text-champagne transition-colors cursor-pointer select-none"
+                    >
+                      <span className="leading-snug">{faq.q}</span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-ink-muted shrink-0 transition-transform duration-250 ease-out ${
+                          isOpen ? 'rotate-180 text-champagne' : ''
+                        }`}
+                        strokeWidth={1.75}
+                      />
+                    </button>
 
-                  {isOpen && (
-                    <div className="pt-3 pr-8 text-[15px] text-ink-muted leading-relaxed animate-fadeIn">
-                      {faq.a}
+                    {/* Smooth 250ms Height Transition */}
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-250 ease-out overflow-hidden ${
+                        isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="pb-5 pr-8 text-[15px] leading-[1.6] text-ink-muted">
+                          {faq.a}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+
+                    {/* Hairline Divider */}
+                    <div className="hairline-divider" />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
