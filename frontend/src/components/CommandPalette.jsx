@@ -77,7 +77,7 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
                   className="w-full h-12 bg-transparent text-[14px] text-ink placeholder:text-ink-subtle focus:outline-none"
                   autoFocus
                 />
-                <kbd className="px-1.5 py-0.5 text-[11px] rounded-[4px] border border-line bg-surface-alt text-ink-muted">
+                <kbd className="px-1.5 py-0.5 text-[13px] rounded-[4px] border border-line bg-surface-alt text-ink-muted">
                   ESC
                 </kbd>
               </div>
@@ -89,7 +89,7 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
 
                 <Command.Group
                   heading="Navigation"
-                  className="px-2 py-1.5 text-[12px] font-medium text-ink-subtle"
+                  className="px-2 py-1.5 text-[13px] font-medium text-ink-subtle"
                 >
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio'))}
@@ -144,7 +144,7 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
 
                 <Command.Group
                   heading="Quick Actions"
-                  className="px-2 py-1.5 text-[12px] font-medium text-ink-subtle mt-2"
+                  className="px-2 py-1.5 text-[13px] font-medium text-ink-subtle mt-2"
                 >
                   <Command.Item
                     onSelect={() =>
@@ -178,7 +178,7 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
                   >
                     <Keyboard className="w-4 h-4 text-ink-muted" />
                     <span>Keyboard shortcuts</span>
-                    <kbd className="ml-auto text-[11px] px-1.5 py-0.5 rounded-[4px] border border-line bg-surface-alt text-ink-muted">
+                    <kbd className="ml-auto text-[13px] px-1.5 py-0.5 rounded-[4px] border border-line bg-surface-alt text-ink-muted">
                       ?
                     </kbd>
                   </Command.Item>

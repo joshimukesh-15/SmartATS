@@ -44,18 +44,7 @@
   --color-champagne-soft: var(--champagne-soft);
   --color-danger: var(--danger);
 
-  /* Fallback aliases to guarantee zero runtime breaking during migration */
-  --color-wine: var(--primary);
-  --color-wine-hover: var(--primary);
-  --color-wine-soft: var(--surface-alt);
-  --color-gold: var(--champagne);
-  --color-gold-hover: var(--champagne);
-  --color-gold-soft: var(--champagne-soft);
-  --color-gold-text: var(--champagne);
-
   --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   --radius-panel: 14px;
   --radius-control: 10px;
@@ -100,8 +89,7 @@
   }
 
   code,
-  pre,
-  .font-mono {
+  pre {
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
   }

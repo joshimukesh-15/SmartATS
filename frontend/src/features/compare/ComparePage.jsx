@@ -159,7 +159,7 @@ export default function ComparePage() {
                   }`}
                 >
                   <span>{cleanCandidateName(cand.candidate_name)}</span>
-                  <span className="opacity-70 text-[12px] tabular-nums">
+                  <span className="opacity-70 text-[13px] tabular-nums">
                     {(cand.final_score ?? 0).toFixed(0)}%
                   </span>
                 </button>
@@ -216,11 +216,11 @@ export default function ComparePage() {
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-[12px] font-semibold text-ink-muted">
+                          <span className="text-[13px] font-semibold text-ink-muted">
                             Rank #{cand.rank || '—'}
                           </span>
                           {isWinner && (
-                            <span className="text-[11px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[4px] bg-champagne text-ink">
+                            <span className="text-[13px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[4px] bg-champagne text-ink">
                               Leading
                             </span>
                           )}
@@ -240,7 +240,7 @@ export default function ComparePage() {
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
                             <ScoreValue score={breakdown.finalScore} size="md" />
-                            <span className="text-[12px] text-ink-muted">
+                            <span className="text-[13px] text-ink-muted">
                               {breakdown.skillsCoveredPercent.toFixed(0)}% skills
                             </span>
                           </div>
@@ -313,7 +313,7 @@ export default function ComparePage() {
                       <td className="sticky left-0 bg-surface z-10 px-5 py-3 font-medium text-[13px] border-r border-line">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-ink">{skill}</span>
-                          <span className="text-[11px] text-ink-subtle uppercase">
+                          <span className="text-[13px] text-ink-subtle uppercase">
                             {isRequired ? 'Req' : 'Opt'}
                           </span>
                         </div>
@@ -340,7 +340,7 @@ export default function ComparePage() {
                               </span>
                             ) : equiv ? (
                               <span
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-champagne-soft/70 text-ink text-[12px] font-medium border border-champagne/30"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-champagne-soft/70 text-ink text-[13px] font-medium border border-champagne/30"
                                 title="Equivalent skill match with 75% credit"
                               >
                                 <Check className="w-3 h-3 text-champagne" />

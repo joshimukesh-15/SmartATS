@@ -84,7 +84,7 @@ export default function HeroSection({ onEnterApp }) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[13px] font-medium text-ink">Toggle required skills:</span>
-                  <span className="text-[12px] text-ink-subtle">Live demo</span>
+                  <span className="text-[13px] text-ink-subtle">Live demo</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {INITIAL_SKILLS.map((skill) => {
@@ -119,7 +119,7 @@ export default function HeroSection({ onEnterApp }) {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <span className="w-5 h-5 rounded-[4px] bg-primary text-on-primary text-[12px] font-semibold flex items-center justify-center">
+                          <span className="w-5 h-5 rounded-[4px] bg-primary text-on-primary text-[13px] font-semibold flex items-center justify-center">
                             {idx + 1}
                           </span>
                           <span className="font-semibold text-ink text-[14px]">{cand.name}</span>
@@ -134,7 +134,7 @@ export default function HeroSection({ onEnterApp }) {
                         height="h-1.5"
                       />
 
-                      <div className="text-[12px] text-ink-muted flex items-center justify-between tabular-nums pt-0.5">
+                      <div className="text-[13px] text-ink-muted flex items-center justify-between tabular-nums pt-0.5">
                         <span>Skills covered: {b.skillsCoveredPoints.toFixed(1)} pts</span>
                         <span>Text match: {b.textMatchPoints.toFixed(1)} pts</span>
                       </div>

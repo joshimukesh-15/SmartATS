@@ -79,7 +79,7 @@ export default function ScoringFormulaSection() {
                   <div className="w-2.5 h-2.5 rounded-full bg-line" />
                   <div className="w-2.5 h-2.5 rounded-full bg-line" />
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-surface border border-line rounded-[6px] text-[12px] text-ink-muted">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-surface border border-line rounded-[6px] text-[13px] text-ink-muted">
                   <Lock className="w-3 h-3 text-champagne" />
                   <span>smartats.app/studio/leaderboard</span>
                 </div>
@@ -101,12 +101,12 @@ export default function ScoringFormulaSection() {
                       className="p-3.5 rounded-[10px] border border-line bg-surface-alt/40 flex items-center justify-between gap-4"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-[6px] bg-primary text-on-primary text-[12px] font-semibold flex items-center justify-center">
+                        <span className="w-6 h-6 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold flex items-center justify-center">
                           {row.rank}
                         </span>
                         <div>
                           <div className="text-[14px] font-semibold text-ink">{row.name}</div>
-                          <div className="text-[12px] text-ink-muted">Verified application</div>
+                          <div className="text-[13px] text-ink-muted">Verified application</div>
                         </div>
                       </div>
 
@@ -114,7 +114,7 @@ export default function ScoringFormulaSection() {
                         {row.verified.map((s, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center gap-1 text-[12px] px-2 py-0.5 rounded-[4px] bg-champagne-soft text-ink"
+                            className="inline-flex items-center gap-1 text-[13px] px-2 py-0.5 rounded-[4px] bg-champagne-soft text-ink"
                           >
                             <Check className="w-3 h-3 text-champagne" />
                             {s}

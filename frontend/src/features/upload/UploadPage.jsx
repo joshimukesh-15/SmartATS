@@ -303,7 +303,7 @@ export default function UploadPage() {
                     <FileText className="w-4 h-4 text-ink-muted shrink-0" />
                     <div className="min-w-0">
                       <div className="text-[14px] font-medium text-ink truncate">{file.name}</div>
-                      <div className="text-[12px] text-ink-subtle">
+                      <div className="text-[13px] text-ink-subtle">
                         {(file.size / 1024).toFixed(0)} KB
                       </div>
                     </div>

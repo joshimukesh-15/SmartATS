@@ -191,7 +191,7 @@ export default function AnalyticsPage() {
                         key={stage}
                         className="p-3 rounded-[8px] bg-surface-alt/40 border border-line space-y-1"
                       >
-                        <div className="text-[12px] font-medium text-ink-muted">{stage}</div>
+                        <div className="text-[13px] font-medium text-ink-muted">{stage}</div>
                         <div className="text-[20px] font-semibold text-ink tabular-nums leading-none">
                           {count}
                         </div>
@@ -219,7 +219,7 @@ export default function AnalyticsPage() {
                   <p className="text-[13px] text-ink-muted">
                     No verified skill coverage data available yet.
                   </p>
-                  <p className="text-[12px] text-ink-subtle">
+                  <p className="text-[13px] text-ink-subtle">
                     Upload and evaluate resumes to view competency distribution.
                   </p>
                 </div>
@@ -260,7 +260,7 @@ export default function AnalyticsPage() {
                   <p className="text-[13px] text-ink-muted">
                     No skill gaps detected in applicant pool.
                   </p>
-                  <p className="text-[12px] text-ink-subtle">
+                  <p className="text-[13px] text-ink-subtle">
                     Upload and evaluate resumes to identify missing qualifications.
                   </p>
                 </div>

@@ -61,7 +61,7 @@ export default function StudioLayout() {
             >
               <Search className="w-3.5 h-3.5 text-ink-subtle" />
               <span className="hidden sm:inline">Search or command...</span>
-              <kbd className="hidden sm:inline px-1.5 py-0.5 text-[11px] rounded-[4px] border border-line bg-surface-alt font-medium text-ink-muted">
+              <kbd className="hidden sm:inline px-1.5 py-0.5 text-[13px] rounded-[4px] border border-line bg-surface-alt font-medium text-ink-muted">
                 ⌘K
               </kbd>
             </button>

@@ -118,7 +118,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
                 <span className="text-[17px] font-semibold text-ink leading-tight tracking-tight">
                   SmartATS
                 </span>
-                <span className="text-[12px] text-ink-subtle leading-tight">Recruiter Studio</span>
+                <span className="text-[13px] text-ink-subtle leading-tight">Recruiter Studio</span>
               </div>
             </NavLink>
           </div>
