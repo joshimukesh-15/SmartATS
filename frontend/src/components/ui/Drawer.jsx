@@ -1,7 +1,15 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
 
-export function Drawer({ isOpen, onClose, title, children, side = 'right', className = '' }) {
+export function Drawer({
+  isOpen,
+  onClose,
+  title,
+  children,
+  side = 'right',
+  maxWidth = 'max-w-2xl',
+  className = '',
+}) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -16,7 +24,7 @@ export function Drawer({ isOpen, onClose, title, children, side = 'right', class
   if (!isOpen) return null;
 
   const sideClasses = {
-    right: 'right-0 top-0 bottom-0 w-full max-w-md border-l border-line',
+    right: `right-0 top-0 bottom-0 w-full ${maxWidth} border-l border-line`,
     left: 'left-0 top-0 bottom-0 w-full max-w-xs border-r border-line',
   };
 

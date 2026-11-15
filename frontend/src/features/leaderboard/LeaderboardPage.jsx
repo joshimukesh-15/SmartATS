@@ -9,11 +9,13 @@ import {
   Mail,
   Phone,
   Clock,
-  MessageSquare,
   SlidersHorizontal,
   Briefcase,
   GraduationCap,
   RotateCcw,
+  ChevronDown,
+  Columns2,
+  Table as TableIcon,
 } from 'lucide-react';
 import {
   useJobs,
@@ -32,6 +34,7 @@ import {
   EmptyState,
   Skeleton,
   Dialog,
+  Drawer,
   toast,
 } from '../../components/ui';
 import { cleanCandidateName } from '../../lib/format';
@@ -125,6 +128,12 @@ export default function LeaderboardPage() {
 
   // Multi-candidate comparison selection
   const [selectedForCompare, setSelectedForCompare] = useState([]);
+
+  // Layout mode & Dossier navigation
+  const [viewMode, setViewMode] = useState('split'); // 'split' | 'table'
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [dossierTab, setDossierTab] = useState('scoring'); // 'scoring' | 'skills' | 'notes'
+  const [openStageMenuId, setOpenStageMenuId] = useState(null);
 
   // Workflow UI state
   const [newNoteContent, setNewNoteContent] = useState('');
@@ -243,6 +252,20 @@ export default function LeaderboardPage() {
     }
   };
 
+  const handleQuickStageChange = async (candidate, newStage) => {
+    if (!candidate || (candidate.review_stage || 'New') === newStage) return;
+    try {
+      await updateStageMutation.mutateAsync({
+        applicationId: candidate.application_id,
+        stage: newStage,
+        changed_by: 'Recruiter',
+      });
+      toast.success(`${cleanCandidateName(candidate.candidate_name)} moved to ${newStage}`);
+    } catch (err) {
+      toast.error(err.message || 'Failed to update review stage');
+    }
+  };
+
   const handleAddNote = async (e) => {
     e.preventDefault();
     if (!selectedCandidate || !newNoteContent.trim()) return;
@@ -308,6 +331,447 @@ export default function LeaderboardPage() {
     });
     setIsWeightsOpen(false);
     toast.info('Reverted to balanced scoring defaults');
+  };
+
+  const renderDossierContent = (_isDrawer = false) => {
+    if (!selectedCandidate || !selectedBreakdown) return null;
+
+    return (
+      <div className="space-y-5 animate-fadeIn">
+        {/* 1. Executive Header */}
+        <div className="space-y-3 pb-4 border-b border-line">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold">
+                  Rank #{selectedCandidate.rank || safeSelectedIndex + 1}
+                </span>
+                <h2 className="text-[20px] sm:text-[22px] font-semibold text-ink leading-tight">
+                  {cleanCandidateName(selectedCandidate.candidate_name)}
+                </h2>
+              </div>
+
+              <div className="flex items-center gap-2 mt-2 text-[13px] text-ink-muted flex-wrap">
+                {selectedCandidate.experience_years !== undefined && (
+                  <span className="inline-flex items-center gap-1 font-medium text-ink">
+                    <Briefcase className="w-3.5 h-3.5 text-ink-subtle" />
+                    <span>{selectedCandidate.experience_years} yrs exp</span>
+                    {selectedCandidate.seniority_level && (
+                      <span className="text-ink-muted">({selectedCandidate.seniority_level})</span>
+                    )}
+                  </span>
+                )}
+                {selectedCandidate.education_level &&
+                  selectedCandidate.education_level !== 'Unspecified' && (
+                    <>
+                      <span className="text-ink-subtle">·</span>
+                      <span className="inline-flex items-center gap-1 text-ink">
+                        <GraduationCap className="w-3.5 h-3.5 text-ink-subtle" />
+                        <span>{selectedCandidate.education_level}</span>
+                      </span>
+                    </>
+                  )}
+                {selectedCandidate.candidate_email && (
+                  <>
+                    <span className="text-ink-subtle">·</span>
+                    <span className="inline-flex items-center gap-1 text-ink-muted">
+                      <Mail className="w-3.5 h-3.5 text-ink-subtle" />
+                      <span>{selectedCandidate.candidate_email}</span>
+                    </span>
+                  </>
+                )}
+                {selectedCandidate.candidate_phone && (
+                  <>
+                    <span className="text-ink-subtle">·</span>
+                    <span className="inline-flex items-center gap-1 text-ink-muted">
+                      <Phone className="w-3.5 h-3.5 text-ink-subtle" />
+                      <span>{selectedCandidate.candidate_phone}</span>
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Score Tile */}
+            <div className="text-right shrink-0 p-3 rounded-[10px] bg-surface-alt/40 border border-line min-w-[110px]">
+              <div className="text-[13px] font-medium text-ink-muted">Final score</div>
+              <ScoreValue score={selectedBreakdown.finalScore} size="xl" />
+            </div>
+          </div>
+
+          {/* Integrated Horizontal Pipeline Ribbon */}
+          <div className="pt-2">
+            <div className="flex items-center justify-between text-[13px] mb-1.5">
+              <span className="font-semibold text-ink">Recruitment Stage</span>
+              {currentCandidateStage === 'Rejected' ? (
+                <button
+                  type="button"
+                  onClick={() => handleStageButtonClick('Reviewing')}
+                  className="text-[13px] text-primary hover:underline font-medium cursor-pointer"
+                >
+                  Re-open Application
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleStageButtonClick('Rejected')}
+                  className="text-[13px] text-ink-muted hover:text-ink cursor-pointer px-2 py-0.5 rounded-[4px] border border-line hover:bg-surface-alt"
+                >
+                  Mark Rejected
+                </button>
+              )}
+            </div>
+
+            {/* Horizontal Segmented Ribbon */}
+            <div className="grid grid-cols-4 gap-1 p-1 rounded-[8px] bg-surface-alt/70 border border-line">
+              {['New', 'Reviewing', 'Interview', 'Hired'].map((s, idx) => {
+                const isCurrent = currentCandidateStage === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-label={`Advance to stage ${idx + 1}`}
+                    onClick={() => handleStageButtonClick(s)}
+                    disabled={updateStageMutation.isPending}
+                    className={`py-1.5 px-2 rounded-[6px] text-[13px] font-medium transition-all cursor-pointer text-center ${
+                      isCurrent
+                        ? 'bg-primary text-on-primary font-semibold shadow-xs'
+                        : 'text-ink-muted hover:text-ink hover:bg-surface'
+                    }`}
+                  >
+                    <span aria-hidden="true">{s}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Transition Note Prompt */}
+            {showTransitionPrompt && (
+              <div className="mt-2.5 p-3 rounded-[8px] border border-line bg-surface space-y-2 animate-fadeIn">
+                <div className="text-[13px] font-medium text-ink flex items-center gap-1.5">
+                  <span>Move candidate to:</span>
+                  <span className="font-bold text-primary">{targetStage}</span>
+                </div>
+                <Input
+                  placeholder="Optional transition reason or note..."
+                  value={transitionNote}
+                  onChange={(e) => setTransitionNote(e.target.value)}
+                />
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setShowTransitionPrompt(false);
+                      setTargetStage('');
+                      setTransitionNote('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    loading={updateStageMutation.isPending}
+                    onClick={handleConfirmStageUpdate}
+                  >
+                    Confirm Move
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 2. Horizontal Navigation Tabs */}
+        <div className="flex items-center gap-1 border-b border-line">
+          <button
+            type="button"
+            onClick={() => setDossierTab('scoring')}
+            className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
+              dossierTab === 'scoring'
+                ? 'border-primary text-ink font-semibold'
+                : 'border-transparent text-ink-muted hover:text-ink'
+            }`}
+          >
+            Evaluation & Math
+          </button>
+          <button
+            type="button"
+            onClick={() => setDossierTab('skills')}
+            className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
+              dossierTab === 'skills'
+                ? 'border-primary text-ink font-semibold'
+                : 'border-transparent text-ink-muted hover:text-ink'
+            }`}
+          >
+            Required Skills ({activeJob?.required_skills?.length || 0})
+          </button>
+          <button
+            type="button"
+            onClick={() => setDossierTab('notes')}
+            className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
+              dossierTab === 'notes'
+                ? 'border-primary text-ink font-semibold'
+                : 'border-transparent text-ink-muted hover:text-ink'
+            }`}
+          >
+            Notes & Activity ({notesList.length + statusHistoryList.length})
+          </button>
+        </div>
+
+        {/* 3. Tab Panels */}
+        {/* Tab 1: Evaluation & Math */}
+        <div className={dossierTab === 'scoring' ? 'space-y-4 animate-fadeIn' : 'hidden'}>
+          <div className="space-y-1.5 p-3.5 rounded-[10px] bg-surface-alt/40 border border-line">
+            <div className="text-[13px] font-medium text-ink flex items-center justify-between">
+              <span>Multi-Pillar Score Progress</span>
+              <span className="tabular-nums font-semibold text-[13px]">
+                {selectedBreakdown.finalScore.toFixed(1)}%
+              </span>
+            </div>
+            <ScoreBar
+              skillsPoints={selectedBreakdown.skillsCoveredPoints}
+              textMatchPoints={selectedBreakdown.textMatchPoints}
+              experiencePoints={selectedBreakdown.experiencePoints}
+              educationPoints={selectedBreakdown.educationPoints}
+              finalScore={selectedBreakdown.finalScore}
+              height="h-2"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-[13px] tabular-nums">
+            <div className="p-3 rounded-[8px] border border-line bg-surface space-y-0.5">
+              <div className="text-ink-muted flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span>Skills Coverage ({(selectedBreakdown.weightSkills * 100).toFixed(0)}%)</span>
+              </div>
+              <div className="text-[15px] font-semibold text-ink">
+                {selectedBreakdown.skillsCoveredPoints.toFixed(1)} pts
+              </div>
+              <div className="text-[12px] text-ink-muted">
+                {selectedBreakdown.skillsCoveredPercent.toFixed(1)}% match
+              </div>
+            </div>
+
+            <div className="p-3 rounded-[8px] border border-line bg-surface space-y-0.5">
+              <div className="text-ink-muted flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-champagne" />
+                <span>Semantic Text ({(selectedBreakdown.weightText * 100).toFixed(0)}%)</span>
+              </div>
+              <div className="text-[15px] font-semibold text-ink">
+                {selectedBreakdown.textMatchPoints.toFixed(1)} pts
+              </div>
+              <div className="text-[12px] text-ink-muted">
+                {selectedBreakdown.textMatchPercent.toFixed(1)}% match
+              </div>
+            </div>
+
+            <div className="p-3 rounded-[8px] border border-line bg-surface space-y-0.5">
+              <div className="text-ink-muted flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-ink-muted" />
+                <span>Experience Fit ({(selectedBreakdown.weightExperience * 100).toFixed(0)}%)</span>
+              </div>
+              <div className="text-[15px] font-semibold text-ink">
+                {selectedBreakdown.experiencePoints.toFixed(1)} pts
+              </div>
+              <div className="text-[12px] text-ink-muted">
+                {selectedBreakdown.experiencePercent.toFixed(1)}% score
+              </div>
+            </div>
+
+            <div className="p-3 rounded-[8px] border border-line bg-surface space-y-0.5">
+              <div className="text-ink-muted flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-champagne/40 border border-champagne" />
+                <span>Education ({(selectedBreakdown.weightEducation * 100).toFixed(0)}%)</span>
+              </div>
+              <div className="text-[15px] font-semibold text-ink">
+                {selectedBreakdown.educationPoints.toFixed(1)} pts
+              </div>
+              <div className="text-[12px] text-ink-muted">
+                {selectedBreakdown.educationPercent.toFixed(1)}% credential
+              </div>
+            </div>
+          </div>
+
+          {selectedCandidate.score_explanation && (
+            <div className="p-3.5 rounded-[8px] border border-line bg-surface space-y-1">
+              <div className="text-[13px] font-semibold text-ink">Explain score</div>
+              <p className="text-[13px] text-ink-muted leading-relaxed whitespace-pre-line">
+                {selectedCandidate.score_explanation}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Tab 2: Required Skills */}
+        <div className={dossierTab === 'skills' ? 'space-y-3 animate-fadeIn' : 'hidden'}>
+          <div className="flex items-center justify-between text-[13px] text-ink-muted pb-1 border-b border-line">
+            <span>Skill Requirement</span>
+            <span>Candidate Evidence</span>
+          </div>
+          <div className="space-y-1.5">
+            {activeJob?.required_skills?.map((skill, sIdx) => {
+              const isFound = selectedCandidate.matched_skills?.some(
+                (m) => m.toLowerCase().trim() === skill.toLowerCase().trim()
+              );
+              const equivSource = selectedCandidate.equivalent_skills?.[skill];
+
+              return (
+                <div
+                  key={sIdx}
+                  className="flex items-center justify-between text-[13px] py-1.5 px-2.5 rounded-[6px] hover:bg-surface-alt/50 border border-line/60 transition-colors gap-2"
+                >
+                  <span className="font-medium text-ink">{skill}</span>
+                  {isFound ? (
+                    <span className="inline-flex items-center gap-1 text-[13px] font-medium text-ink bg-champagne-soft px-2 py-0.5 rounded-[4px]">
+                      <Check className="w-3.5 h-3.5 text-champagne" />
+                      Found in resume
+                    </span>
+                  ) : equivSource ? (
+                    <span
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-ink bg-champagne-soft/70 px-2 py-0.5 rounded-[4px] border border-champagne/30"
+                      title="Recognized as equivalent skill family with 75% credit"
+                    >
+                      <Check className="w-3.5 h-3.5 text-champagne" />
+                      Via {equivSource} (75%)
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[13px] text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[4px] border border-dashed border-line">
+                      <Minus className="w-3.5 h-3.5 text-ink-subtle" />
+                      Missing
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Tab 3: Notes & Activity */}
+        <div className={dossierTab === 'notes' ? 'space-y-4 animate-fadeIn' : 'hidden'}>
+          <form onSubmit={handleAddNote} className="space-y-2">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Add recruiter feedback or review note..."
+                value={newNoteContent}
+                onChange={(e) => setNewNoteContent(e.target.value)}
+                className="flex-1"
+              />
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!newNoteContent.trim() || addNoteMutation.isPending}
+                loading={addNoteMutation.isPending}
+              >
+                Post
+              </Button>
+            </div>
+          </form>
+
+          <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+            {notesList.length === 0 ? (
+              <p className="text-[13px] text-ink-muted italic py-1">No notes recorded yet.</p>
+            ) : (
+              notesList.map((n, i) => (
+                <div
+                  key={n.note_id || i}
+                  className="p-3 rounded-[8px] bg-surface border border-line text-[13px] space-y-1"
+                >
+                  <div className="flex items-center justify-between text-[13px] text-ink-muted">
+                    <span className="font-semibold text-ink">{n.author}</span>
+                    <span className="tabular-nums">
+                      {new Date(n.created_at).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                  <p className="text-ink leading-relaxed text-[13px]">{n.content}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="pt-2 border-t border-line">
+            <button
+              type="button"
+              onClick={() => setShowAuditTrail(!showAuditTrail)}
+              className="flex items-center justify-between w-full text-[13px] font-semibold text-ink hover:text-primary transition-colors cursor-pointer py-1"
+            >
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-ink-muted" />
+                <span>Status history ({statusHistoryList.length})</span>
+              </div>
+              <span className="text-[13px] text-ink-muted font-normal">
+                {showAuditTrail ? 'Hide' : 'Show'}
+              </span>
+            </button>
+
+            {showAuditTrail && (
+              <div className="space-y-2 pt-2 border-l-2 border-line ml-2 pl-3">
+                {statusHistoryList.length === 0 ? (
+                  <p className="text-[13px] text-ink-muted italic">No transitions recorded.</p>
+                ) : (
+                  statusHistoryList.map((h, i) => (
+                    <div key={h.history_id || i} className="text-[13px] space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-ink">
+                          {h.from_stage ? `${h.from_stage} → ${h.to_stage}` : `Initial: ${h.to_stage}`}
+                        </span>
+                        <span className="text-ink-muted tabular-nums">
+                          {new Date(h.created_at).toLocaleDateString(undefined, {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                      <div className="text-ink-muted">
+                        by {h.changed_by}
+                        {h.note && <span className="italic text-ink"> — "{h.note}"</span>}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 4. Compare Footer */}
+        <div className="pt-3 border-t border-line flex items-center justify-between gap-3">
+          <Button
+            variant={
+              selectedForCompare.includes(selectedCandidate.application_id)
+                ? 'secondary'
+                : 'primary'
+            }
+            size="sm"
+            leftIcon={<GitCompare className="w-3.5 h-3.5" />}
+            onClick={() => handleToggleCompare(selectedCandidate.application_id)}
+          >
+            {selectedForCompare.includes(selectedCandidate.application_id)
+              ? 'Remove from compare'
+              : 'Add to compare'}
+          </Button>
+
+          <div className="hidden sm:flex items-center gap-1.5 text-[12px] text-ink-muted">
+            <span>Use</span>
+            <kbd className="px-1.5 py-0.5 rounded-[4px] bg-surface-alt border border-line text-[11px] font-mono">
+              ↑
+            </kbd>
+            <kbd className="px-1.5 py-0.5 rounded-[4px] bg-surface-alt border border-line text-[11px] font-mono">
+              ↓
+            </kbd>
+            <span>to browse</span>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -405,8 +869,8 @@ export default function LeaderboardPage() {
           })}
         </div>
 
-        {/* Right: Sort controls */}
-        <div className="flex items-center gap-2 text-[13px] text-ink-muted shrink-0">
+        {/* Right: Sort controls & Layout switcher */}
+        <div className="flex items-center gap-2 text-[13px] text-ink-muted shrink-0 flex-wrap">
           <span className="hidden xl:inline">Sort:</span>
           <button
             type="button"
@@ -440,6 +904,36 @@ export default function LeaderboardPage() {
           >
             Name {sortBy === 'name' && (sortOrder === 'desc' ? '↓' : '↑')}
           </button>
+
+          {/* Layout mode switcher */}
+          <div className="hidden md:flex items-center p-0.5 rounded-[8px] border border-line bg-surface ml-1">
+            <button
+              type="button"
+              onClick={() => setViewMode('split')}
+              className={`px-2.5 py-1 rounded-[6px] text-[12px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'split'
+                  ? 'bg-primary text-on-primary font-semibold'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+              title="Split View (Side-by-side table & dossier)"
+            >
+              <Columns2 className="w-3.5 h-3.5" />
+              <span>Split</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={`px-2.5 py-1 rounded-[6px] text-[12px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'table'
+                  ? 'bg-primary text-on-primary font-semibold'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+              title="Full Table with Slide-Over Dossier"
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>Full table</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -477,10 +971,12 @@ export default function LeaderboardPage() {
         />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* LEFT: Candidate Table (lg:col-span-7) */}
+          {/* Candidate Table */}
           <div
             ref={tableContainerRef}
-            className="lg:col-span-7 rounded-[14px] border border-line bg-surface overflow-hidden focus:outline-none"
+            className={`${
+              viewMode === 'table' ? 'lg:col-span-12' : 'lg:col-span-7'
+            } rounded-[14px] border border-line bg-surface overflow-hidden focus:outline-none transition-all duration-200`}
             tabIndex={0}
           >
             <div className="overflow-x-auto">
@@ -492,7 +988,7 @@ export default function LeaderboardPage() {
                     </th>
                     <th className="w-14 px-3 py-3 text-center font-medium">Rank</th>
                     <th className="px-4 py-3 font-medium">Candidate</th>
-                    <th className="w-28 px-3 py-3 font-medium">Stage</th>
+                    <th className="w-32 px-3 py-3 font-medium">Stage</th>
                     <th className="w-20 px-3 py-3 text-right font-medium hidden sm:table-cell">
                       Skills
                     </th>
@@ -516,8 +1012,8 @@ export default function LeaderboardPage() {
                         onClick={() => {
                           setSelectedIndex(idx);
                           setShowTransitionPrompt(false);
-                          if (window.innerWidth < 1024) {
-                            setMobileDetailOpen(true);
+                          if (viewMode === 'table' || window.innerWidth < 1024) {
+                            setIsDrawerOpen(true);
                           }
                         }}
                         className={`transition-colors cursor-pointer select-none ${
@@ -559,7 +1055,8 @@ export default function LeaderboardPage() {
                           <div className="text-[13px] text-ink-muted truncate">
                             {candidate.candidate_email || '—'}
                           </div>
-                          {(candidate.experience_years !== undefined || candidate.education_level) && (
+                          {(candidate.experience_years !== undefined ||
+                            candidate.education_level) && (
                             <div className="flex items-center gap-1.5 mt-0.5 text-[13px] text-ink-muted flex-wrap">
                               {candidate.experience_years !== undefined && (
                                 <span className="font-medium text-ink">
@@ -572,32 +1069,74 @@ export default function LeaderboardPage() {
                                   <span>{candidate.seniority_level}</span>
                                 </>
                               )}
-                              {candidate.education_level && candidate.education_level !== 'Unspecified' && (
-                                <>
-                                  <span className="text-ink-subtle">·</span>
-                                  <span className="truncate max-w-[120px]">{candidate.education_level}</span>
-                                </>
-                              )}
+                              {candidate.education_level &&
+                                candidate.education_level !== 'Unspecified' && (
+                                  <>
+                                    <span className="text-ink-subtle">·</span>
+                                    <span className="truncate max-w-[120px]">
+                                      {candidate.education_level}
+                                    </span>
+                                  </>
+                                )}
                             </div>
                           )}
-                          {candidate.equivalent_skills && Object.keys(candidate.equivalent_skills).length > 0 && (
-                            <div className="mt-1">
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[13px] bg-champagne-soft text-ink font-medium border border-champagne/30">
-                                <span>+{Object.keys(candidate.equivalent_skills).length} equiv skill</span>
-                              </span>
-                            </div>
-                          )}
+                          {candidate.equivalent_skills &&
+                            Object.keys(candidate.equivalent_skills).length > 0 && (
+                              <div className="mt-1">
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[13px] bg-champagne-soft text-ink font-medium border border-champagne/30">
+                                  <span>
+                                    +{Object.keys(candidate.equivalent_skills).length} equiv skill
+                                  </span>
+                                </span>
+                              </div>
+                            )}
                         </td>
 
-                        {/* Stage Badge */}
-                        <td className="px-3 py-3">
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-[6px] text-[13px] ${
-                              stageConf.badge
-                            }`}
-                          >
-                            {stageKey}
-                          </span>
+                        {/* Interactive Stage Badge Dropdown */}
+                        <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                          <div className="relative inline-block text-left">
+                            <button
+                              type="button"
+                              aria-label={`Change stage for candidate ${idx + 1}`}
+                              onClick={() =>
+                                setOpenStageMenuId(
+                                  openStageMenuId === candidate.application_id
+                                    ? null
+                                    : candidate.application_id
+                                )
+                              }
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-[6px] text-[13px] font-medium transition-colors cursor-pointer border ${
+                                stageConf.badge
+                              }`}
+                              title="Click to transition applicant pipeline stage"
+                            >
+                              <span aria-hidden="true">{stageKey}</span>
+                              <ChevronDown className="w-3 h-3 opacity-60 ml-0.5" />
+                            </button>
+
+                            {openStageMenuId === candidate.application_id && (
+                              <div className="absolute left-0 mt-1 w-36 rounded-[8px] bg-surface border border-line shadow-xl z-30 py-1 animate-fadeIn">
+                                {STAGES.map((s) => (
+                                  <button
+                                    key={s}
+                                    type="button"
+                                    onClick={() => {
+                                      handleQuickStageChange(candidate, s);
+                                      setOpenStageMenuId(null);
+                                    }}
+                                    className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-alt transition-colors flex items-center justify-between cursor-pointer ${
+                                      stageKey === s
+                                        ? 'font-semibold text-primary bg-surface-alt/60'
+                                        : 'text-ink'
+                                    }`}
+                                  >
+                                    <span>{s}</span>
+                                    {stageKey === s && <Check className="w-3 h-3 text-primary" />}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </td>
 
                         {/* Skills Covered % */}
@@ -632,404 +1171,32 @@ export default function LeaderboardPage() {
             </div>
           </div>
 
-          {/* RIGHT: Master-Detail Candidate & Review Panel (lg:col-span-5) */}
-          <div className="hidden lg:block lg:col-span-5 sticky top-20" aria-live="polite">
-            {selectedCandidate && selectedBreakdown ? (
-              <Panel className="p-6 space-y-6 max-h-[calc(100vh-6rem)] overflow-y-auto">
-                {/* 1. Candidate Header */}
-                <div className="flex items-start justify-between gap-4 pb-4 border-b border-line">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold flex items-center justify-center shrink-0">
-                        {selectedCandidate.rank || safeSelectedIndex + 1}
-                      </span>
-                      <h2 className="text-[20px] font-semibold text-ink leading-tight">
-                        {cleanCandidateName(selectedCandidate.candidate_name)}
-                      </h2>
-                    </div>
-                    <div className="space-y-1 mt-2 text-[13px] text-ink-muted">
-                      {selectedCandidate.candidate_email && (
-                        <div className="flex items-center gap-2">
-                          <Mail className="w-3.5 h-3.5 text-ink-subtle" />
-                          <span>{selectedCandidate.candidate_email}</span>
-                        </div>
-                      )}
-                      {selectedCandidate.candidate_phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="w-3.5 h-3.5 text-ink-subtle" />
-                          <span>{selectedCandidate.candidate_phone}</span>
-                        </div>
-                      )}
-                      {selectedCandidate.experience_years !== undefined && (
-                        <div className="flex items-center gap-2">
-                          <Briefcase className="w-3.5 h-3.5 text-ink-subtle" />
-                          <span className="text-ink font-medium">
-                            {selectedCandidate.experience_years} years experience
-                            {selectedCandidate.seniority_level && ` · ${selectedCandidate.seniority_level}`}
-                          </span>
-                        </div>
-                      )}
-                      {selectedCandidate.education_level && selectedCandidate.education_level !== 'Unspecified' && (
-                        <div className="flex items-center gap-2">
-                          <GraduationCap className="w-3.5 h-3.5 text-ink-subtle" />
-                          <span className="text-ink">{selectedCandidate.education_level}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Final Score Value */}
-                  <div className="text-right">
-                    <div className="text-[13px] font-medium text-ink-muted">Final score</div>
-                    <ScoreValue score={selectedBreakdown.finalScore} size="xl" />
-                  </div>
-                </div>
-
-                {/* 2. Applicant Pipeline Review Stepper (Properly Placed at Top) */}
-                <div className="space-y-3 p-4 rounded-[12px] bg-surface-alt/50 border border-line">
-                  <div className="flex items-center justify-between">
-                    <div className="text-[13px] font-semibold text-ink">Applicant Pipeline Stage</div>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-[6px] text-[13px] font-medium ${
-                        (STAGE_CONFIG[currentCandidateStage] || STAGE_CONFIG.New).badge
-                      }`}
-                    >
-                      {currentCandidateStage}
-                    </span>
-                  </div>
-
-                  {/* Progressive Stepper Track */}
-                  <div className="grid grid-cols-4 gap-1.5 pt-1">
-                    {['New', 'Reviewing', 'Interview', 'Hired'].map((s, idx) => {
-                      const isCurrent = currentCandidateStage === s;
-                      return (
-                        <button
-                          key={s}
-                          type="button"
-                          aria-label={`Advance to stage ${idx + 1}`}
-                          onClick={() => handleStageButtonClick(s)}
-                          disabled={updateStageMutation.isPending}
-                          className={`px-2 py-2 rounded-[8px] text-[13px] text-center border transition-all cursor-pointer ${
-                            isCurrent
-                              ? 'bg-primary text-on-primary border-primary font-semibold shadow-sm'
-                              : 'bg-surface border-line text-ink hover:bg-surface-alt hover:border-line'
-                          }`}
-                        >
-                          <div aria-hidden="true">
-                            <div className="text-[13px] opacity-70 mb-0.5">0{idx + 1}</div>
-                            <div className="truncate font-medium">{s}</div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Rejection / Terminal Action */}
-                  <div className="flex items-center justify-between pt-1 border-t border-line/60">
-                    <span className="text-[13px] text-ink-muted">Terminal outcome:</span>
-                    {currentCandidateStage === 'Rejected' ? (
-                      <button
-                        type="button"
-                        onClick={() => handleStageButtonClick('Reviewing')}
-                        className="text-[13px] text-primary hover:underline cursor-pointer font-medium"
-                      >
-                        Re-open Application
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => handleStageButtonClick('Rejected')}
-                        className="text-[13px] text-ink-muted hover:text-ink cursor-pointer border border-line px-2.5 py-1 rounded-[6px] hover:bg-surface"
-                      >
-                        Mark Rejected
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Transition Confirmation Prompt */}
-                  {showTransitionPrompt && (
-                    <div className="pt-3 space-y-2.5 border-t border-line animate-fadeIn">
-                      <div className="text-[13px] font-medium text-ink flex items-center gap-1.5">
-                        <span>Move candidate to:</span>
-                        <span className="font-bold text-primary">{targetStage}</span>
-                      </div>
-                      <Input
-                        placeholder="Optional transition reason or note..."
-                        value={transitionNote}
-                        onChange={(e) => setTransitionNote(e.target.value)}
-                      />
-                      <div className="flex justify-end gap-2 pt-1">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => {
-                            setShowTransitionPrompt(false);
-                            setTargetStage('');
-                            setTransitionNote('');
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          loading={updateStageMutation.isPending}
-                          onClick={handleConfirmStageUpdate}
-                        >
-                          Confirm Move
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* 3. Scoring Breakdown & Diagnostics */}
-                <div className="space-y-2 p-4 rounded-[12px] bg-surface-alt/50 border border-line">
-                  <div className="text-[13px] font-medium text-ink flex items-center justify-between">
-                    <span>Scoring Breakdown</span>
-                    <span className="tabular-nums font-semibold text-[13px]">
-                      {selectedBreakdown.finalScore.toFixed(1)}%
-                    </span>
-                  </div>
-                  <ScoreBar
-                    skillsPoints={selectedBreakdown.skillsCoveredPoints}
-                    textMatchPoints={selectedBreakdown.textMatchPoints}
-                    experiencePoints={selectedBreakdown.experiencePoints}
-                    educationPoints={selectedBreakdown.educationPoints}
-                    finalScore={selectedBreakdown.finalScore}
-                    height="h-2"
-                  />
-                  <div className="pt-2 text-[13px] text-ink-muted space-y-1.5 tabular-nums">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-primary" />
-                        Skills covered {selectedBreakdown.skillsCoveredPercent.toFixed(1)}% × {selectedBreakdown.weightSkills.toFixed(2)}
-                      </span>
-                      <span className="font-medium text-ink">
-                        {selectedBreakdown.skillsCoveredPoints.toFixed(1)} pts
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-champagne" />
-                        Text match {selectedBreakdown.textMatchPercent.toFixed(1)}% × {selectedBreakdown.weightText.toFixed(2)}
-                      </span>
-                      <span className="font-medium text-ink">
-                        {selectedBreakdown.textMatchPoints.toFixed(1)} pts
-                      </span>
-                    </div>
-                    {selectedBreakdown.hasMultiPillar && (
-                      <>
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-ink-muted" />
-                            Experience {selectedBreakdown.experiencePercent.toFixed(1)}% × {selectedBreakdown.weightExperience.toFixed(2)}
-                          </span>
-                          <span className="font-medium text-ink">
-                            {selectedBreakdown.experiencePoints.toFixed(1)} pts
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-champagne/40 border border-champagne" />
-                            Education {selectedBreakdown.educationPercent.toFixed(1)}% × {selectedBreakdown.weightEducation.toFixed(2)}
-                          </span>
-                          <span className="font-medium text-ink">
-                            {selectedBreakdown.educationPoints.toFixed(1)} pts
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* 4. Required Skills Diagnostic */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-[14px] font-semibold text-ink">Required skills status</h3>
-                    {selectedCandidate.equivalent_skills &&
-                      Object.keys(selectedCandidate.equivalent_skills).length > 0 && (
-                        <span className="text-[13px] text-ink-muted">
-                          {Object.keys(selectedCandidate.equivalent_skills).length} equivalent recognized
-                        </span>
-                      )}
-                  </div>
-                  <div className="space-y-2">
-                    {activeJob?.required_skills?.map((skill, sIdx) => {
-                      const isFound = selectedCandidate.matched_skills?.some(
-                        (m) => m.toLowerCase().trim() === skill.toLowerCase().trim()
-                      );
-                      const equivSource = selectedCandidate.equivalent_skills?.[skill];
-
-                      return (
-                        <div
-                          key={sIdx}
-                          className="flex items-center justify-between text-[13px] py-1 border-b border-line/50 last:border-b-0 gap-2"
-                        >
-                          <span className="font-medium text-ink">{skill}</span>
-                          {isFound ? (
-                            <span className="inline-flex items-center gap-1 text-[13px] font-medium text-ink bg-champagne-soft px-2 py-0.5 rounded-[4px]">
-                              <Check className="w-3.5 h-3.5 text-champagne" />
-                              Found in resume
-                            </span>
-                          ) : equivSource ? (
-                            <span
-                              className="inline-flex items-center gap-1 text-[13px] font-medium text-ink bg-champagne-soft/70 px-2 py-0.5 rounded-[4px] border border-champagne/30"
-                              title="Recognized as equivalent skill family with 75% credit"
-                            >
-                              <Check className="w-3.5 h-3.5 text-champagne" />
-                              Via {equivSource} (75%)
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[13px] text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[4px] border border-dashed border-line">
-                              <Minus className="w-3.5 h-3.5 text-ink-subtle" />
-                              Missing
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 5. Plain-English Score Explanation */}
-                {selectedCandidate.score_explanation && (
-                  <div className="space-y-1.5 pt-2 border-t border-line">
-                    <div className="text-[13px] font-semibold text-ink">Explain score</div>
-                    <p className="text-[13px] text-ink-muted leading-relaxed whitespace-pre-line">
-                      {selectedCandidate.score_explanation}
-                    </p>
-                  </div>
-                )}
-
-                {/* 6. Recruiter Notes & Activity Stream */}
-                <div className="space-y-4 p-4 rounded-[12px] bg-surface-alt/50 border border-line">
-                  <div className="flex items-center justify-between pb-2 border-b border-line">
-                    <div className="text-[13px] font-semibold text-ink flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4 text-ink-muted" />
-                      <span>Recruiter notes ({notesList.length})</span>
-                    </div>
-                  </div>
-
-                  {/* Add Note Form */}
-                  <form onSubmit={handleAddNote} className="space-y-2">
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Add recruiter feedback or review note..."
-                        value={newNoteContent}
-                        onChange={(e) => setNewNoteContent(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Button
-                        type="submit"
-                        size="sm"
-                        disabled={!newNoteContent.trim() || addNoteMutation.isPending}
-                        loading={addNoteMutation.isPending}
-                      >
-                        Post
-                      </Button>
-                    </div>
-                  </form>
-
-                  {/* Notes Feed */}
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {notesList.length === 0 ? (
-                      <p className="text-[13px] text-ink-muted italic py-1">No notes recorded yet.</p>
-                    ) : (
-                      notesList.map((n, i) => (
-                        <div
-                          key={n.note_id || i}
-                          className="p-3 rounded-[8px] bg-surface border border-line text-[13px] space-y-1"
-                        >
-                          <div className="flex items-center justify-between text-[13px] text-ink-muted">
-                            <span className="font-semibold text-ink">{n.author}</span>
-                            <span className="tabular-nums">
-                              {new Date(n.created_at).toLocaleDateString(undefined, {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </span>
-                          </div>
-                          <p className="text-ink leading-relaxed text-[13px]">{n.content}</p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  {/* Status Audit Trail */}
-                  <div className="pt-2 border-t border-line">
-                    <button
-                      type="button"
-                      onClick={() => setShowAuditTrail(!showAuditTrail)}
-                      className="flex items-center justify-between w-full text-[13px] font-semibold text-ink hover:text-primary transition-colors cursor-pointer py-1"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-ink-muted" />
-                        <span>Status history ({statusHistoryList.length})</span>
-                      </div>
-                      <span className="text-[13px] text-ink-muted font-normal">
-                        {showAuditTrail ? 'Hide' : 'Show'}
-                      </span>
-                    </button>
-
-                    {showAuditTrail && (
-                      <div className="space-y-2.5 pt-2 border-l-2 border-line ml-2 pl-3">
-                        {statusHistoryList.length === 0 ? (
-                          <p className="text-[13px] text-ink-muted italic">No transitions recorded.</p>
-                        ) : (
-                          statusHistoryList.map((h, i) => (
-                            <div key={h.history_id || i} className="text-[13px] space-y-0.5">
-                              <div className="flex items-center gap-2">
-                                <span className="font-semibold text-ink">
-                                  {h.from_stage
-                                    ? `${h.from_stage} → ${h.to_stage}`
-                                    : `Initial: ${h.to_stage}`}
-                                </span>
-                                <span className="text-ink-muted tabular-nums">
-                                  {new Date(h.created_at).toLocaleDateString(undefined, {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                  })}
-                                </span>
-                              </div>
-                              <div className="text-ink-muted">
-                                by {h.changed_by}
-                                {h.note && <span className="italic text-ink"> — "{h.note}"</span>}
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* 7. Compare Action Button */}
-                <div className="pt-4 border-t border-line flex items-center justify-between gap-3">
-                  <Button
-                    variant={
-                      selectedForCompare.includes(selectedCandidate.application_id)
-                        ? 'secondary'
-                        : 'primary'
-                    }
-                    size="sm"
-                    leftIcon={<GitCompare className="w-3.5 h-3.5" />}
-                    onClick={() => handleToggleCompare(selectedCandidate.application_id)}
-                  >
-                    {selectedForCompare.includes(selectedCandidate.application_id)
-                      ? 'Remove from compare'
-                      : 'Add to compare'}
-                  </Button>
-                </div>
-              </Panel>
-            ) : null}
-          </div>
+          {/* RIGHT: Master-Detail Candidate & Review Panel (shown in split view) */}
+          {viewMode === 'split' && (
+            <div className="hidden lg:block lg:col-span-5 sticky top-20" aria-live="polite">
+              {selectedCandidate && selectedBreakdown ? (
+                <Panel className="p-5 max-h-[calc(100vh-6rem)] overflow-y-auto space-y-4">
+                  {renderDossierContent(false)}
+                </Panel>
+              ) : null}
+            </div>
+          )}
         </div>
       )}
+
+      {/* Candidate Dossier Slide-Over Drawer (for full-table mode and mobile) */}
+      <Drawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        title={
+          selectedCandidate
+            ? `${cleanCandidateName(selectedCandidate.candidate_name)}`
+            : 'Candidate Dossier'
+        }
+        maxWidth="max-w-2xl"
+      >
+        {selectedCandidate && selectedBreakdown && renderDossierContent(true)}
+      </Drawer>
 
       {/* Floating Multi-Select Action Bar (shown when 2+ candidates are checked) */}
       {selectedForCompare.length >= 2 && (
