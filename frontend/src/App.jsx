@@ -30,7 +30,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-slate-900 selection:text-white">
       
       {/* Navigation */}
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -89,9 +89,9 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-8 text-center text-xs text-slate-500 bg-[#0B0F19]">
+      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 bg-white">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center space-x-2 text-sm text-slate-300">
+          <div className="flex items-center space-x-2 text-sm text-slate-800">
             <span className="font-bold">SmartATS</span>
             <span className="text-slate-500 text-xs">&mdash; Explainable Hybrid Screening System</span>
           </div>

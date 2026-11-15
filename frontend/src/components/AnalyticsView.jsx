@@ -38,7 +38,7 @@ export default function AnalyticsView({ selectedJobId }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -47,77 +47,77 @@ export default function AnalyticsView({ selectedJobId }) {
     <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="border-b border-slate-800 pb-6">
-        <span className="text-xs uppercase font-mono tracking-wider text-blue-400">
+      <div className="border-b border-slate-200 pb-6">
+        <span className="text-xs uppercase font-mono tracking-wider text-slate-500">
           Empirical Diagnostics
         </span>
-        <h1 className="text-3xl font-bold text-white mt-1 tracking-tight">
+        <h1 className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">
           Screening Analytics & Intelligence
         </h1>
-        <p className="text-xs text-slate-400 mt-1 font-sans">
+        <p className="text-xs text-slate-600 mt-1 font-sans">
           Aggregate evaluation benchmarks, skill availability trends, and deficiency diagnostics.
         </p>
       </div>
 
       {/* Global Metrics Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-lg hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-300">
-          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-400">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-300">
+          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-500">
             Processed Documents
           </span>
-          <div className="text-3xl font-bold text-white mt-1">
+          <div className="text-3xl font-bold text-slate-900 mt-1">
             {overview?.processed_resumes || 0}
           </div>
-          <div className="text-xs text-emerald-400 mt-1 font-mono">
+          <div className="text-xs text-emerald-700 mt-1 font-mono">
             Screened successfully
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-lg hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-300">
-          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-400">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-300">
+          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-500">
             Blocked Duplicates
           </span>
-          <div className="text-3xl font-bold text-amber-400 mt-1">
+          <div className="text-3xl font-bold text-slate-900 mt-1">
             {overview?.duplicate_resumes || 0}
           </div>
-          <div className="text-xs text-slate-400 mt-1 font-mono">
+          <div className="text-xs text-slate-500 mt-1 font-mono">
             Via SHA-256 binary hash
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-lg hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-300">
-          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-400">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-300">
+          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-500">
             Benchmark Average
           </span>
-          <div className="text-3xl font-bold text-blue-400 mt-1">
+          <div className="text-3xl font-bold text-slate-900 mt-1">
             {overview?.average_score || 0}%
           </div>
-          <div className="text-xs text-slate-400 mt-1 font-mono">
+          <div className="text-xs text-slate-500 mt-1 font-mono">
             Platform-wide mean
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-lg hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-300">
-          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-400">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-300">
+          <span className="text-xs uppercase font-mono tracking-wider font-semibold text-slate-500">
             Candidate Records
           </span>
-          <div className="text-3xl font-bold text-white mt-1">
+          <div className="text-3xl font-bold text-slate-900 mt-1">
             {overview?.total_candidates || 0}
           </div>
-          <div className="text-xs text-slate-400 mt-1 font-mono">
+          <div className="text-xs text-slate-500 mt-1 font-mono">
             Unique indexed profiles
           </div>
         </div>
       </div>
 
       {/* Job-Specific Analytics Filter */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-7 shadow-lg space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-xs space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
-            <span className="text-xs uppercase font-mono tracking-wider text-blue-400">
+            <span className="text-xs uppercase font-mono tracking-wider text-slate-500">
               Role Analysis
             </span>
-            <h2 className="text-xl font-bold text-white mt-0.5 tracking-tight">
+            <h2 className="text-xl font-bold text-slate-900 mt-0.5 tracking-tight">
               Skill Frequency & Gap Diagnostics
             </h2>
           </div>
@@ -125,7 +125,7 @@ export default function AnalyticsView({ selectedJobId }) {
             <select
               value={selectedJob}
               onChange={(e) => setSelectedJob(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-medium focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-slate-900 transition-colors shadow-xs"
             >
               {jobs.map((j) => (
                 <option key={j.job_id} value={j.job_id}>
@@ -141,7 +141,7 @@ export default function AnalyticsView({ selectedJobId }) {
             
             {/* Top Matched Skills */}
             <div className="space-y-4">
-              <div className="flex items-center space-x-1.5 text-xs font-mono font-semibold text-emerald-400">
+              <div className="flex items-center space-x-1.5 text-xs font-mono font-semibold text-emerald-700">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>TOP MATCHED SKILLS IN TALENT POOL</span>
               </div>
@@ -153,14 +153,14 @@ export default function AnalyticsView({ selectedJobId }) {
                     return (
                       <div key={idx} className="space-y-1.5">
                         <div className="flex justify-between text-xs">
-                          <span className="font-semibold text-white">{item.skill}</span>
-                          <span className="font-mono text-slate-400">
+                          <span className="font-semibold text-slate-900">{item.skill}</span>
+                          <span className="font-mono text-slate-500">
                             {item.count} candidates ({percent}%)
                           </span>
                         </div>
-                        <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
                           <div
-                            className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                            className="bg-emerald-600 h-full rounded-full transition-all duration-500"
                             style={{ width: `${percent}%` }}
                           ></div>
                         </div>
@@ -175,7 +175,7 @@ export default function AnalyticsView({ selectedJobId }) {
 
             {/* Most Frequently Missing Skills */}
             <div className="space-y-4">
-              <div className="flex items-center space-x-1.5 text-xs font-mono font-semibold text-rose-400">
+              <div className="flex items-center space-x-1.5 text-xs font-mono font-semibold text-rose-700">
                 <AlertTriangle className="w-4 h-4" />
                 <span>FREQUENTLY MISSING SKILLS (GAP DIAGNOSTICS)</span>
               </div>
@@ -187,12 +187,12 @@ export default function AnalyticsView({ selectedJobId }) {
                     return (
                       <div key={idx} className="space-y-1.5">
                         <div className="flex justify-between text-xs">
-                          <span className="font-semibold text-white">{item.skill}</span>
-                          <span className="font-mono text-rose-400">
+                          <span className="font-semibold text-slate-900">{item.skill}</span>
+                          <span className="font-mono text-rose-700">
                             Missing in {item.count} resumes ({percent}%)
                           </span>
                         </div>
-                        <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
                           <div
                             className="bg-rose-500 h-full rounded-full transition-all duration-500"
                             style={{ width: `${percent}%` }}
@@ -202,7 +202,7 @@ export default function AnalyticsView({ selectedJobId }) {
                     );
                   })
                 ) : (
-                  <p className="text-xs text-emerald-400 font-mono">No competency gaps detected in applicants.</p>
+                  <p className="text-xs text-emerald-700 font-mono">No competency gaps detected in applicants.</p>
                 )}
               </div>
             </div>

@@ -73,15 +73,15 @@ export default function RankingsView({
     <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
-          <span className="text-xs uppercase font-mono tracking-wider text-blue-400">
+          <span className="text-xs uppercase font-mono tracking-wider text-slate-500">
             Screening Results
           </span>
-          <h1 className="text-3xl font-bold text-white mt-1 tracking-tight">
+          <h1 className="text-3xl font-bold text-slate-900 mt-1 tracking-tight">
             Candidate Leaderboard
           </h1>
-          <p className="text-xs text-slate-400 mt-1 font-sans">
+          <p className="text-xs text-slate-600 mt-1 font-sans">
             Ranked candidate recommendations with verified keyword coverage and contextual similarity.
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function RankingsView({
           {selectedCandidates.length >= 2 && (
             <button
               onClick={handleCompareClick}
-              className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold tracking-wide transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)] active:scale-[0.98]"
+              className="inline-flex items-center space-x-2 px-4 py-2 bg-slate-900 hover:bg-black text-white rounded-full text-xs font-semibold tracking-wide transition-all shadow-xs active:scale-[0.98]"
             >
               <GitCompare className="w-3.5 h-3.5" />
               <span>Compare Selected ({selectedCandidates.length})</span>
@@ -102,9 +102,9 @@ export default function RankingsView({
             <a
               href={getExportCsvUrl(jobId)}
               download
-              className="inline-flex items-center space-x-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-semibold transition active:scale-[0.98]"
+              className="inline-flex items-center space-x-2 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-full text-xs font-semibold transition active:scale-[0.98] shadow-xs"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
               <span>Export CSV</span>
             </a>
           )}
@@ -112,18 +112,18 @@ export default function RankingsView({
       </div>
 
       {/* Control Bar: Job Selector & Search */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/60 border border-slate-800 p-4 rounded-2xl shadow-lg">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 border border-slate-200 p-4 rounded-2xl shadow-xs">
         
         {/* Job Dropdown */}
         <div className="md:col-span-1">
-          <label htmlFor="job-filter" className="block text-xs uppercase font-mono tracking-wider font-semibold text-slate-400 mb-1.5">
+          <label htmlFor="job-filter" className="block text-xs uppercase font-mono tracking-wider font-semibold text-slate-600 mb-1.5">
             Target Job Opening
           </label>
           <select
             id="job-filter"
             value={jobId}
             onChange={(e) => setJobId(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-medium focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-slate-900 transition-colors shadow-xs"
           >
             {jobs.map((j) => (
               <option key={j.job_id} value={j.job_id}>
@@ -135,18 +135,18 @@ export default function RankingsView({
 
         {/* Search */}
         <div className="md:col-span-2">
-          <label htmlFor="candidate-search" className="block text-xs uppercase font-mono tracking-wider font-semibold text-slate-400 mb-1.5">
+          <label htmlFor="candidate-search" className="block text-xs uppercase font-mono tracking-wider font-semibold text-slate-600 mb-1.5">
             Search Filter
           </label>
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3.5 top-3 text-slate-500" />
+            <Search className="w-3.5 h-3.5 absolute left-3.5 top-3 text-slate-400" />
             <input
               id="candidate-search"
               type="text"
               placeholder="Search candidate name, email, or matched technical skill..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 transition-colors shadow-xs"
             />
           </div>
         </div>
@@ -156,13 +156,13 @@ export default function RankingsView({
       {/* Table Section */}
       {loading ? (
         <div className="flex items-center justify-center min-h-[35vh]">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : filteredCandidates.length === 0 ? (
-        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-12 text-center space-y-2">
-          <Award className="w-8 h-8 text-slate-500 mx-auto" />
-          <h3 className="text-base font-bold text-white">No Evaluation Records</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto font-sans">
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-12 text-center space-y-2">
+          <Award className="w-8 h-8 text-slate-400 mx-auto" />
+          <h3 className="text-base font-bold text-slate-900">No Evaluation Records</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto font-sans">
             No candidates processed for this position yet. Upload documents to generate scores.
           </p>
         </div>
@@ -171,13 +171,13 @@ export default function RankingsView({
           tabIndex={0}
           role="region"
           aria-labelledby="leaderboard-table-caption"
-          className="table-wrapper bg-slate-900/60 border border-slate-800 rounded-2xl shadow-xl overflow-hidden"
+          className="table-wrapper bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden"
         >
           <table className="w-full text-left border-collapse">
             <caption id="leaderboard-table-caption" className="sr-only">
               Candidate Leaderboard and Hybrid Match Scores
             </caption>
-            <thead className="bg-slate-950/90 sticky top-0 z-10 border-b border-slate-800 text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold">
+            <thead className="bg-slate-50 sticky top-0 z-10 border-b border-slate-200 text-[10px] uppercase font-mono tracking-wider text-slate-500 font-semibold">
               <tr>
                 <th scope="col" className="p-4 w-12 text-center">
                   <span className="sr-only">Select</span>
@@ -191,7 +191,7 @@ export default function RankingsView({
                 <th scope="col" className="py-4 px-4 text-right">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80 text-xs">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {filteredCandidates.map((cand) => {
                 const isSelected = selectedCandidates.includes(cand.application_id);
                 const isTop1 = cand.rank === 1;
@@ -199,8 +199,8 @@ export default function RankingsView({
                 return (
                   <tr
                     key={cand.application_id}
-                    className={`hover:bg-slate-800/40 transition-colors ${
-                      isSelected ? 'bg-blue-600/10' : ''
+                    className={`hover:bg-slate-50/80 transition-colors ${
+                      isSelected ? 'bg-slate-50' : ''
                     }`}
                   >
                     {/* Checkbox */}
@@ -209,48 +209,48 @@ export default function RankingsView({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleSelectCandidate(cand.application_id)}
-                        className="w-4 h-4 rounded bg-slate-950 border-slate-750 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer"
                       />
                     </td>
 
                     {/* Rank */}
                     <td className="py-4 px-3 text-center font-mono font-bold">
                       {isTop1 ? (
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] shadow-[0_0_10px_rgba(37,99,235,0.4)]">
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-slate-900 text-white text-[10px] shadow-xs">
                           #1 TOP
                         </span>
                       ) : (
-                        <span className="text-slate-400">#{cand.rank}</span>
+                        <span className="text-slate-500">#{cand.rank}</span>
                       )}
                     </td>
 
                     {/* Candidate Name & Contact */}
                     <td className="py-4 px-3">
-                      <div className="font-bold text-white text-sm">
+                      <div className="font-bold text-slate-900 text-sm">
                         {cand.candidate_name}
                       </div>
-                      <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                      <div className="text-[11px] text-slate-500 font-mono mt-0.5">
                         {cand.candidate_email || 'No email registered'}
                       </div>
                     </td>
 
                     {/* Final Score */}
                     <td className="py-4 px-3 text-center font-mono">
-                      <span className="text-sm font-bold text-white">
+                      <span className="text-sm font-bold text-slate-900">
                         {cand.final_score.toFixed(1)}%
                       </span>
                     </td>
 
                     {/* Keyword Score */}
                     <td className="py-4 px-3 text-center font-mono">
-                      <span className="font-semibold text-emerald-400">
+                      <span className="font-semibold text-emerald-700">
                         {cand.keyword_score.toFixed(1)}%
                       </span>
                     </td>
 
                     {/* TF-IDF Similarity */}
                     <td className="py-4 px-3 text-center font-mono">
-                      <span className="font-semibold text-blue-400">
+                      <span className="font-semibold text-slate-700">
                         {cand.tfidf_score.toFixed(1)}%
                       </span>
                     </td>
@@ -262,13 +262,13 @@ export default function RankingsView({
                           {cand.matched_skills.slice(0, 3).map((skill, i) => (
                             <span
                               key={i}
-                              className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                              className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"
                             >
                               ✓ {skill}
                             </span>
                           ))}
                           {cand.matched_skills.length > 3 && (
-                            <span className="px-1.5 py-0.5 rounded-lg text-[10px] font-mono text-slate-400 bg-slate-800">
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono text-slate-500 bg-slate-100 border border-slate-200">
                               +{cand.matched_skills.length - 3}
                             </span>
                           )}
@@ -279,13 +279,13 @@ export default function RankingsView({
                             {cand.missing_skills.slice(0, 2).map((skill, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-rose-500/10 text-rose-300 border border-rose-500/20"
+                                className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-rose-50 text-rose-700 border border-rose-200"
                               >
                                 ✕ {skill}
                               </span>
                             ))}
                             {cand.missing_skills.length > 2 && (
-                              <span className="px-1.5 py-0.5 rounded-lg text-[10px] font-mono text-rose-400 bg-rose-500/10">
+                              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono text-rose-600 bg-rose-50 border border-rose-200">
                                 +{cand.missing_skills.length - 2}
                               </span>
                             )}
@@ -298,7 +298,7 @@ export default function RankingsView({
                     <td className="py-4 px-4 text-right">
                       <button
                         onClick={() => onViewCandidate(cand)}
-                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-blue-600 text-slate-200 hover:text-white border border-slate-700 rounded-lg text-xs font-semibold transition active:scale-[0.98]"
+                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 rounded-full text-xs font-semibold transition active:scale-[0.98] shadow-xs"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>Explain</span>

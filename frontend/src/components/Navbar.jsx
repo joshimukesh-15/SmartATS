@@ -21,7 +21,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0B0F19]/80 backdrop-blur-xl border-b border-slate-800/80">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -32,19 +32,19 @@ export default function Navbar({ activeTab, setActiveTab }) {
               title="Return to Product Landing Page"
               className="flex items-center space-x-3 text-left focus:outline-none group"
             >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] group-hover:scale-105 transition-transform duration-300">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white transition-transform group-hover:scale-105">
                 <span className="font-bold text-sm tracking-tight">S</span>
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-base font-bold tracking-tight text-white group-hover:text-blue-400 transition-colors">
+                  <span className="text-base font-bold tracking-tight text-slate-900 group-hover:text-slate-700 transition-colors">
                     SmartATS
                   </span>
-                  <span className="text-[10px] uppercase font-mono font-semibold tracking-wider px-2 py-0.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400">
+                  <span className="text-[10px] uppercase font-mono font-semibold tracking-wider px-2 py-0.5 rounded-full border border-slate-200 bg-slate-100 text-slate-700">
                     Studio
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   Explainable Resume Matching
                 </p>
               </div>
@@ -61,10 +61,10 @@ export default function Navbar({ activeTab, setActiveTab }) {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-all active:scale-[0.98] ${
+                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all active:scale-[0.98] ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.35)]'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -74,13 +74,13 @@ export default function Navbar({ activeTab, setActiveTab }) {
               })}
             </nav>
 
-            <div className="h-5 w-px bg-slate-800 mx-1 hidden sm:block"></div>
+            <div className="h-5 w-px bg-slate-200 mx-1 hidden sm:block"></div>
 
             <button
               onClick={() => setActiveTab('landing')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700/80 bg-slate-850 hover:bg-slate-800 active:scale-[0.98] text-slate-200 hover:text-white transition-all shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 hover:text-slate-900 transition-all shadow-xs focus:outline-none focus:ring-2 focus:ring-slate-400"
             >
-              <Globe className="w-3.5 h-3.5 text-blue-400" />
+              <Globe className="w-3.5 h-3.5 text-slate-500" />
               <span className="hidden sm:inline">Landing Page</span>
             </button>
           </div>
