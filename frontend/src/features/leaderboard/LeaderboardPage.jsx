@@ -53,6 +53,22 @@ export default function LeaderboardPage() {
   const [sortBy, setSortBy] = useState('score');
   const [sortOrder, setSortOrder] = useState('desc');
 
+  // Row density state with localStorage persistence
+  const [density, setDensity] = useState(() => {
+    try {
+      return localStorage.getItem('smartats_leaderboard_density') || 'comfortable';
+    } catch {
+      return 'comfortable';
+    }
+  });
+
+  const handleDensityChange = (newDensity) => {
+    setDensity(newDensity);
+    try {
+      localStorage.setItem('smartats_leaderboard_density', newDensity);
+    } catch {}
+  };
+
   // Dossier UI state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [dossierTab, setDossierTab] = useState('scoring');
@@ -172,13 +188,11 @@ export default function LeaderboardPage() {
         setSearch={setSearch}
         stageFilter={stageFilter}
         setStageFilter={setStageFilter}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
         rawCandidates={rawCandidates}
         activeJobId={activeJobId}
         selectedCandidate={selectedCandidate}
+        density={density}
+        onDensityChange={handleDensityChange}
       />
 
       {/* Master-Detail Layout */}
@@ -209,34 +223,41 @@ export default function LeaderboardPage() {
           }
         />
       ) : (
-        <div className="w-full space-y-4">
-          <LeaderboardTable
-            candidates={candidates}
-            safeSelectedIndex={safeSelectedIndex}
-            selectedForCompare={selectedForCompare}
-            activeJob={activeJob}
-            onSelectCandidate={(idx) => {
-              setSelectedIndex(idx);
-              setShowTransitionPrompt(false);
-              setIsDrawerOpen(true);
-            }}
-            onToggleCompare={handleToggleCompare}
-            openStageMenuId={openStageMenuId}
-            setOpenStageMenuId={setOpenStageMenuId}
-            onQuickStageChange={handleQuickStageChange}
-            tableContainerRef={tableContainerRef}
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-7 xl:col-span-7 space-y-4">
+            <LeaderboardTable
+              candidates={candidates}
+              safeSelectedIndex={safeSelectedIndex}
+              selectedForCompare={selectedForCompare}
+              activeJob={activeJob}
+              onSelectCandidate={(idx) => {
+                setSelectedIndex(idx);
+                setShowTransitionPrompt(false);
+                setIsDrawerOpen(true);
+              }}
+              onToggleCompare={handleToggleCompare}
+              openStageMenuId={openStageMenuId}
+              setOpenStageMenuId={setOpenStageMenuId}
+              onQuickStageChange={handleQuickStageChange}
+              tableContainerRef={tableContainerRef}
+              density={density}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+              onSort={(key, order) => {
+                setSortBy(key);
+                setSortOrder(order);
+              }}
+            />
+          </div>
 
-          {/* Reference panel for test compatibility and screen readers */}
-          {selectedCandidate && selectedBreakdown && (
-            <div className="hidden" aria-hidden="true">
-              {renderDetailPanel()}
-            </div>
-          )}
+          {/* Desktop Sticky Candidate Detail Panel */}
+          <div className="hidden lg:block lg:col-span-5 xl:col-span-5">
+            {selectedCandidate && selectedBreakdown && renderDetailPanel()}
+          </div>
         </div>
       )}
 
-      {/* Candidate Dossier Slide-Over Drawer */}
+      {/* Candidate Dossier Slide-Over Drawer for Mobile / Compact Screens */}
       <Drawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}

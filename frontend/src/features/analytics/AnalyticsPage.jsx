@@ -205,7 +205,7 @@ export default function AnalyticsPage() {
 
           {/* 2-Column Analytics Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Matched Skills Frequency (Primary Bars) */}
+            {/* Matched Skills Frequency (Horizontal Bars with Right-Aligned Values, Matched in Primary) */}
             <Panel className="p-5 sm:p-6 space-y-6">
               <div className="space-y-1">
                 <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Verified skill coverage</h2>
@@ -229,12 +229,12 @@ export default function AnalyticsPage() {
                     <div key={idx} className="space-y-1.5">
                       <div className="flex items-center justify-between text-[13px]">
                         <span className="font-medium text-ink">{item.skill}</span>
-                        <span className="text-ink-muted tabular-nums">
+                        <span className="text-ink font-semibold tabular-nums text-right">
                           {item.count} / {item.total} ({item.percent.toFixed(0)}%)
                         </span>
                       </div>
-                      {/* Primary color bar */}
-                      <div className="h-2 w-full rounded-full bg-surface-alt overflow-hidden">
+                      {/* Horizontal bar in primary */}
+                      <div className="h-2.5 w-full rounded-full bg-surface-alt overflow-hidden">
                         <div
                           style={{ width: `${item.percent}%` }}
                           className="h-full bg-primary transition-all duration-500 rounded-full"
@@ -246,7 +246,7 @@ export default function AnalyticsPage() {
               )}
             </Panel>
 
-            {/* Missing Skills Frequency (Champagne-Soft Bars) */}
+            {/* Missing Skills Frequency (Missing in Champagne-Soft with Champagne Border) */}
             <Panel className="p-5 sm:p-6 space-y-6">
               <div className="space-y-1">
                 <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Common skill gaps</h2>
@@ -270,15 +270,15 @@ export default function AnalyticsPage() {
                     <div key={idx} className="space-y-1.5">
                       <div className="flex items-center justify-between text-[13px]">
                         <span className="font-medium text-ink">{item.skill}</span>
-                        <span className="text-ink-muted tabular-nums">
+                        <span className="text-champagne font-semibold tabular-nums text-right">
                           Missing in {item.missingCount} {item.missingCount === 1 ? 'resume' : 'resumes'} ({item.percent.toFixed(0)}%)
                         </span>
                       </div>
-                      {/* Champagne bar */}
-                      <div className="h-2 w-full rounded-full bg-surface-alt overflow-hidden">
+                      {/* Horizontal bar in champagne-soft with champagne border */}
+                      <div className="h-2.5 w-full rounded-full bg-surface-alt overflow-hidden">
                         <div
                           style={{ width: `${item.percent}%` }}
-                          className="h-full bg-champagne transition-all duration-500 rounded-full"
+                          className="h-full bg-champagne-soft border border-champagne transition-all duration-500 rounded-full"
                         />
                       </div>
                     </div>

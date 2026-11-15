@@ -8,16 +8,14 @@ export default function LeaderboardFilters({
   setSearch,
   stageFilter,
   setStageFilter,
-  sortBy,
-  setSortBy,
-  sortOrder,
-  setSortOrder,
   rawCandidates = [],
   activeJobId,
   selectedCandidate,
+  density = 'comfortable',
+  onDensityChange,
 }) {
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-6 rounded-[14px] bg-surface border border-line">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-[14px] bg-surface border border-line shadow-xs">
       {/* Left: Search input */}
       <div className="w-full lg:w-72">
         <Input
@@ -57,53 +55,47 @@ export default function LeaderboardFilters({
         })}
       </div>
 
-      {/* Right: Sort controls & Layout switcher */}
-      <div className="flex items-center gap-2 text-[13px] text-ink-muted shrink-0 flex-wrap">
-        <span className="hidden xl:inline">Sort:</span>
-        <button
-          type="button"
-          onClick={() => {
-            if (sortBy === 'score') {
-              setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            } else {
-              setSortBy('score');
-              setSortOrder('desc');
-            }
-          }}
-          className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] font-medium ${
-            sortBy === 'score' ? 'bg-surface-alt text-ink font-semibold' : 'bg-surface'
-          }`}
-        >
-          Score {sortBy === 'score' && (sortOrder === 'desc' ? '↓' : '↑')}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            if (sortBy === 'name') {
-              setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            } else {
-              setSortBy('name');
-              setSortOrder('asc');
-            }
-          }}
-          className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] font-medium ${
-            sortBy === 'name' ? 'bg-surface-alt text-ink font-semibold' : 'bg-surface'
-          }`}
-        >
-          Name {sortBy === 'name' && (sortOrder === 'desc' ? '↓' : '↑')}
-        </button>
+      {/* Right: Density toggle & Navigation */}
+      <div className="flex items-center gap-2.5 text-[13px] text-ink-muted shrink-0 flex-wrap">
+        {/* Row density toggle */}
+        <div className="flex items-center rounded-[8px] border border-line bg-surface-alt/60 p-0.5 select-none">
+          <button
+            type="button"
+            onClick={() => onDensityChange?.('comfortable')}
+            className={`px-2.5 py-1 rounded-[6px] text-[13px] font-medium transition-colors cursor-pointer ${
+              density === 'comfortable'
+                ? 'bg-surface text-ink shadow-xs font-semibold'
+                : 'text-ink-muted hover:text-ink'
+            }`}
+            title="Comfortable row density (64px)"
+          >
+            Comfortable
+          </button>
+          <button
+            type="button"
+            onClick={() => onDensityChange?.('compact')}
+            className={`px-2.5 py-1 rounded-[6px] text-[13px] font-medium transition-colors cursor-pointer ${
+              density === 'compact'
+                ? 'bg-surface text-ink shadow-xs font-semibold'
+                : 'text-ink-muted hover:text-ink'
+            }`}
+            title="Compact row density (48px)"
+          >
+            Compact
+          </button>
+        </div>
 
-        {/* Layout mode switcher */}
+        {/* Review Page Link */}
         <Link
           to={
             selectedCandidate
               ? `/studio/review?jobId=${activeJobId}&candidateId=${selectedCandidate.application_id}`
               : `/studio/review?jobId=${activeJobId}`
           }
-          className="px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] font-medium text-ink transition-colors flex items-center gap-1.5 ml-1"
+          className="px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] font-medium text-ink transition-colors flex items-center gap-1.5"
         >
           <UserCheck className="w-4 h-4 text-champagne" strokeWidth={1.75} />
-          <span>Open Candidate Review</span>
+          <span>Review</span>
         </Link>
       </div>
     </div>

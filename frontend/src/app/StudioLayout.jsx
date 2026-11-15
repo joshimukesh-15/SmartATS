@@ -1,20 +1,21 @@
 import { useState, Suspense } from 'react';
 import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
-import { Search, Plus, UploadCloud } from 'lucide-react';
+import { Search, Plus, UploadCloud, GitCompare } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { CommandPalette } from '../components/CommandPalette';
 import { Button } from '../components/ui/Button';
+import { Kbd } from '../components/ui/Kbd';
 import { ErrorBoundary } from './ErrorBoundary';
 import { RouteSkeleton } from './RouteSkeleton';
 
 const ROUTE_TITLES = {
   '/studio': 'Overview',
   '/studio/': 'Overview',
-  '/studio/jobs': 'Job Openings',
-  '/studio/upload': 'Upload Resumes',
+  '/studio/jobs': 'Jobs',
+  '/studio/upload': 'Upload',
   '/studio/leaderboard': 'Leaderboard',
-  '/studio/review': 'Candidate Review',
-  '/studio/compare': 'Compare Candidates',
+  '/studio/review': 'Review',
+  '/studio/compare': 'Compare',
   '/studio/analytics': 'Analytics',
 };
 
@@ -27,12 +28,67 @@ export default function StudioLayout() {
   const currentPath = location.pathname.replace(/\/$/, '');
   let pageTitle = ROUTE_TITLES[currentPath];
   if (!pageTitle) {
-    if (currentPath.startsWith('/studio/leaderboard')) pageTitle = 'Leaderboard';
-    else if (currentPath.startsWith('/studio/review')) pageTitle = 'Candidate Review';
+    if (currentPath.startsWith('/studio/jobs')) pageTitle = 'Jobs';
+    else if (currentPath.startsWith('/studio/upload')) pageTitle = 'Upload';
+    else if (currentPath.startsWith('/studio/leaderboard')) pageTitle = 'Leaderboard';
+    else if (currentPath.startsWith('/studio/review')) pageTitle = 'Review';
     else if (currentPath.startsWith('/studio/compare')) pageTitle = 'Compare';
     else if (currentPath.startsWith('/studio/analytics')) pageTitle = 'Analytics';
     else pageTitle = 'Studio';
   }
+
+  // Derive contextual primary page action
+  const renderPrimaryAction = () => {
+    if (location.pathname.includes('/studio/jobs')) {
+      return (
+        <Button
+          variant="primary"
+          size="sm"
+          leftIcon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent('smartats:open-create-job'));
+          }}
+        >
+          New opening
+        </Button>
+      );
+    }
+    if (location.pathname.includes('/studio/upload')) {
+      return (
+        <Button
+          variant="primary"
+          size="sm"
+          leftIcon={<UploadCloud className="w-4 h-4" strokeWidth={1.75} />}
+          onClick={() => navigate('/studio/upload')}
+        >
+          Upload resumes
+        </Button>
+      );
+    }
+    if (location.pathname.includes('/studio/leaderboard')) {
+      return (
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon={<GitCompare className="w-4 h-4" strokeWidth={1.75} />}
+          onClick={() => navigate('/studio/compare')}
+        >
+          Compare finalists
+        </Button>
+      );
+    }
+    // Default action (Overview, etc.)
+    return (
+      <Button
+        variant="primary"
+        size="sm"
+        leftIcon={<UploadCloud className="w-4 h-4" strokeWidth={1.75} />}
+        onClick={() => navigate('/studio/upload')}
+      >
+        Upload
+      </Button>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col md:flex-row font-sans selection:bg-primary selection:text-on-primary">
@@ -41,52 +97,31 @@ export default function StudioLayout() {
 
       {/* Main Studio View Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar with Breadcrumb, Search (Ctrl+K), and Page Action */}
-        <header className="h-14 border-b border-line bg-surface/70 backdrop-blur-xs px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20">
+        {/* Top Bar with Breadcrumb, Search Input with <Kbd>, and Primary Action */}
+        <header className="h-14 border-b border-line bg-surface/80 backdrop-blur-xs px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-[13px] text-ink-muted">
-            <Link to="/studio" className="hover:text-ink transition-colors">
+          <div className="flex items-center gap-2 text-[13px] text-ink-muted select-none">
+            <Link to="/studio" className="hover:text-ink transition-colors font-medium">
               Studio
             </Link>
             <span className="text-ink-subtle">/</span>
-            <span className="text-ink font-medium">{pageTitle}</span>
+            <span className="text-ink font-semibold">{pageTitle}</span>
           </div>
 
-          {/* Right Actions: Command Palette Button & Quick Action */}
+          {/* Right Actions: Search with <Kbd> & Primary Page Action */}
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setCommandPaletteOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] text-ink-muted hover:text-ink transition-colors cursor-pointer select-none"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] text-ink-muted hover:text-ink transition-colors cursor-pointer select-none"
+              title="Search screens and actions (Ctrl+K)"
             >
               <Search className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
-              <span className="hidden sm:inline">Search or command...</span>
-              <kbd className="hidden sm:inline px-1.5 py-0.5 text-[13px] rounded-[4px] border border-line bg-surface-alt font-medium text-ink-muted">
-                ⌘K
-              </kbd>
+              <span className="hidden sm:inline">Search...</span>
+              <Kbd className="hidden sm:inline">Ctrl K</Kbd>
             </button>
 
-            {location.pathname.includes('/studio/jobs') ? (
-              <Button
-                variant="primary"
-                size="sm"
-                leftIcon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
-                onClick={() => {
-                  window.dispatchEvent(new CustomEvent('smartats:open-create-job'));
-                }}
-              >
-                New opening
-              </Button>
-            ) : (
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<UploadCloud className="w-4 h-4" strokeWidth={1.75} />}
-                onClick={() => navigate('/studio/upload')}
-              >
-                Upload
-              </Button>
-            )}
+            {renderPrimaryAction()}
           </div>
         </header>
 

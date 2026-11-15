@@ -1,8 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, FileText, AlertCircle, ArrowRight, Clock, X } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useJobs, useUploadResumes } from '../../hooks';
 import { Select, Button, Panel, toast } from '../../components/ui';
+import UploadFileRow from './UploadFileRow';
+import DropZone from './DropZone';
+import UploadStepHeader from './UploadStepHeader';
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -11,24 +14,25 @@ export default function UploadPage() {
   const [fileList, setFileList] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [fileStatuses, setFileStatuses] = useState({});
-  const fileInputRef = useRef(null);
 
   // Set default job once loaded
   const currentJobId = selectedJobId || (jobs.length > 0 ? String(jobs[0].job_id) : '');
-
   const uploadMutation = useUploadResumes(currentJobId);
+
+  // Derive active step in 3-step workflow
+  const activeStep = useMemo(() => {
+    const hasResults = Object.values(fileStatuses).some(
+      (s) => s.status && s.status !== 'uploading' && s.status !== 'parsing'
+    );
+    if (hasResults) return 3;
+    if (fileList.length > 0 || processing) return 2;
+    return 1;
+  }, [fileStatuses, fileList.length, processing]);
 
   const handleFilesAdded = (incomingFiles) => {
     const files = Array.from(incomingFiles);
     if (files.length === 0) return;
     setFileList((prev) => [...prev, ...files]);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    if (e.dataTransfer.files?.length) {
-      handleFilesAdded(e.dataTransfer.files);
-    }
   };
 
   const handleRemoveFile = (indexToRemove) => {
@@ -56,23 +60,23 @@ export default function UploadPage() {
 
     setProcessing(true);
 
-    // Initial status: Uploading
+    // Initial status: Uploading with in-flight progress bars
     const initialStatuses = {};
     fileList.forEach((f, idx) => {
       const key = `${f.name}-${idx}`;
-      const uploadingObj = { status: 'uploading', text: 'Uploading document...' };
+      const uploadingObj = { status: 'uploading', text: 'Uploading file...' };
       initialStatuses[key] = uploadingObj;
       initialStatuses[f.name] = uploadingObj;
     });
     setFileStatuses(initialStatuses);
 
-    // Provide responsive feedback while in flight
+    // Dynamic progress stage feedback
     const timer = setTimeout(() => {
       setFileStatuses((prev) => {
         const next = { ...prev };
         Object.keys(next).forEach((key) => {
           if (next[key]?.status === 'uploading') {
-            next[key] = { status: 'parsing', text: 'Screening and validating file...' };
+            next[key] = { status: 'parsing', text: 'Validating and screening resume...' };
           }
         });
         return next;
@@ -88,26 +92,21 @@ export default function UploadPage() {
 
         let acceptedCount = 0;
         let duplicateCount = 0;
-        let rejectedCount = 0;
-        let errorCount = 0;
+        let _rejectedCount = 0;
+        let _errorCount = 0;
 
         fileList.forEach((file, idx) => {
           const key = `${file.name}-${idx}`;
-
-          // Match each response to its uploaded file (by filename/index)
           const resultItem =
             results.find((r, rIdx) => r.filename === file.name && rIdx === idx) ||
             results.find((r) => r.filename === file.name) ||
             results[idx];
 
           if (!resultItem) {
-            const statusObj = {
-              status: 'error',
-              text: 'No response received from server',
-            };
+            const statusObj = { status: 'error', text: 'No response received from server' };
             nextStatuses[key] = statusObj;
             nextStatuses[file.name] = statusObj;
-            errorCount++;
+            _errorCount++;
             return;
           }
 
@@ -121,7 +120,6 @@ export default function UploadPage() {
               status: 'queued',
               text: message || 'Queued for background screening & scoring',
               applicationId: resultItem.application_id,
-              candidateId: resultItem.candidate_id,
               candidateName: resultItem.candidate_name,
             };
           } else if (status === 'DUPLICATE') {
@@ -129,27 +127,14 @@ export default function UploadPage() {
             statusObj = {
               status: 'duplicate',
               text: message || 'Duplicate resume detected for this job (skipped)',
-              applicationId: resultItem.application_id,
-              candidateId: resultItem.candidate_id,
               candidateName: resultItem.candidate_name,
             };
           } else if (status === 'REJECTED') {
-            rejectedCount++;
-            statusObj = {
-              status: 'rejected',
-              text: message || 'File rejected by server',
-            };
-          } else if (status === 'ERROR') {
-            errorCount++;
-            statusObj = {
-              status: 'error',
-              text: message || 'Upload failed',
-            };
+            _rejectedCount++;
+            statusObj = { status: 'rejected', text: message || 'File rejected by server' };
           } else {
-            statusObj = {
-              status: status.toLowerCase(),
-              text: message || status,
-            };
+            _errorCount++;
+            statusObj = { status: 'error', text: message || 'Upload failed' };
           }
 
           nextStatuses[key] = statusObj;
@@ -158,25 +143,12 @@ export default function UploadPage() {
 
         setFileStatuses(nextStatuses);
 
-        // Feedback toast supporting partial upload success
         if (acceptedCount === fileList.length) {
-          toast.success(
-            acceptedCount === 1
-              ? 'Resume uploaded successfully and queued for screening'
-              : `All ${acceptedCount} resumes uploaded and queued for screening`
-          );
+          toast.success(`All ${acceptedCount} resumes uploaded and queued for screening`);
         } else if (acceptedCount > 0) {
-          const parts = [`${acceptedCount} queued`];
-          if (duplicateCount > 0) parts.push(`${duplicateCount} duplicate(s)`);
-          if (rejectedCount > 0) parts.push(`${rejectedCount} rejected`);
-          if (errorCount > 0) parts.push(`${errorCount} failed`);
-          toast.info(`Partial upload complete: ${parts.join(', ')}`);
+          toast.info(`Processed batch: ${acceptedCount} queued, ${duplicateCount} duplicate(s)`);
         } else {
-          const reasons = [];
-          if (duplicateCount > 0) reasons.push(`${duplicateCount} duplicate(s)`);
-          if (rejectedCount > 0) reasons.push(`${rejectedCount} rejected`);
-          if (errorCount > 0) reasons.push(`${errorCount} failed`);
-          toast.error(`Upload unsuccessful: ${reasons.join(', ') || 'No resumes processed'}`);
+          toast.error('Upload unsuccessful: check file status messages below');
         }
       },
       onError: (err) => {
@@ -207,6 +179,9 @@ export default function UploadPage() {
         </p>
       </div>
 
+      {/* 3-Step Header with Active Step Indicator */}
+      <UploadStepHeader activeStep={activeStep} />
+
       {/* 1. Job Selector */}
       <div className="space-y-2">
         <label className="text-[13px] font-medium text-ink">Select Target Job Opening</label>
@@ -233,36 +208,11 @@ export default function UploadPage() {
       </div>
 
       {/* 2. Drag and Drop Zone */}
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        className="rounded-[14px] border-2 border-dashed border-line bg-surface hover:bg-surface-alt/40 p-10 text-center transition-colors cursor-pointer space-y-3"
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept=".pdf,.docx"
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files) handleFilesAdded(e.target.files);
-          }}
-        />
-        <div className="w-12 h-12 rounded-[10px] bg-surface-alt border border-line flex items-center justify-center mx-auto text-ink-muted">
-          <UploadCloud className="w-5 h-5" strokeWidth={1.75} />
-        </div>
-        <div className="space-y-1">
-          <div className="text-[15px] font-medium text-ink">
-            Drag and drop candidate files here, or click to browse
-          </div>
-          <p className="text-[13px] text-ink-muted">Supports PDF and DOCX files up to 15MB each.</p>
-        </div>
-      </div>
+      <DropZone onFilesAdded={handleFilesAdded} />
 
-      {/* 3. Staged Files List & Statuses */}
+      {/* 3. Staged Files List with Progress Bars & Status Badges */}
       {fileList.length > 0 && (
-        <Panel className="p-5 sm:p-6 space-y-4">
+        <Panel className="p-5 sm:p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-line">
             <div className="text-[15px] font-semibold text-ink">
               Staged Files ({fileList.length})
@@ -295,72 +245,20 @@ export default function UploadPage() {
               const fileKey = `${file.name}-${idx}`;
               const statusInfo = fileStatuses[fileKey] || fileStatuses[file.name];
               return (
-                <div
+                <UploadFileRow
                   key={fileKey}
-                  className="py-3 flex items-center justify-between gap-4 first:pt-0 last:pb-0"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <FileText className="w-4 h-4 text-ink-muted shrink-0" strokeWidth={1.75} />
-                    <div className="min-w-0">
-                      <div className="text-[14px] font-medium text-ink truncate">{file.name}</div>
-                      <div className="text-[13px] text-ink-subtle tabular-nums">
-                        {(file.size / 1024).toFixed(0)} KB
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-[13px] text-right">
-                      {!statusInfo ? (
-                        <span className="text-ink-muted">Ready to upload</span>
-                      ) : statusInfo.status === 'queued' || statusInfo.status === 'accepted' ? (
-                        <span className="inline-flex items-center gap-1.5 text-primary font-medium">
-                          <Clock className="w-4 h-4 text-primary shrink-0" strokeWidth={1.75} />
-                          <span>{statusInfo.text}</span>
-                        </span>
-                      ) : statusInfo.status === 'duplicate' ? (
-                        <span className="inline-flex items-center gap-1.5 text-ink-muted font-medium">
-                          <AlertCircle className="w-4 h-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
-                          <span>{statusInfo.text}</span>
-                        </span>
-                      ) : statusInfo.status === 'rejected' ? (
-                        <span className="inline-flex items-center gap-1.5 text-danger font-medium">
-                          <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-                          <span>{statusInfo.text}</span>
-                        </span>
-                      ) : statusInfo.status === 'error' ? (
-                        <span className="inline-flex items-center gap-1.5 text-danger font-medium">
-                          <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-                          <span>{statusInfo.text}</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2 text-ink-muted font-medium">
-                          <span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
-                          <span>{statusInfo.text}</span>
-                        </span>
-                      )}
-                    </div>
-
-                    {!processing && !statusInfo && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveFile(idx)}
-                        aria-label={`Remove ${file.name}`}
-                        className="p-1 text-ink-muted hover:text-ink transition-colors rounded cursor-pointer"
-                      >
-                        <X className="w-4 h-4" strokeWidth={1.75} />
-                      </button>
-                    )}
-                  </div>
-                </div>
+                  file={file}
+                  index={idx}
+                  statusInfo={statusInfo}
+                  processing={processing}
+                  onRemove={handleRemoveFile}
+                />
               );
             })}
           </div>
 
-          {/* Action to view results */}
-          {Object.values(fileStatuses).some(
-            (s) => s.status === 'queued' || s.status === 'accepted'
-          ) && (
+          {/* Action to view results once queued */}
+          {activeStep === 3 && (
             <div className="pt-4 border-t border-line flex justify-end">
               <Button
                 variant="primary"

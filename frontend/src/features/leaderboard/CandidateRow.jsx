@@ -1,5 +1,5 @@
 import { Check, ChevronDown } from 'lucide-react';
-import { ScoreBar, ScoreValue } from '../../components/ui';
+import { ScoreBar, ScoreValue, Avatar } from '../../components/ui';
 import { cleanCandidateName } from '../../lib/format';
 import { STAGES, STAGE_CONFIG } from './constants';
 
@@ -14,9 +14,17 @@ export default function CandidateRow({
   openStageMenuId,
   setOpenStageMenuId,
   onQuickStageChange,
+  density = 'comfortable',
 }) {
   const stageKey = candidate.review_stage || 'New';
   const stageConf = STAGE_CONFIG[stageKey] || STAGE_CONFIG.New;
+
+  const matchedSkills = candidate.matched_skills || [];
+  const visibleSkills = matchedSkills.slice(0, 3);
+  const overflowSkills = matchedSkills.slice(3);
+
+  const isCompact = density === 'compact';
+  const cellPadding = isCompact ? 'py-2 px-3' : 'py-3.5 px-4';
 
   return (
     <tr
@@ -27,7 +35,7 @@ export default function CandidateRow({
     >
       {/* Checkbox for compare */}
       <td
-        className="px-3 py-3 text-center"
+        className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-center`}
         onClick={(e) => {
           e.stopPropagation();
           onToggleCompare(candidate.application_id);
@@ -42,7 +50,7 @@ export default function CandidateRow({
       </td>
 
       {/* Rank */}
-      <td className="px-3 py-3 text-center">
+      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-center`}>
         <span
           className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums ${
             idx === 0 ? 'bg-primary text-on-primary' : 'bg-surface-alt text-ink'
@@ -52,52 +60,79 @@ export default function CandidateRow({
         </span>
       </td>
 
-      {/* Candidate Name, Email, Experience & Equiv Skills */}
-      <td className="px-4 py-3 min-w-[170px]">
-        <div className="font-semibold text-ink text-[15px] leading-[1.4]">
-          {cleanCandidateName(candidate.candidate_name)}
-        </div>
-        <div className="text-[13px] leading-[1.5] text-ink-muted truncate">
-          {candidate.candidate_email || '—'}
-        </div>
-        {(candidate.experience_years !== undefined || candidate.education_level) && (
-          <div className="flex items-center gap-1.5 mt-0.5 text-[13px] leading-[1.5] text-ink-muted flex-wrap">
-            {candidate.experience_years !== undefined && (
-              <span className="font-medium text-ink tabular-nums">
-                {candidate.experience_years} yrs
-              </span>
-            )}
-            {candidate.seniority_level && (
-              <>
-                <span className="text-ink-subtle">·</span>
-                <span>{candidate.seniority_level}</span>
-              </>
-            )}
-            {candidate.education_level &&
-              candidate.education_level !== 'Unspecified' && (
-                <>
-                  <span className="text-ink-subtle">·</span>
-                  <span className="truncate max-w-[120px]">
-                    {candidate.education_level}
-                  </span>
-                </>
-              )}
-          </div>
-        )}
-        {candidate.equivalent_skills &&
-          Object.keys(candidate.equivalent_skills).length > 0 && (
-            <div className="mt-1">
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[13px] bg-champagne-soft text-ink font-medium border border-champagne/30">
-                <span className="tabular-nums">
-                  +{Object.keys(candidate.equivalent_skills).length} equiv skill
-                </span>
-              </span>
+      {/* Candidate Avatar, Name, Email, Experience & Capped Skill Chips */}
+      <td className={cellPadding}>
+        <div className="flex items-center gap-3">
+          <Avatar name={cleanCandidateName(candidate.candidate_name)} size="sm" />
+          <div className="min-w-0">
+            <div className="font-semibold text-ink text-[15px] leading-[1.4] truncate">
+              {cleanCandidateName(candidate.candidate_name)}
             </div>
-          )}
+            <div className="text-[13px] leading-[1.5] text-ink-muted truncate">
+              {candidate.candidate_email || '—'}
+            </div>
+
+            {/* Experience & Seniority metadata */}
+            {(candidate.experience_years !== undefined || candidate.education_level) && (
+              <div className="flex items-center gap-1.5 mt-0.5 text-[13px] leading-[1.5] text-ink-muted flex-wrap">
+                {candidate.experience_years !== undefined && (
+                  <span className="font-medium text-ink tabular-nums">
+                    {candidate.experience_years} yrs
+                  </span>
+                )}
+                {candidate.seniority_level && (
+                  <>
+                    <span className="text-ink-subtle">·</span>
+                    <span>{candidate.seniority_level}</span>
+                  </>
+                )}
+                {candidate.education_level &&
+                  candidate.education_level !== 'Unspecified' && (
+                    <>
+                      <span className="text-ink-subtle">·</span>
+                      <span className="truncate max-w-[120px]">
+                        {candidate.education_level}
+                      </span>
+                    </>
+                  )}
+              </div>
+            )}
+
+            {/* Skill chips capped at 3 with +N overflow tooltip */}
+            {matchedSkills.length > 0 && (
+              <div className="flex items-center gap-1 mt-1 flex-wrap">
+                {visibleSkills.map((sk, sIdx) => (
+                  <span
+                    key={sIdx}
+                    className="px-1.5 py-0.5 rounded-[4px] bg-surface text-ink text-[13px] border border-line"
+                  >
+                    {sk}
+                  </span>
+                ))}
+                {overflowSkills.length > 0 && (
+                  <span
+                    className="px-1.5 py-0.5 rounded-[4px] bg-surface-alt text-ink-muted text-[13px] border border-line cursor-help"
+                    title={overflowSkills.join(', ')}
+                  >
+                    +{overflowSkills.length}
+                  </span>
+                )}
+                {candidate.equivalent_skills &&
+                  Object.keys(candidate.equivalent_skills).length > 0 && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[13px] bg-champagne-soft text-ink font-medium border border-champagne/30">
+                      <span className="tabular-nums">
+                        +{Object.keys(candidate.equivalent_skills).length} equiv skill
+                      </span>
+                    </span>
+                  )}
+              </div>
+            )}
+          </div>
+        </div>
       </td>
 
       {/* Interactive Stage Badge Dropdown */}
-      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'}`} onClick={(e) => e.stopPropagation()}>
         <div className="relative inline-block text-left">
           <button
             type="button"
@@ -144,18 +179,18 @@ export default function CandidateRow({
       </td>
 
       {/* Skills Covered % */}
-      <td className="px-3 py-3 text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell">
+      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell`}>
         {breakdown.skillsCoveredPercent.toFixed(1)}%
       </td>
 
       {/* Text Match % */}
-      <td className="px-3 py-3 text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell">
+      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell`}>
         {breakdown.textMatchPercent.toFixed(1)}%
       </td>
 
       {/* Final Score with Slim Bar */}
-      <td className="px-4 py-3 text-right">
-        <div className="space-y-1">
+      <td className={cellPadding}>
+        <div className="space-y-1 text-right">
           <ScoreValue score={breakdown.finalScore} size="sm" />
           <ScoreBar
             skillsPoints={breakdown.skillsCoveredPoints}

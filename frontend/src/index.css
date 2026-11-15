@@ -180,6 +180,13 @@
   background: var(--ink-subtle);
 }
 
+/* Subtle 1.6s Shimmer for Skeletons */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* Subtle Hero Slanted Edge */
 .slant-bottom {
   clip-path: polygon(0 0, 100% 0, 100% 98%, 0 100%);

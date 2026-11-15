@@ -10,18 +10,30 @@ import {
   BarChart3,
   Globe,
   Menu,
+  Search,
 } from 'lucide-react';
 import { ThemeToggle } from './ui/ThemeToggle';
 import { Drawer } from './ui/Drawer';
+import { Kbd } from './ui/Kbd';
 
-const NAV_ITEMS = [
-  { path: '/studio', label: 'Overview', icon: LayoutDashboard, exact: true },
-  { path: '/studio/jobs', label: 'Job Openings', icon: Briefcase },
-  { path: '/studio/upload', label: 'Upload Resumes', icon: UploadCloud },
-  { path: '/studio/leaderboard', label: 'Leaderboard', icon: Award },
-  { path: '/studio/review', label: 'Candidate Review', icon: UserCheck },
-  { path: '/studio/compare', label: 'Compare', icon: GitCompare },
-  { path: '/studio/analytics', label: 'Analytics', icon: BarChart3 },
+const NAV_GROUPS = [
+  {
+    title: 'Workspace',
+    items: [
+      { path: '/studio', label: 'Overview', icon: LayoutDashboard, exact: true },
+      { path: '/studio/jobs', label: 'Jobs', icon: Briefcase },
+      { path: '/studio/upload', label: 'Upload', icon: UploadCloud },
+    ],
+  },
+  {
+    title: 'Insights',
+    items: [
+      { path: '/studio/leaderboard', label: 'Leaderboard', icon: Award },
+      { path: '/studio/review', label: 'Review', icon: UserCheck },
+      { path: '/studio/compare', label: 'Compare', icon: GitCompare },
+      { path: '/studio/analytics', label: 'Analytics', icon: BarChart3 },
+    ],
+  },
 ];
 
 export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActiveTab }) {
@@ -33,6 +45,10 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
       return location.pathname === '/studio' || location.pathname === '/studio/';
     }
     return location.pathname.startsWith(item.path);
+  };
+
+  const handleTriggerCommandPalette = () => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }));
   };
 
   return (
@@ -59,7 +75,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
         </div>
       </div>
 
-      {/* Mobile Sheet Menu */}
+      {/* Mobile Drawer Menu */}
       <Drawer
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
@@ -67,38 +83,64 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
         side="left"
       >
         <div className="flex flex-col justify-between h-full space-y-6">
-          <nav className="space-y-1">
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const active = isItemActive(item);
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-[10px] text-[14px] font-medium transition-colors ${
-                    active
-                      ? 'bg-surface-alt text-ink font-semibold'
-                      : 'text-ink-muted hover:text-ink hover:bg-surface-alt/50'
-                  }`}
-                >
-                  <Icon className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-                  <span>{item.label}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
+          <div className="space-y-6">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.title} className="space-y-1.5">
+                <div className="px-3 text-[13px] font-semibold uppercase tracking-wider text-ink-subtle">
+                  {group.title}
+                </div>
+                <nav className="space-y-1">
+                  {group.items.map((item) => {
+                    const Icon = item.icon;
+                    const active = isItemActive(item);
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileOpen(false)}
+                        className={`group relative flex items-center gap-3 px-3.5 py-2.5 rounded-[8px] text-[14px] font-medium transition-colors ${
+                          active
+                            ? 'bg-surface-alt text-ink font-semibold'
+                            : 'text-ink-muted hover:text-ink hover:bg-surface-alt/50'
+                        }`}
+                      >
+                        {active && (
+                          <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-primary" />
+                        )}
+                        <Icon className="w-4 h-4 shrink-0" strokeWidth={1.75} />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    );
+                  })}
+                </nav>
+              </div>
+            ))}
+          </div>
 
           <div className="pt-6 border-t border-line space-y-3">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                handleTriggerCommandPalette();
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] text-ink-muted transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+                <span>Search</span>
+              </span>
+              <Kbd>Ctrl K</Kbd>
+            </button>
             <NavLink
               to="/"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] text-ink-muted hover:text-ink transition-colors font-medium"
+              className="flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] text-ink-muted hover:text-ink transition-colors font-medium"
             >
               <Globe className="w-4 h-4" strokeWidth={1.75} />
-              <span>Website</span>
+              <span>Public Website</span>
             </NavLink>
-            <div className="pt-2">
+            <div className="pt-1">
               <ThemeToggle showLabel={true} className="w-full justify-start" />
             </div>
           </div>
@@ -106,10 +148,10 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
       </Drawer>
 
       {/* Desktop 232px Sidebar */}
-      <aside className="hidden md:flex flex-col justify-between w-[232px] shrink-0 min-h-screen bg-surface border-r border-line p-4 sticky top-0 h-screen overflow-y-auto">
+      <aside className="hidden md:flex flex-col justify-between w-[232px] shrink-0 min-h-screen bg-surface border-r border-line p-3.5 sticky top-0 h-screen overflow-y-auto">
         <div className="space-y-6">
           {/* Logo / Brand Header */}
-          <div className="px-2 pt-1 pb-2">
+          <div className="px-2 pt-1 pb-1">
             <NavLink to="/studio" className="flex items-center gap-2.5">
               <span className="w-7 h-7 rounded-[8px] bg-primary text-on-primary font-semibold text-[15px] flex items-center justify-center select-none shadow-xs">
                 S
@@ -123,39 +165,67 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
             </NavLink>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="space-y-1">
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const active = isItemActive(item);
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-[10px] text-[14px] transition-colors select-none ${
-                    active
-                      ? 'bg-surface-alt text-ink font-semibold'
-                      : 'text-ink-muted hover:text-ink hover:bg-surface-alt/60'
-                  }`}
-                >
-                  <Icon className="w-4 h-4 shrink-0" strokeWidth={1.75} />
-                  <span>{item.label}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
+          {/* Grouped Navigation Links */}
+          <div className="space-y-5">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.title} className="space-y-1">
+                <div className="px-3 pb-1 text-[13px] font-semibold uppercase tracking-wider text-ink-subtle">
+                  {group.title}
+                </div>
+                <nav className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const Icon = item.icon;
+                    const active = isItemActive(item);
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        className={`group relative flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-[14px] transition-colors select-none ${
+                          active
+                            ? 'bg-surface-alt text-ink font-semibold'
+                            : 'text-ink-muted hover:text-ink hover:bg-surface-alt/60'
+                        }`}
+                      >
+                        {/* 3px Primary Marker for active item */}
+                        {active && (
+                          <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-primary" />
+                        )}
+                        <Icon className="w-4 h-4 shrink-0" strokeWidth={1.75} />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    );
+                  })}
+                </nav>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Footer Navigation & Theme Toggle */}
-        <div className="pt-4 border-t border-line space-y-1">
+        {/* Footer: Search <Kbd>, Public Site & Theme Toggle */}
+        <div className="pt-3 border-t border-line space-y-2">
+          {/* Command search trigger with Ctrl K */}
+          <button
+            type="button"
+            onClick={handleTriggerCommandPalette}
+            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] text-ink-muted hover:text-ink transition-colors cursor-pointer select-none"
+            title="Open command palette (Ctrl+K)"
+          >
+            <span className="flex items-center gap-2">
+              <Search className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+              <span>Search</span>
+            </span>
+            <Kbd>Ctrl K</Kbd>
+          </button>
+
           <NavLink
             to="/"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-[13px] text-ink-muted hover:text-ink hover:bg-surface-alt/60 transition-colors font-medium"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-[8px] text-[13px] text-ink-muted hover:text-ink hover:bg-surface-alt/60 transition-colors font-medium"
           >
             <Globe className="w-4 h-4" strokeWidth={1.75} />
-            <span>Public Site</span>
+            <span>Public Website</span>
           </NavLink>
-          <div className="pt-1">
+
+          <div className="pt-1 px-1">
             <ThemeToggle showLabel={true} className="w-full justify-start" />
           </div>
         </div>
