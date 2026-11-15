@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Briefcase,
   Users,
-  CheckCircle2,
+  Check,
   TrendingUp,
   Award,
   ArrowRight,
@@ -10,19 +10,31 @@ import {
   FileText,
   Sparkles,
   ArrowUpRight,
+  CheckCircle2,
 } from 'lucide-react';
-import { fetchOverviewAnalytics, fetchJobs } from '../api';
+import { fetchOverviewAnalytics, fetchJobs, fetchJobRankings } from '../api';
 
 export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
   const [analytics, setAnalytics] = useState(null);
   const [jobs, setJobs] = useState([]);
+  const [topCandidates, setTopCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([fetchOverviewAnalytics(), fetchJobs()])
-      .then(([analyticsData, jobsData]) => {
+      .then(async ([analyticsData, jobsData]) => {
         setAnalytics(analyticsData);
         setJobs(jobsData);
+        if (jobsData.length > 0) {
+          try {
+            const rankings = await fetchJobRankings(jobsData[0].job_id);
+            if (rankings?.rankings) {
+              setTopCandidates(rankings.rankings.slice(0, 2));
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -31,110 +43,190 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-[#7B1E3A] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
+  // All stat cards identical: gold icon + number + label
   const kpis = [
     {
       label: 'Active Positions',
       value: analytics?.total_jobs || 0,
       subtext: 'Open requirements',
-      cardStyle: 'bg-white border-[#E2E8F0] text-[#0F172A]',
-      subtextStyle: 'text-[#64748B]',
+      icon: Briefcase,
     },
     {
       label: 'Screened Candidates',
       value: analytics?.total_candidates || 0,
-      subtext: 'Parsed & indexed',
-      cardStyle: 'bg-[#ECFDF5] border-[#A7F3D0] text-[#065F46]',
-      subtextStyle: 'text-[#065F46]/80',
+      subtext: 'Parsed & indexed profiles',
+      icon: Users,
     },
     {
       label: 'Processed Resumes',
       value: analytics?.processed_resumes || 0,
       subtext: 'Completed screenings',
-      cardStyle: 'bg-white border-[#E2E8F0] text-[#0F172A]',
-      subtextStyle: 'text-[#64748B]',
+      icon: FileText,
     },
     {
       label: 'Average Score',
       value: `${analytics?.average_score || 0}%`,
-      subtext: 'Hybrid benchmark',
-      cardStyle: 'bg-[#FFFBEB] border-[#FDE68A] text-[#92400E]',
-      subtextStyle: 'text-[#92400E]/80',
+      subtext: 'System-wide mean benchmark',
+      icon: TrendingUp,
     },
   ];
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       
-      {/* Hero Studio Banner */}
-      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-8 sm:p-10 shadow-xs relative overflow-hidden">
-        <div className="max-w-2xl space-y-4 relative">
-          <div className="inline-flex items-center space-x-2 text-xs font-mono font-medium text-[#475569] uppercase tracking-wider bg-[#F1F5F9] px-3.5 py-1 rounded-full border border-[#E2E8F0]">
-            <span className="w-2 h-2 rounded-full bg-[#059669]"></span>
-            <span>Empirical Candidate Evaluation</span>
+      {/* Hero Studio Banner with Mini Leaderboard Preview on Right Side */}
+      <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 sm:p-8 lg:p-10 shadow-[0_1px_2px_rgba(42,16,21,0.05)] relative overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Left Hero Column */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="inline-flex items-center space-x-2 text-xs font-mono uppercase tracking-[0.12em] text-[#B8893B] bg-[#F7EDD8] px-3.5 py-1 rounded-full border border-[#B8893B]/30 font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B8893B]"></span>
+              <span>Empirical Candidate Evaluation</span>
+            </div>
+            
+            <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#2A1015] leading-tight">
+              Objective resume screening, explained by design.
+            </h1>
+            
+            <p className="text-sm text-[#6B5A55] leading-relaxed font-sans max-w-xl">
+              SmartATS eliminates arbitrary AI hallucinations through a verifiable screening model: deterministic required skill verification combined with contextual experience analysis.
+            </p>
+            
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                onClick={() => setActiveTab('upload')}
+                className="inline-flex items-center space-x-2 px-5 py-2.5 bg-[#7B1E3A] hover:bg-[#5E1229] active:scale-[0.98] text-white rounded-full text-xs font-semibold tracking-wide transition-all shadow-xs"
+              >
+                <UploadCloud className="w-4 h-4 text-white" />
+                <span>Ingest Resumes</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('jobs')}
+                className="inline-flex items-center space-x-2 px-5 py-2.5 bg-transparent hover:bg-[#F8ECEF] active:scale-[0.98] text-[#7B1E3A] border border-[#7B1E3A] rounded-full text-xs font-semibold tracking-wide transition shadow-xs"
+              >
+                <span>Manage Job Openings</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#79736B]" />
+              </button>
+            </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#0F172A] leading-tight">
-            Objective resume screening, explained by design.
-          </h1>
-          <p className="text-sm text-[#475569] leading-relaxed font-sans max-w-xl">
-            SmartATS eliminates arbitrary AI hallucinations through a verifiable screening model: deterministic required skill verification combined with contextual experience analysis.
-          </p>
-          <div className="flex flex-wrap items-center gap-3 pt-3">
-            <button
-              onClick={() => setActiveTab('upload')}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-[#059669] hover:bg-[#047857] active:scale-[0.98] text-white rounded-full text-xs font-semibold tracking-wide transition-all shadow-xs"
-            >
-              <UploadCloud className="w-4 h-4" />
-              <span>Ingest Resumes</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('jobs')}
-              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-white hover:bg-[#F8FAFC] active:scale-[0.98] text-[#0F172A] border border-[#E2E8F0] rounded-full text-xs font-semibold tracking-wide transition shadow-xs"
-            >
-              <span>Manage Job Openings</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#64748B]" />
-            </button>
+
+          {/* Right Hero Column: Mini Leaderboard Preview Card */}
+          <div className="lg:col-span-5">
+            <div className="bg-[#FBF7F2] border border-[#E8DDD0] rounded-2xl p-5 shadow-xs space-y-3 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-[#B8893B]">
+              <div className="flex items-center justify-between border-b border-[#E8DDD0] pb-2.5">
+                <div className="flex items-center space-x-2">
+                  <Award className="w-4 h-4 text-[#B8893B]" />
+                  <span className="font-serif text-xs font-bold text-[#2A1015]">Top Candidate Shortlist</span>
+                </div>
+                <span className="text-[10px] font-mono text-[#8A6420] uppercase font-semibold bg-[#F7EDD8] px-2 py-0.5 rounded-full border border-[#B8893B]/20">
+                  Live Preview
+                </span>
+              </div>
+
+              {topCandidates.length > 0 ? (
+                <div className="space-y-2.5">
+                  {topCandidates.map((cand, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white border border-[#E8DDD0] rounded-xl p-3 flex items-center justify-between space-x-3 shadow-xs hover:border-[#B8893B] transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-serif font-bold text-xs text-[#2A1015] truncate">
+                            {cand.candidate_name}
+                          </span>
+                          {cand.rank === 1 && (
+                            <span className="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded-full bg-[#F7EDD8] text-[#8A6420] border border-[#B8893B]/30">
+                              TOP
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-1 mt-1 text-[10px] text-[#6B5A55] font-mono truncate">
+                          <span>{cand.matched_skills.slice(0, 3).join(', ')}</span>
+                          {cand.matched_skills.length > 3 && <span>+{cand.matched_skills.length - 3}</span>}
+                        </div>
+                      </div>
+
+                      <div className="text-right flex-shrink-0">
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-mono font-bold ${
+                          cand.final_score >= 80
+                            ? 'bg-[#7B1E3A] text-white'
+                            : cand.final_score >= 60
+                            ? 'bg-[#F7EDD8] text-[#8A6420] border border-[#B8893B]/30'
+                            : 'bg-[#EFE7E1] text-[#6B5A55]'
+                        }`}>
+                          {cand.final_score.toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => setActiveTab('rankings')}
+                    className="w-full text-center text-xs font-semibold text-[#7B1E3A] hover:underline pt-1 block"
+                  >
+                    Open Full Leaderboard &rarr;
+                  </button>
+                </div>
+              ) : (
+                <div className="py-6 text-center text-xs text-[#6B5A55] font-mono">
+                  Select a job opening or upload resumes to populate leaderboard.
+                </div>
+              )}
+            </div>
           </div>
+
         </div>
       </div>
 
-      {/* KPI Stats Grid */}
+      {/* KPI Stats Grid: ALL IDENTICAL (Gold icon in gold-soft container + number + label) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {kpis.map((kpi, idx) => (
-          <div
-            key={idx}
-            className={`border rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between hover:-translate-y-0.5 transition-all duration-300 ${kpi.cardStyle}`}
-          >
-            <span className="text-xs uppercase tracking-wider font-mono opacity-80 font-semibold">
-              {kpi.label}
-            </span>
-            <div className="my-3">
-              <div className="text-3xl sm:text-4xl font-bold tracking-tight">
-                {kpi.value}
+        {kpis.map((kpi, idx) => {
+          const Icon = kpi.icon;
+          return (
+            <div
+              key={idx}
+              className="bg-white border border-[#E8DDD0] rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(42,16,21,0.05)] hover:shadow-[0_8px_24px_rgba(123,30,58,0.12)] hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] uppercase tracking-[0.12em] font-mono text-[#6B5A55] font-semibold">
+                  {kpi.label}
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-[#F7EDD8] border border-[#B8893B]/30 flex items-center justify-center text-[#8A6420]">
+                  <Icon className="w-4 h-4 text-[#B8893B]" />
+                </div>
+              </div>
+              
+              <div className="my-1">
+                <div className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#2A1015]">
+                  {kpi.value}
+                </div>
+              </div>
+
+              <div className="text-xs text-[#6B5A55] border-t border-[#E8DDD0]/50 pt-2 mt-2">
+                {kpi.subtext}
               </div>
             </div>
-            <div className={`text-xs border-t border-black/5 pt-2 ${kpi.subtextStyle}`}>
-              {kpi.subtext}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Two-Column Section */}
+      {/* Two-Column Section: Score Tiers Chart & Active Job Openings */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Score Distribution Breakdown */}
-        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-7 shadow-xs space-y-6 lg:col-span-1">
-          <div className="border-b border-[#E2E8F0] pb-4">
-            <div className="text-xs uppercase font-mono tracking-wider text-[#64748B] font-semibold">
+        {/* Score Tiers Visual Chart */}
+        <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(42,16,21,0.05)] space-y-6 lg:col-span-1">
+          <div className="border-b border-[#E8DDD0] pb-4">
+            <span className="eyebrow-label block">
               Screening Distribution
-            </div>
-            <h2 className="text-xl font-bold text-[#0F172A] mt-1">
-              Score Tiers
+            </span>
+            <h2 className="font-serif text-xl font-bold text-[#2A1015] mt-1">
+              Score Tiers Breakdown
             </h2>
           </div>
 
@@ -144,17 +236,26 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
                 const total = analytics.processed_resumes || 1;
                 const percentage = Math.round((count / total) * 100);
 
+                // Tier colors: 80-100% wine (#7B1E3A), 60-79% gold (#B8893B), <60% warm-gray (#6B5A55)
+                const isHigh = range.includes('80') || range.includes('90');
+                const isMid = range.includes('60') || range.includes('70');
+
+                const barColor = isHigh ? 'bg-[#7B1E3A]' : isMid ? 'bg-[#B8893B]' : 'bg-[#6B5A55]';
+                const tagBg = isHigh ? 'bg-[#F8ECEF] text-[#7B1E3A]' : isMid ? 'bg-[#F7EDD8] text-[#8A6420]' : 'bg-[#EFE7E1] text-[#6B5A55]';
+
                 return (
                   <div key={range} className="space-y-1.5">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-mono font-medium text-[#0F172A]">{range}</span>
-                      <span className="font-mono text-[#64748B]">
+                    <div className="flex justify-between text-xs items-center">
+                      <span className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold ${tagBg}`}>
+                        {range}
+                      </span>
+                      <span className="font-mono text-[#6B5A55]">
                         {count} candidates ({percentage}%)
                       </span>
                     </div>
-                    <div className="w-full bg-[#F1F5F9] rounded-full h-2 overflow-hidden border border-[#E2E8F0]">
+                    <div className="w-full bg-[#F5EEE6] rounded-full h-2.5 overflow-hidden border border-[#E8DDD0]">
                       <div
-                        className="h-full bg-[#059669] rounded-full transition-all duration-500"
+                        className={`h-full ${barColor} rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
@@ -163,35 +264,45 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
               })}
           </div>
 
-          <div className="pt-2 text-xs text-[#475569] bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] leading-relaxed">
-            <div className="font-mono text-[11px] uppercase text-[#059669] font-semibold mb-1">
-              Scoring Standard
+          {/* Tier Legend */}
+          <div className="pt-2 text-xs text-[#6B5A55] bg-[#FBF7F2] p-4 rounded-xl border border-[#E8DDD0] space-y-2">
+            <span className="eyebrow-label block text-[10px]">Tier Standards</span>
+            <div className="flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#7B1E3A]"></span>
+              <span><strong>80–100%:</strong> Recommended Shortlist</span>
             </div>
-            Scores reflect weighted evaluation: verified mandatory keyword matches and contextual cosine alignment against the job description.
+            <div className="flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#B8893B]"></span>
+              <span><strong>60–79%:</strong> Technical Validation Required</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#6B5A55]"></span>
+              <span><strong>&lt;60%:</strong> Significant Gap Identified</span>
+            </div>
           </div>
         </div>
 
         {/* Active Openings List */}
-        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-7 shadow-xs space-y-6 lg:col-span-2">
-          <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
+        <div className="bg-white border border-[#E8DDD0] rounded-2xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(42,16,21,0.05)] space-y-6 lg:col-span-2">
+          <div className="flex items-center justify-between border-b border-[#E8DDD0] pb-4">
             <div>
-              <div className="text-xs uppercase font-mono tracking-wider text-[#64748B] font-semibold">
+              <span className="eyebrow-label block">
                 Live Postings
-              </div>
-              <h2 className="text-xl font-bold text-[#0F172A] mt-1">
+              </span>
+              <h2 className="font-serif text-xl font-bold text-[#2A1015] mt-1">
                 Active Job Openings
               </h2>
             </div>
             <button
               onClick={() => setActiveTab('jobs')}
-              className="text-xs font-semibold text-[#0F172A] hover:text-[#059669] inline-flex items-center space-x-1 transition"
+              className="text-xs font-semibold text-[#7B1E3A] hover:underline inline-flex items-center space-x-1 transition"
             >
               <span>View Directory</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="divide-y divide-[#E2E8F0]">
+          <div className="divide-y divide-[#E8DDD0]">
             {jobs.slice(0, 4).map((job) => (
               <div
                 key={job.job_id}
@@ -199,10 +310,10 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
               >
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2.5">
-                    <h3 className="text-base font-bold text-[#0F172A] group-hover:text-[#059669] transition">
+                    <h3 className="font-serif text-base font-bold text-[#2A1015] group-hover:text-[#7B1E3A] transition">
                       {job.title}
                     </h3>
-                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-full border border-[#E2E8F0] bg-[#F1F5F9] text-[#64748B]">
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-full border border-[#E8DDD0] bg-[#F5EEE6] text-[#6B5A55]">
                       {job.applications_count || 0} applicants
                     </span>
                   </div>
@@ -211,13 +322,13 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
                     {job.required_skills.slice(0, 5).map((skill, i) => (
                       <span
                         key={i}
-                        className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]"
+                        className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F7EDD8] text-[#8A6420] border border-[#B8893B]/30"
                       >
                         {skill}
                       </span>
                     ))}
                     {job.required_skills.length > 5 && (
-                      <span className="px-1.5 py-0.5 text-xs text-[#64748B] font-mono">
+                      <span className="px-1.5 py-0.5 text-xs text-[#6B5A55] font-mono">
                         +{job.required_skills.length - 5}
                       </span>
                     )}
@@ -227,13 +338,13 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
                 <div className="flex items-center space-x-2 self-start sm:self-center">
                   <button
                     onClick={() => onSelectJobForRankings(job.job_id)}
-                    className="px-3.5 py-1.5 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-full text-xs font-semibold transition active:scale-[0.98] shadow-xs"
+                    className="px-4 py-2 bg-transparent hover:bg-[#F8ECEF] text-[#7B1E3A] border border-[#7B1E3A] rounded-full text-xs font-semibold transition active:scale-[0.98] shadow-xs"
                   >
                     Leaderboard
                   </button>
                   <button
                     onClick={() => setActiveTab('upload')}
-                    className="px-3.5 py-1.5 bg-white hover:bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0] rounded-full text-xs font-medium transition active:scale-[0.98] shadow-xs"
+                    className="px-3.5 py-2 bg-white hover:bg-[#F5EEE6] text-[#2A1015] border border-[#E8DDD0] rounded-full text-xs font-medium transition active:scale-[0.98] shadow-xs"
                   >
                     Upload
                   </button>

@@ -5,11 +5,12 @@
 [![React 19](https://img.shields.io/badge/React-19.3-61dafb.svg?logo=react)](https://react.dev)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4.0-38bdf8.svg?logo=tailwindcss)](https://tailwindcss.com)
 [![Tests Passing](https://img.shields.io/badge/tests-17%2F17%20passing-brightgreen.svg)]()
+[![Design System](https://img.shields.io/badge/Design_System-Luxury_Editorial_B2B-7B1E3A.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Explainable Recruiter Decision Support Platform**  
 > Combines deterministic keyword extraction, TF-IDF lexical cosine similarity, and skill gap diagnostics to generate transparent, auditable candidate rankings.
-> Engineered with a research-journal visual aesthetic on warm ivory stone (`#FAF8F5`), high-contrast typography, and a conversion-grade landing page.
+> Engineered with a luxury editorial B2B design system on warm cream (`#FBF7F2`), deep wine (`#7B1E3A`), accent gold (`#B8893B`), and high-contrast serif typography.
 
 Repository: **[https://github.com/joshimukesh-15/SmartATS](https://github.com/joshimukesh-15/SmartATS)**
 
@@ -17,18 +18,18 @@ Repository: **[https://github.com/joshimukesh-15/SmartATS](https://github.com/jo
 
 ## 1. Project Overview
 
-SmartATS is a resume screening and candidate-ranking platform designed to help recruiters identify suitable candidates for job openings. Rather than operating as a black-box AI tool, SmartATS provides objective, evidence-based recommendations and detailed score breakdowns.
+SmartATS is an enterprise resume-screening and candidate-ranking platform engineered specifically for talent partners, recruiters, and engineering hiring committees. Rather than operating as an unpredictable generative black box, SmartATS provides objective, evidence-based recommendations, deterministic keyword verification, and fully auditable mathematical scoring.
 
 ### Key Capabilities
 - **Multi-Format Ingestion**: Supports `.pdf` and `.docx` resumes using PyMuPDF and python-docx, with automated OCR fallback via Tesseract for scanned documents.
-- **Duplicate Resume Detection**: Computes SHA-256 cryptographic hashes on uploaded documents to catch exact duplicate submissions, and normalizes email addresses to deduplicate candidates across positions.
-- **Hybrid Matching Engine**:
-  $$\text{Final Score} = (0.60 \times \text{Keyword Score}) + (0.40 \times \text{TF-IDF Cosine Similarity})$$
-- **Skill Gap Diagnostics**: Segregates mandatory requirements, missing critical skills, and optional preferred skills.
-- **Explainable Ranking**: Delivers mathematical formulas and narrative justifications for every recommendation.
-- **Side-by-Side Candidate Comparison**: Compare 2 to 5 candidates on a unified technical skill matrix.
-- **Modern Recruiter Dashboard**: High-performance React 19 + Tailwind CSS frontend built following modern web standards.
-- **Benchmarking & Export**: Full evaluation script (`scripts/evaluate.py`) measuring Precision@K, Recall@K, and NDCG@K, plus instant CSV exports.
+- **SHA-256 Binary Deduplication**: Computes cryptographic hashes on raw file payloads before GPU/CPU computation, eliminating duplicate submissions across agencies.
+- **Dual-Track Hybrid Matching Engine**:
+  $$\text{Final Score} = (0.60 \times \text{Keyword Coverage}) + (0.40 \times \text{Vector TF-IDF Cosine Similarity})$$
+- **Explainable Skill Gap Diagnostics**: Segregates mandatory requirements, missing critical skills, and optional preferred skills with exact text verification.
+- **Side-by-Side Differential Matrix**: Compare 2 to 5 candidates simultaneously with leading candidate highlighting and shared competency analysis.
+- **Luxury Editorial B2B Design System**: High-craft aesthetic featuring cream canvas, deep wine, accent gold, and zero generic AI slop.
+- **Award-Style Landing Page**: 10 distinct asymmetric sections, 3D perspective hero with drifting parallax chips, infinite marquee, 4-column bento grid, sticky-scroll workflow, diagonal stats band, browser mockup with clip-path inset reveal, and Lenis-style smooth virtual scrolling.
+- **Evaluation & Benchmarking**: Comprehensive suite measuring Precision@K, Recall@K, and NDCG@K, plus instant CSV exports.
 
 ---
 
@@ -37,8 +38,10 @@ SmartATS is a resume screening and candidate-ranking platform designed to help r
 | Layer | Technology | Purpose |
 |---|---|---|
 | **Backend API** | FastAPI (Python 3.11+) | Asynchronous REST API, Background Tasks |
-| **Frontend** | React 19.3, Vite 8, Tailwind CSS | Enterprise Recruiter Dashboard |
+| **Frontend Framework** | React 19.3, Vite 8 | High-density Recruiter Studio & Landing Page |
+| **Styling & Tokens** | Tailwind CSS v4, Custom CSS Variables | Strict Luxury Editorial Token Architecture |
 | **Icons & UI** | Lucide React | Accessible iconography |
+| **Smooth Scrolling** | Custom RAF Lerp Engine | Lenis-style virtual smooth scrolling |
 | **Database & ORM** | PostgreSQL & SQLite, SQLAlchemy 2.0 | Persistent relational storage & cascade models |
 | **Schema Migrations**| Alembic | Automated schema evolution |
 | **PDF Extraction** | PyMuPDF (`fitz`) | High-speed structured PDF text extraction |
@@ -51,7 +54,43 @@ SmartATS is a resume screening and candidate-ranking platform designed to help r
 
 ---
 
-## 3. System Architecture & Scoring Methodology
+## 3. Visual Design System & Color Tokens
+
+SmartATS adheres to a strict luxury B2B design language inspired by premium editorial publications and high-density financial data tools. Generic primary colors (blue, green, purple, bright red) are completely prohibited.
+
+```
+Canvas & Base:
+  ├── Root Canvas (bg):        #FBF7F2 (Warm Cream)
+  ├── Cards & Surfaces:        #FFFFFF (Pure White)
+  ├── Surface-Alt:             #F5EEE6 (Subtle Warm Tint)
+  └── Hairline Borders:        #E8DDD0 (Warm Architectural Taupe)
+
+Typography Ink:
+  ├── Primary Ink:             #2A1015 (Deep Wine-Black)
+  ├── Secondary / Muted:       #6B5A55 (Warm Taupe-Gray, WCAG AA Compliant)
+  └── Headings:                Playfair Display / Fraunces (Editorial Serif)
+  └── UI & Body:               Inter
+  └── Numbers & Chips:         JetBrains Mono
+
+Brand Accents (Max 10% Ratio):
+  ├── Primary Wine:            #7B1E3A (Hover: #5E1229 | Soft: #F8ECEF)
+  └── Accent Gold:             #B8893B (Hover: #9A7230 | Soft: #F7EDD8 | Text: #8A6420)
+
+Score Badges & Progress Tiers:
+  ├── High Tier (≥ 80%):       #7B1E3A bg, White text, Wine bar
+  ├── Mid Tier (60%–79%):      #F7EDD8 bg, #8A6420 text, Gold bar
+  └── Low Tier (< 60%):        #EFE7E1 bg, #6B5A55 text, Warm-gray bar
+```
+
+### Motion & Interaction Rules
+- **Smooth Virtual Scroll**: Hardware-accelerated `requestAnimationFrame` linear interpolation (ease: `0.085`).
+- **Magnetic Buttons**: Follows cursor within a 8px radius with spring-back physics and sliding arrow icon.
+- **Viewport Reveals**: 24px vertical translation with 80ms stagger delay via `IntersectionObserver`.
+- **Reduced Motion Support**: Automatically detects and respects `prefers-reduced-motion: reduce`.
+
+---
+
+## 4. System Architecture & Scoring Methodology
 
 ```
 Candidate Resume (.pdf / .docx)
@@ -98,13 +137,13 @@ Candidate Resume (.pdf / .docx)
                         ▼
        ┌─────────────────────────────────┐
        │ SQLite / PostgreSQL Storage     │
-       │ React 19 Recruiter Dashboard    │
+       │ High-Density Recruiter Studio   │
        └─────────────────────────────────┘
 ```
 
 ---
 
-## 4. Benchmark & Evaluation Results
+## 5. Benchmark & Evaluation Results
 
 Benchmarking was performed using `scripts/evaluate.py` across labeled candidate datasets:
 
@@ -122,7 +161,7 @@ Full benchmark data is saved in [`reports/evaluation_report.csv`](reports/evalua
 
 ---
 
-## 5. Directory Structure
+## 6. Directory Structure
 
 ```
 smart-ats/
@@ -164,20 +203,37 @@ smart-ats/
 │
 ├── frontend/                       # Modern React 19 Frontend (Vite + Tailwind CSS)
 │   ├── src/
+│   │   ├── utils/
+│   │   │   └── smoothScroll.js     # Lenis-style smooth virtual scroll engine (RAF lerp)
 │   │   ├── components/
-│   │   │   ├── Navbar.jsx          # Top navigation & view switcher
-│   │   │   ├── LandingPageView.jsx # Claude editorial conversion landing page with live simulator
-│   │   │   ├── OverviewView.jsx    # Recruiter KPI dashboard & recent jobs
-│   │   │   ├── JobsView.jsx        # Job management & tag editor
-│   │   │   ├── UploadView.jsx      # Drag-and-drop resume upload & duplicate alerts
-│   │   │   ├── RankingsView.jsx    # Candidate leaderboard with score breakdowns
-│   │   │   ├── CompareView.jsx     # Side-by-side technical skill matrix
-│   │   │   ├── AnalyticsView.jsx   # Skill gap frequency & score distributions
+│   │   │   ├── Navbar.jsx          # Top luxury navigation & view switcher
+│   │   │   ├── LandingPageView.jsx # Master landing page orchestrator
+│   │   │   ├── OverviewView.jsx    # Recruiter KPI dashboard with Score Tiers chart
+│   │   │   ├── JobsView.jsx        # Job opening bento cards & tag editor
+│   │   │   ├── UploadView.jsx      # Gold dashed dropzone & duplicate alerts
+│   │   │   ├── RankingsView.jsx    # Candidate leaderboard with tier score badges
+│   │   │   ├── CompareView.jsx     # Side-by-side technical skill matrix with winner highlight
+│   │   │   ├── AnalyticsView.jsx   # Skill gap frequency diagnostics & identical stat cards
 │   │   │   ├── CandidateModal.jsx  # Native <dialog> explainability breakdown
-│   │   │   └── CreateJobModal.jsx  # Native <dialog> job creation form
+│   │   │   ├── CreateJobModal.jsx  # Native <dialog> job creation modal
+│   │   │   └── landing/            # Modular Award-Style Landing Page Sections
+│   │   │       ├── FloatingNav.jsx     # Pill-shaped nav with 40px scroll shrink & mobile drawer
+│   │   │       ├── HeroSection.jsx     # 2-col split + 3D tilted card + 3 parallax floating chips
+│   │   │       ├── SkillsMarquee.jsx   # Infinite marquee with dual-edge mask gradient
+│   │   │       ├── BentoBenefits.jsx   # 4-col bento grid + 2x2 cut-corner card with spotlight
+│   │   │       ├── WorkflowSticky.jsx  # Sticky left col + scroll progress line + 3 step panels
+│   │   │       ├── StatsBand.jsx       # Full-width diagonal band + count-up + thin gold dividers
+│   │   │       ├── ProductShowcase.jsx # Browser mockup with clip-path inset reveal on scroll
+│   │   │       ├── FAQSection.jsx      # Sticky pitch left + smooth height accordion right
+│   │   │       ├── CTASection.jsx      # Arched top ellipse + subtle grain + gold button
+│   │   │       ├── FooterSection.jsx   # Minimal links + 18vw cropped serif wordmark
+│   │   │       ├── Reveal.jsx          # Shared Viewport Entry & 80ms Stagger Wrapper
+│   │   │       └── MagneticButton.jsx  # Magnetic cursor tracking (max 8px) + sliding arrow
 │   │   ├── api.js                  # Frontend API client
 │   │   ├── App.jsx                 # Master application controller
-│   │   └── index.css               # Tailwind & Modern Web scroll containment
+│   │   ├── index.css               # Tailwind v4, CSS variables & clip-path utilities
+│   │   └── index.html              # Google Fonts (Playfair Display, Fraunces, Inter, Mono)
+│   ├── tailwind.config.js          # Extended theme tokens for luxury palette
 │   ├── package.json
 │   └── vite.config.js
 │
@@ -201,11 +257,11 @@ smart-ats/
 
 ---
 
-## 6. Getting Started
+## 7. Getting Started
 
 ### Prerequisites
 - Python 3.11+
-- Node.js 18+ (verified on Node v26)
+- Node.js 18+ (verified on Node v20/v22/v26)
 
 ### Option A: Local Development Setup
 
@@ -222,11 +278,11 @@ smart-ats/
    python scripts/seed_demo_data.py
    ```
 
-3. **Start the FastAPI Backend:**
+3. **Start the FastAPI Backend Server:**
    ```bash
    uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
    ```
-   API Docs available at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+   Interactive OpenAPI Documentation available at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 4. **Start the React Frontend Dev Server:**
    ```bash
@@ -238,9 +294,9 @@ smart-ats/
 
 ---
 
-### Option B: Docker Container Deployment
+### Option B: Docker Multi-Container Deployment
 
-Run the complete multi-container stack with PostgreSQL:
+Run the complete production containerized stack with PostgreSQL:
 ```bash
 docker-compose up --build -d
 ```
@@ -248,7 +304,7 @@ Access the application directly at [http://localhost:8000](http://localhost:8000
 
 ---
 
-## 7. Testing & Verification
+## 8. Testing & Verification
 
 Run the automated test suite covering parsing, extraction, duplicate detection, hybrid matching, and API endpoints:
 ```bash
@@ -260,8 +316,13 @@ Run the benchmark evaluation script:
 python scripts/evaluate.py
 ```
 
+Build the production frontend bundle:
+```bash
+npm --prefix frontend run build
+```
+
 ---
 
-## 8. License
+## 9. License
 
 MIT License. Designed and engineered for transparent recruiter decision support.
