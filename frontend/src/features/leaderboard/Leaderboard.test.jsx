@@ -22,27 +22,59 @@ vi.mock('../../hooks', () => ({
           application_id: 'app-1',
           candidate_name: 'Sarah Jenkins',
           candidate_email: 'sarah@example.com',
+          review_stage: 'Interview',
           rank: 1,
           final_score: 95.0,
           keyword_score: 100.0,
           tfidf_score: 87.5,
           matched_skills: ['Python', 'FastAPI'],
           missing_skills: [],
+          notes: [
+            {
+              note_id: 1,
+              application_id: 'app-1',
+              content: 'Excellent candidate during system screen',
+              author: 'Recruiter',
+              created_at: '2026-11-15T10:00:00Z',
+            },
+          ],
+          status_history: [
+            {
+              history_id: 1,
+              application_id: 'app-1',
+              from_stage: 'Reviewing',
+              to_stage: 'Interview',
+              note: 'Passed initial screening',
+              changed_by: 'Recruiter',
+              created_at: '2026-11-15T09:30:00Z',
+            },
+          ],
         },
         {
           application_id: 'app-2',
           candidate_name: 'Alex Rivera',
           candidate_email: 'alex@example.com',
+          review_stage: 'New',
           rank: 2,
           final_score: 85.0,
           keyword_score: 80.0,
           tfidf_score: 82.5,
           matched_skills: ['Python'],
           missing_skills: ['FastAPI'],
+          notes: [],
+          status_history: [],
         },
       ],
     },
     isLoading: false,
+  }),
+  useUpdateApplicationStage: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useAddApplicationNote: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({}),
+    isPending: false,
   }),
 }));
 
@@ -64,6 +96,36 @@ describe('Leaderboard Page', () => {
     // Verify right panel updates (detail panel shows Alex's email)
     const emails = screen.getAllByText('alex@example.com');
     expect(emails.length).toBeGreaterThan(0);
+  });
+
+  it('displays candidate review stages and notes in detail panel', () => {
+    render(
+      <MemoryRouter>
+        <LeaderboardPage />
+      </MemoryRouter>
+    );
+
+    // Sarah is selected by default; verify stage badge and note
+    expect(screen.getAllByText('Interview').length).toBeGreaterThan(0);
+    expect(
+      screen.getByText('Excellent candidate during system screen')
+    ).toBeInTheDocument();
+  });
+
+  it('filters candidates by stage when clicking stage pill', () => {
+    render(
+      <MemoryRouter>
+        <LeaderboardPage />
+      </MemoryRouter>
+    );
+
+    // Click 'New' stage filter
+    const newStageBtn = screen.getByRole('button', { name: /New/i });
+    fireEvent.click(newStageBtn);
+
+    // Only Alex should be present (Alex has 'New', Sarah has 'Interview')
+    expect(screen.getAllByText('Alex Rivera').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Sarah Jenkins')).not.toBeInTheDocument();
   });
 
   it('supports keyboard navigation via ArrowDown and ArrowUp', () => {

@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text, inspect
 from app.core.config import settings
 from app.database.database import engine, Base
 from app.database import models  # ensure models are registered
@@ -22,6 +23,20 @@ async def lifespan(app: FastAPI):
     # Initialize database tables on startup
     logger.info("Initializing database schemas...")
     Base.metadata.create_all(bind=engine)
+
+    # Safe schema migration check for applications review_stage
+    try:
+        with engine.connect() as conn:
+            inspector = inspect(engine)
+            if "applications" in inspector.get_table_names():
+                columns = [col["name"] for col in inspector.get_columns("applications")]
+                if "review_stage" not in columns:
+                    logger.info("Adding missing column review_stage to applications table...")
+                    conn.execute(text("ALTER TABLE applications ADD COLUMN review_stage VARCHAR(50) DEFAULT 'New' NOT NULL"))
+                    conn.commit()
+    except Exception as e:
+        logger.warning("Schema migration notice: %s", e)
+
     logger.info("Database initialized successfully.")
     yield
     logger.info("Application shutting down.")

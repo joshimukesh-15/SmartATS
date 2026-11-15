@@ -62,6 +62,7 @@ class Application(Base):
     resume_path = Column(String(500), nullable=False)
     file_hash = Column(String(64), nullable=False, index=True)
     processing_status = Column(String(50), default="PENDING", nullable=False)  # PENDING, PROCESSING, COMPLETED, FAILED, DUPLICATE
+    review_stage = Column(String(50), default="New", nullable=False)  # New, Reviewing, Interview, Rejected, Hired
     applied_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
@@ -73,6 +74,54 @@ class Application(Base):
         uselist=False,
         cascade="all, delete-orphan"
     )
+    status_history = relationship(
+        "ApplicationStatusHistory",
+        back_populates="application",
+        cascade="all, delete-orphan",
+        order_by="desc(ApplicationStatusHistory.created_at)"
+    )
+    notes = relationship(
+        "ApplicationNote",
+        back_populates="application",
+        cascade="all, delete-orphan",
+        order_by="desc(ApplicationNote.created_at)"
+    )
+
+
+class ApplicationStatusHistory(Base):
+    __tablename__ = "application_status_history"
+
+    history_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    application_id = Column(
+        Integer,
+        ForeignKey("applications.application_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    from_stage = Column(String(50), nullable=True)
+    to_stage = Column(String(50), nullable=False)
+    note = Column(Text, nullable=True)
+    changed_by = Column(String(100), default="Recruiter", nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    application = relationship("Application", back_populates="status_history")
+
+
+class ApplicationNote(Base):
+    __tablename__ = "application_notes"
+
+    note_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    application_id = Column(
+        Integer,
+        ForeignKey("applications.application_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    content = Column(Text, nullable=False)
+    author = Column(String(100), default="Recruiter", nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    application = relationship("Application", back_populates="notes")
 
 
 class MatchResult(Base):
@@ -83,7 +132,6 @@ class MatchResult(Base):
         Integer,
         ForeignKey("applications.application_id", ondelete="CASCADE"),
         nullable=False,
-        unique=True,
         index=True
     )
     keyword_score = Column(Float, default=0.0, nullable=False)

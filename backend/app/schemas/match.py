@@ -1,7 +1,11 @@
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
-from app.schemas.application import MatchResultResponse
+from app.schemas.application import (
+    MatchResultResponse,
+    ApplicationNoteResponse,
+    ApplicationStatusHistoryResponse
+)
 
 
 class RankingItem(BaseModel):
@@ -12,6 +16,7 @@ class RankingItem(BaseModel):
     candidate_email: Optional[str] = None
     candidate_phone: Optional[str] = None
     processing_status: str
+    review_stage: str = "New"
     final_score: float
     keyword_score: float
     tfidf_score: float
@@ -19,6 +24,8 @@ class RankingItem(BaseModel):
     missing_skills: List[str] = Field(default_factory=list)
     preferred_matched_skills: List[str] = Field(default_factory=list)
     score_explanation: Optional[str] = None
+    notes: List[ApplicationNoteResponse] = Field(default_factory=list)
+    status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
     applied_at: datetime
 
 
@@ -38,6 +45,7 @@ class CandidateCompareItem(BaseModel):
     application_id: int
     candidate_id: int
     candidate_name: str
+    review_stage: str = "New"
     final_score: float
     keyword_score: float
     tfidf_score: float

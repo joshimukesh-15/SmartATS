@@ -19,6 +19,48 @@ class MatchResultResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ApplicationNoteResponse(BaseModel):
+    note_id: int
+    application_id: int
+    content: str
+    author: str = "Recruiter"
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ApplicationStatusHistoryResponse(BaseModel):
+    history_id: int
+    application_id: int
+    from_stage: Optional[str] = None
+    to_stage: str
+    note: Optional[str] = None
+    changed_by: str = "Recruiter"
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ApplicationStatusUpdateRequest(BaseModel):
+    stage: str = Field(..., description="Stage name: New, Reviewing, Interview, Rejected, Hired")
+    note: Optional[str] = Field(None, description="Optional note or explanation for the stage transition")
+    changed_by: Optional[str] = Field("Recruiter", description="Name of the person making the change")
+
+
+class ApplicationNoteCreateRequest(BaseModel):
+    content: str = Field(..., min_length=1, description="Content of the recruiter note")
+    author: Optional[str] = Field("Recruiter", description="Author name")
+
+
+class ApplicationWorkflowDetailsResponse(BaseModel):
+    application_id: int
+    review_stage: str
+    status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
+    notes: List[ApplicationNoteResponse] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ApplicationResponse(BaseModel):
     application_id: int
     job_id: int
@@ -26,9 +68,12 @@ class ApplicationResponse(BaseModel):
     resume_path: str
     file_hash: str
     processing_status: str
+    review_stage: str = "New"
     applied_at: datetime
     candidate: Optional[CandidateResponse] = None
     match_result: Optional[MatchResultResponse] = None
+    status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
+    notes: List[ApplicationNoteResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 

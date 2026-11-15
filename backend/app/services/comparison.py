@@ -56,6 +56,7 @@ def compare_candidates_service(
                 application_id=app.application_id,
                 candidate_id=app.candidate_id,
                 candidate_name=name,
+                review_stage=app.review_stage or "New",
                 final_score=final_score,
                 keyword_score=kw_score,
                 tfidf_score=tfidf_score,

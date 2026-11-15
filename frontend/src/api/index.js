@@ -3,3 +3,4 @@ export * from './queryKeys';
 export * from './jobs';
 export * from './candidates';
 export * from './analytics';
+export * from './applications';

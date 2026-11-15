@@ -277,6 +277,67 @@ export default function OverviewPage() {
           )}
         </Panel>
       </div>
+
+      {/* 3. Pipeline Review Stages */}
+      <Panel className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-[16px] font-semibold text-ink">Applicant review pipeline</h2>
+            <p className="text-[13px] text-ink-muted mt-0.5">
+              Active candidates distributed across hiring review stages.
+            </p>
+          </div>
+          {defaultJobId && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => navigate(`/studio/leaderboard/${defaultJobId}`)}
+            >
+              Open Leaderboard
+            </Button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+          {[
+            {
+              stage: 'New',
+              count: analytics?.stage_distribution?.New ?? 0,
+              desc: 'Awaiting initial screen',
+            },
+            {
+              stage: 'Reviewing',
+              count: analytics?.stage_distribution?.Reviewing ?? 0,
+              desc: 'Under recruiter review',
+            },
+            {
+              stage: 'Interview',
+              count: analytics?.stage_distribution?.Interview ?? 0,
+              desc: 'Interview scheduled',
+            },
+            {
+              stage: 'Hired',
+              count: analytics?.stage_distribution?.Hired ?? 0,
+              desc: 'Accepted offer',
+            },
+            {
+              stage: 'Rejected',
+              count: analytics?.stage_distribution?.Rejected ?? 0,
+              desc: 'Archived / declined',
+            },
+          ].map((item) => (
+            <div
+              key={item.stage}
+              onClick={() => defaultJobId && navigate(`/studio/leaderboard/${defaultJobId}`)}
+              className="p-4 rounded-[10px] bg-surface-alt/40 border border-line hover:bg-surface-alt/70 transition-colors cursor-pointer space-y-1"
+            >
+              <div className="text-[13px] font-medium text-ink">{item.stage}</div>
+              <div className="text-[24px] font-semibold text-ink tabular-nums">{item.count}</div>
+              <div className="text-[12px] text-ink-muted">{item.desc}</div>
+            </div>
+          ))}
+        </div>
+      </Panel>
     </div>
   );
 }

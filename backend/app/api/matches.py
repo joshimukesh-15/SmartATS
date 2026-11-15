@@ -100,6 +100,19 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
         "<50%": len([s for s in all_scores if s < 50])
     }
 
+    stage_counts_raw = dict(
+        db.query(Application.review_stage, func.count(Application.application_id))
+        .group_by(Application.review_stage)
+        .all()
+    )
+    stage_counts = {
+        "New": stage_counts_raw.get("New", 0),
+        "Reviewing": stage_counts_raw.get("Reviewing", 0),
+        "Interview": stage_counts_raw.get("Interview", 0),
+        "Hired": stage_counts_raw.get("Hired", 0),
+        "Rejected": stage_counts_raw.get("Rejected", 0)
+    }
+
     avg_score = round(sum(all_scores) / len(all_scores), 1) if all_scores else 0.0
 
     return {
@@ -111,7 +124,8 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
         "failed_resumes": status_counts.get("FAILED", 0),
         "duplicate_resumes": status_counts.get("DUPLICATE", 0),
         "average_score": avg_score,
-        "score_distribution": score_ranges
+        "score_distribution": score_ranges,
+        "stage_distribution": stage_counts
     }
 
 
@@ -137,12 +151,20 @@ def get_job_specific_analytics(job_id: int, db: Session = Depends(get_db)):
         for sk in m.matched_skills:
             matched_freq[sk] = matched_freq.get(sk, 0) + 1
 
+    job_stage_counts = {
+        "New": 0, "Reviewing": 0, "Interview": 0, "Hired": 0, "Rejected": 0
+    }
+    for a in apps:
+        st = a.review_stage or "New"
+        job_stage_counts[st] = job_stage_counts.get(st, 0) + 1
+
     return {
         "job_id": job.job_id,
         "job_title": job.title,
         "total_applications": len(apps),
         "total_processed": len(matches),
         "average_final_score": round(sum(scores) / len(scores), 1) if scores else 0.0,
+        "stage_distribution": job_stage_counts,
         "score_buckets": {
             "80-100%": len([s for s in scores if s >= 80]),
             "60-79%": len([s for s in scores if 60 <= s < 80]),

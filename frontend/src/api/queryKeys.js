@@ -18,4 +18,9 @@ export const queryKeys = {
     all: ['candidates'],
     detail: (id) => [...queryKeys.candidates.all, 'detail', String(id)],
   },
+  applications: {
+    all: ['applications'],
+    detail: (id) => [...queryKeys.applications.all, 'detail', String(id)],
+    history: (id) => [...queryKeys.applications.all, 'history', String(id)],
+  },
 };

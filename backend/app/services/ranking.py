@@ -2,6 +2,7 @@ from typing import List, Dict, Any
 from sqlalchemy.orm import Session
 from app.database.models import Application, MatchResult, Candidate, Job
 from app.schemas.match import RankingItem, JobRankingsResponse
+from app.schemas.application import ApplicationNoteResponse, ApplicationStatusHistoryResponse
 
 
 def get_job_rankings(db: Session, job_id: int) -> JobRankingsResponse:
@@ -37,6 +38,9 @@ def get_job_rankings(db: Session, job_id: int) -> JobRankingsResponse:
         if app.processing_status == "COMPLETED":
             processed_count += 1
 
+        notes_data = [ApplicationNoteResponse.model_validate(n) for n in (app.notes or [])]
+        history_data = [ApplicationStatusHistoryResponse.model_validate(h) for h in (app.status_history or [])]
+
         ranking_items.append(
             RankingItem(
                 rank=0,  # assigned after sorting
@@ -46,6 +50,7 @@ def get_job_rankings(db: Session, job_id: int) -> JobRankingsResponse:
                 candidate_email=cand.email if cand else None,
                 candidate_phone=cand.phone if cand else None,
                 processing_status=app.processing_status,
+                review_stage=app.review_stage or "New",
                 final_score=final_score,
                 keyword_score=keyword_score,
                 tfidf_score=tfidf_score,
@@ -53,6 +58,8 @@ def get_job_rankings(db: Session, job_id: int) -> JobRankingsResponse:
                 missing_skills=missing_skills,
                 preferred_matched_skills=pref_skills,
                 score_explanation=explanation,
+                notes=notes_data,
+                status_history=history_data,
                 applied_at=app.applied_at
             )
         )
