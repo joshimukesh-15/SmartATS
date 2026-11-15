@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   FileSpreadsheet,
   GitCompare,
@@ -60,6 +60,7 @@ const STAGE_CONFIG = {
 
 export default function LeaderboardPage() {
   const { jobId: routeJobId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const { data: jobs = [], isLoading: jobsLoading } = useJobs();
@@ -72,36 +73,39 @@ export default function LeaderboardPage() {
   const updateStageMutation = useUpdateApplicationStage(activeJobId);
   const addNoteMutation = useAddApplicationNote(activeJobId);
 
-  // Search, Stage Filter & Sorting state
+  // Search & Stage Filter state
   const [search, setSearch] = useState('');
-  const [stageFilter, setStageFilter] = useState('All');
+  const initialStage = searchParams.get('stage');
+  const [stageFilter, setStageFilter] = useState(
+    initialStage && STAGES.includes(initialStage) ? initialStage : 'All'
+  );
   const [sortBy, setSortBy] = useState('score');
   const [sortOrder, setSortOrder] = useState('desc');
 
-  // Selected candidate for Master-Detail right panel
+  // Selected candidate index
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   // Multi-candidate comparison selection
   const [selectedForCompare, setSelectedForCompare] = useState([]);
 
-  // Recruiter notes & workflow UI state
+  // Workflow UI state
   const [newNoteContent, setNewNoteContent] = useState('');
   const [showTransitionPrompt, setShowTransitionPrompt] = useState(false);
   const [targetStage, setTargetStage] = useState('');
   const [transitionNote, setTransitionNote] = useState('');
   const [showAuditTrail, setShowAuditTrail] = useState(false);
 
-  // Mobile modal state
+  // Mobile detail dialog
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
 
   const tableContainerRef = useRef(null);
 
-  // Candidates list derived from query
+  // Raw candidates list from API
   const rawCandidates = useMemo(() => {
     return rankingsData?.rankings || [];
   }, [rankingsData]);
 
-  // Filtered and sorted candidates
+  // Filtered and sorted candidate list
   const candidates = useMemo(() => {
     let list = rawCandidates;
     if (stageFilter !== 'All') {
@@ -177,7 +181,7 @@ export default function LeaderboardPage() {
     navigate(`/studio/compare/${activeJobId}?${params.toString()}`);
   };
 
-  const handleStageSelectChange = (newStage) => {
+  const handleStageButtonClick = (newStage) => {
     if (!selectedCandidate || newStage === currentCandidateStage) return;
     setTargetStage(newStage);
     setShowTransitionPrompt(true);
@@ -196,20 +200,6 @@ export default function LeaderboardPage() {
       setShowTransitionPrompt(false);
       setTransitionNote('');
       setTargetStage('');
-    } catch (err) {
-      toast.error(err.message || 'Failed to update review stage');
-    }
-  };
-
-  const handleDirectStageUpdate = async (newStage) => {
-    if (!selectedCandidate || newStage === currentCandidateStage) return;
-    try {
-      await updateStageMutation.mutateAsync({
-        applicationId: selectedCandidate.application_id,
-        stage: newStage,
-        changed_by: 'Recruiter',
-      });
-      toast.success(`Candidate moved to ${newStage}`);
     } catch (err) {
       toast.error(err.message || 'Failed to update review stage');
     }
@@ -272,48 +262,50 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      {/* Stage Filter Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-        <span className="text-[13px] text-ink-muted font-medium mr-1 shrink-0">Stage:</span>
-        {['All', ...STAGES].map((stg) => {
-          const isSelected = stageFilter === stg;
-          const count =
-            stg === 'All'
-              ? rawCandidates.length
-              : rawCandidates.filter((c) => (c.review_stage || 'New') === stg).length;
-          return (
-            <button
-              key={stg}
-              type="button"
-              onClick={() => setStageFilter(stg)}
-              className={`px-3 py-1 rounded-[8px] text-[13px] border transition-colors cursor-pointer shrink-0 ${
-                isSelected
-                  ? 'bg-primary text-on-primary border-primary font-medium'
-                  : 'bg-surface border-line text-ink-muted hover:text-ink hover:bg-surface-alt'
-              }`}
-            >
-              <span>{stg}</span>
-              <span className="ml-1.5 tabular-nums text-[12px] opacity-80">
-                ({count})
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Filter / Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="max-w-xs w-full">
+      {/* Unified Action & Filter Toolbar */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-3 rounded-[12px] bg-surface border border-line">
+        {/* Left: Search input */}
+        <div className="w-full lg:w-72">
           <Input
             placeholder="Search candidates or skills..."
-            leftIcon={<Search className="w-4 h-4" />}
+            leftIcon={<Search className="w-4 h-4 text-ink-muted" />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-2 text-[13px] text-ink-muted">
-          <span>Sort by:</span>
+        {/* Center: Stage Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
+          <span className="text-[13px] text-ink-muted font-medium mr-1 shrink-0">Stage:</span>
+          {['All', ...STAGES].map((stg) => {
+            const isSelected = stageFilter === stg;
+            const count =
+              stg === 'All'
+                ? rawCandidates.length
+                : rawCandidates.filter((c) => (c.review_stage || 'New') === stg).length;
+            return (
+              <button
+                key={stg}
+                type="button"
+                onClick={() => setStageFilter(stg)}
+                className={`px-3 py-1.5 rounded-[8px] text-[13px] border transition-colors cursor-pointer shrink-0 ${
+                  isSelected
+                    ? 'bg-primary text-on-primary border-primary font-medium'
+                    : 'bg-surface border-line text-ink-muted hover:text-ink hover:bg-surface-alt'
+                }`}
+              >
+                <span>{stg}</span>
+                <span className="ml-1.5 tabular-nums text-[13px] opacity-75">
+                  ({count})
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Right: Sort controls */}
+        <div className="flex items-center gap-2 text-[13px] text-ink-muted shrink-0">
+          <span className="hidden xl:inline">Sort:</span>
           <button
             type="button"
             onClick={() => {
@@ -324,7 +316,7 @@ export default function LeaderboardPage() {
                 setSortOrder('desc');
               }
             }}
-            className={`px-2.5 py-1 rounded-[6px] border border-line cursor-pointer ${
+            className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] ${
               sortBy === 'score' ? 'bg-surface-alt text-ink font-semibold' : 'bg-surface'
             }`}
           >
@@ -340,7 +332,7 @@ export default function LeaderboardPage() {
                 setSortOrder('asc');
               }
             }}
-            className={`px-2.5 py-1 rounded-[6px] border border-line cursor-pointer ${
+            className={`px-3 py-1.5 rounded-[8px] border border-line cursor-pointer text-[13px] ${
               sortBy === 'name' ? 'bg-surface-alt text-ink font-semibold' : 'bg-surface'
             }`}
           >
@@ -364,14 +356,21 @@ export default function LeaderboardPage() {
         </div>
       ) : candidates.length === 0 ? (
         <EmptyState
-          title={search || stageFilter !== 'All' ? 'No candidates match your filter' : 'No candidates evaluated'}
+          title={
+            search || stageFilter !== 'All'
+              ? 'No candidates match your filter'
+              : 'No candidates evaluated'
+          }
           description={
             search || stageFilter !== 'All'
               ? 'Try modifying your search keywords or selecting another stage.'
               : 'Upload resumes for this job opening to populate the leaderboard.'
           }
           action={
-            !search && stageFilter === 'All' && <Button onClick={() => navigate('/studio/upload')}>Upload resumes</Button>
+            !search &&
+            stageFilter === 'All' && (
+              <Button onClick={() => navigate('/studio/upload')}>Upload resumes</Button>
+            )
           }
         />
       ) : (
@@ -403,7 +402,7 @@ export default function LeaderboardPage() {
                 </thead>
                 <tbody className="divide-y divide-line">
                   {candidates.map((candidate, idx) => {
-                    const isSelected = selectedIndex === idx;
+                    const isSelected = safeSelectedIndex === idx;
                     const isCompared = selectedForCompare.includes(candidate.application_id);
                     const breakdown = computeBreakdown(candidate, activeJob);
                     const stageKey = candidate.review_stage || 'New';
@@ -455,7 +454,7 @@ export default function LeaderboardPage() {
                           <div className="font-semibold text-ink text-[14px]">
                             {cleanCandidateName(candidate.candidate_name)}
                           </div>
-                          <div className="text-[12px] text-ink-muted truncate">
+                          <div className="text-[13px] text-ink-muted truncate">
                             {candidate.candidate_email || '—'}
                           </div>
                         </td>
@@ -463,7 +462,7 @@ export default function LeaderboardPage() {
                         {/* Stage Badge */}
                         <td className="px-3 py-3">
                           <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-[6px] text-[12px] ${
+                            className={`inline-flex items-center px-2 py-0.5 rounded-[6px] text-[13px] ${
                               stageConf.badge
                             }`}
                           >
@@ -472,12 +471,12 @@ export default function LeaderboardPage() {
                         </td>
 
                         {/* Skills Covered % */}
-                        <td className="px-3 py-3 text-right tabular-nums text-ink-muted hidden sm:table-cell">
+                        <td className="px-3 py-3 text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell">
                           {breakdown.skillsCoveredPercent.toFixed(1)}%
                         </td>
 
                         {/* Text Match % */}
-                        <td className="px-3 py-3 text-right tabular-nums text-ink-muted hidden sm:table-cell">
+                        <td className="px-3 py-3 text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell">
                           {breakdown.textMatchPercent.toFixed(1)}%
                         </td>
 
@@ -501,11 +500,11 @@ export default function LeaderboardPage() {
             </div>
           </div>
 
-          {/* RIGHT: Sticky Detail Panel (lg:col-span-5) */}
+          {/* RIGHT: Master-Detail Candidate & Review Panel (lg:col-span-5) */}
           <div className="hidden lg:block lg:col-span-5 sticky top-20" aria-live="polite">
             {selectedCandidate && selectedBreakdown ? (
               <Panel className="p-6 space-y-6 max-h-[calc(100vh-6rem)] overflow-y-auto">
-                {/* Header */}
+                {/* 1. Candidate Header */}
                 <div className="flex items-start justify-between gap-4 pb-4 border-b border-line">
                   <div>
                     <div className="flex items-center gap-2">
@@ -532,19 +531,19 @@ export default function LeaderboardPage() {
                     </div>
                   </div>
 
-                  {/* Large Score */}
+                  {/* Final Score Value */}
                   <div className="text-right">
-                    <div className="text-[12px] font-medium text-ink-muted">Final score</div>
+                    <div className="text-[13px] font-medium text-ink-muted">Final score</div>
                     <ScoreValue score={selectedBreakdown.finalScore} size="xl" />
                   </div>
                 </div>
 
-                {/* Applicant Review Workflow Stage Card */}
-                <div className="space-y-3 p-4 rounded-[10px] bg-surface-alt/50 border border-line">
+                {/* 2. Applicant Pipeline Review Stepper (Properly Placed at Top) */}
+                <div className="space-y-3 p-4 rounded-[12px] bg-surface-alt/50 border border-line">
                   <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-semibold text-ink">Review stage</span>
+                    <div className="text-[13px] font-semibold text-ink">Applicant Pipeline Stage</div>
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-[6px] text-[12px] ${
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-[6px] text-[13px] font-medium ${
                         (STAGE_CONFIG[currentCandidateStage] || STAGE_CONFIG.New).badge
                       }`}
                     >
@@ -552,28 +551,60 @@ export default function LeaderboardPage() {
                     </span>
                   </div>
 
-                  <div className="space-y-2 pt-1">
-                    <label className="text-[12px] text-ink-muted block font-medium">
-                      Transition stage:
-                    </label>
-                    <Select
-                      value={currentCandidateStage}
-                      onChange={(e) => handleStageSelectChange(e.target.value)}
-                      disabled={updateStageMutation.isPending}
-                    >
-                      {STAGES.map((s) => (
-                        <option key={s} value={s}>
-                          {s === currentCandidateStage ? `${s} (Current)` : `Move to ${s}`}
-                        </option>
-                      ))}
-                    </Select>
+                  {/* Progressive Stepper Track */}
+                  <div className="grid grid-cols-4 gap-1.5 pt-1">
+                    {['New', 'Reviewing', 'Interview', 'Hired'].map((s, idx) => {
+                      const isCurrent = currentCandidateStage === s;
+                      return (
+                        <button
+                          key={s}
+                          type="button"
+                          aria-label={`Advance to stage ${idx + 1}`}
+                          onClick={() => handleStageButtonClick(s)}
+                          disabled={updateStageMutation.isPending}
+                          className={`px-2 py-2 rounded-[8px] text-[13px] text-center border transition-all cursor-pointer ${
+                            isCurrent
+                              ? 'bg-primary text-on-primary border-primary font-semibold shadow-sm'
+                              : 'bg-surface border-line text-ink hover:bg-surface-alt hover:border-line'
+                          }`}
+                        >
+                          <div aria-hidden="true">
+                            <div className="text-[13px] opacity-70 mb-0.5">0{idx + 1}</div>
+                            <div className="truncate font-medium">{s}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  {/* Stage Transition Prompt with Optional Note */}
+                  {/* Rejection / Terminal Action */}
+                  <div className="flex items-center justify-between pt-1 border-t border-line/60">
+                    <span className="text-[13px] text-ink-muted">Terminal outcome:</span>
+                    {currentCandidateStage === 'Rejected' ? (
+                      <button
+                        type="button"
+                        onClick={() => handleStageButtonClick('Reviewing')}
+                        className="text-[13px] text-primary hover:underline cursor-pointer font-medium"
+                      >
+                        Re-open Application
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleStageButtonClick('Rejected')}
+                        className="text-[13px] text-ink-muted hover:text-ink cursor-pointer border border-line px-2.5 py-1 rounded-[6px] hover:bg-surface"
+                      >
+                        Mark Rejected
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Transition Confirmation Prompt */}
                   {showTransitionPrompt && (
-                    <div className="pt-2 space-y-2 border-t border-line animate-fadeIn">
-                      <div className="text-[12px] text-ink font-medium">
-                        Moving to <span className="font-bold text-primary">{targetStage}</span>
+                    <div className="pt-3 space-y-2.5 border-t border-line animate-fadeIn">
+                      <div className="text-[13px] font-medium text-ink flex items-center gap-1.5">
+                        <span>Move candidate to:</span>
+                        <span className="font-bold text-primary">{targetStage}</span>
                       </div>
                       <Input
                         placeholder="Optional transition reason or note..."
@@ -598,18 +629,18 @@ export default function LeaderboardPage() {
                           loading={updateStageMutation.isPending}
                           onClick={handleConfirmStageUpdate}
                         >
-                          Confirm
+                          Confirm Move
                         </Button>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Two-Segment Score Bar & Math Line */}
-                <div className="space-y-2 p-4 rounded-[10px] bg-surface-alt/50 border border-line">
+                {/* 3. Scoring Breakdown & Diagnostics */}
+                <div className="space-y-2 p-4 rounded-[12px] bg-surface-alt/50 border border-line">
                   <div className="text-[13px] font-medium text-ink flex items-center justify-between">
                     <span>Scoring Breakdown</span>
-                    <span className="tabular-nums font-semibold">
+                    <span className="tabular-nums font-semibold text-[13px]">
                       {selectedBreakdown.finalScore.toFixed(1)}%
                     </span>
                   </div>
@@ -641,7 +672,7 @@ export default function LeaderboardPage() {
                   </div>
                 </div>
 
-                {/* Required Skills Diagnostic */}
+                {/* 4. Required Skills Diagnostic */}
                 <div className="space-y-3">
                   <h3 className="text-[14px] font-semibold text-ink">Required skills status</h3>
                   <div className="space-y-2">
@@ -657,13 +688,13 @@ export default function LeaderboardPage() {
                         >
                           <span className="font-medium text-ink">{skill}</span>
                           {isFound ? (
-                            <span className="inline-flex items-center gap-1 text-[12px] font-medium text-ink bg-champagne-soft px-2 py-0.5 rounded-[4px]">
-                              <Check className="w-3 h-3 text-champagne" />
+                            <span className="inline-flex items-center gap-1 text-[13px] font-medium text-ink bg-champagne-soft px-2 py-0.5 rounded-[4px]">
+                              <Check className="w-3.5 h-3.5 text-champagne" />
                               Found in resume
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[12px] text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[4px] border border-dashed border-line">
-                              <Minus className="w-3 h-3 text-ink-subtle" />
+                            <span className="inline-flex items-center gap-1 text-[13px] text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[4px] border border-dashed border-line">
+                              <Minus className="w-3.5 h-3.5 text-ink-subtle" />
                               Missing
                             </span>
                           )}
@@ -673,7 +704,7 @@ export default function LeaderboardPage() {
                   </div>
                 </div>
 
-                {/* Score explanation note */}
+                {/* 5. Plain-English Score Explanation */}
                 {selectedCandidate.score_explanation && (
                   <div className="space-y-1.5 pt-2 border-t border-line">
                     <div className="text-[13px] font-semibold text-ink">Explain score</div>
@@ -683,45 +714,20 @@ export default function LeaderboardPage() {
                   </div>
                 )}
 
-                {/* Recruiter Notes Thread & Add Note */}
-                <div className="space-y-3 pt-4 border-t border-line">
-                  <div className="flex items-center justify-between">
+                {/* 6. Recruiter Notes & Activity Stream */}
+                <div className="space-y-4 p-4 rounded-[12px] bg-surface-alt/50 border border-line">
+                  <div className="flex items-center justify-between pb-2 border-b border-line">
                     <div className="text-[13px] font-semibold text-ink flex items-center gap-2">
-                      <MessageSquare className="w-3.5 h-3.5 text-ink-muted" />
+                      <MessageSquare className="w-4 h-4 text-ink-muted" />
                       <span>Recruiter notes ({notesList.length})</span>
                     </div>
                   </div>
 
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {notesList.length === 0 ? (
-                      <p className="text-[12px] text-ink-muted italic py-1">No notes recorded yet.</p>
-                    ) : (
-                      notesList.map((n, i) => (
-                        <div
-                          key={n.note_id || i}
-                          className="p-2.5 rounded-[8px] bg-surface-alt/40 border border-line text-[13px] space-y-1"
-                        >
-                          <div className="flex items-center justify-between text-[11px] text-ink-muted">
-                            <span className="font-medium text-ink">{n.author}</span>
-                            <span className="tabular-nums">
-                              {new Date(n.created_at).toLocaleDateString(undefined, {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </span>
-                          </div>
-                          <p className="text-ink leading-relaxed">{n.content}</p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <form onSubmit={handleAddNote} className="space-y-2 pt-1">
+                  {/* Add Note Form */}
+                  <form onSubmit={handleAddNote} className="space-y-2">
                     <div className="flex gap-2">
                       <Input
-                        placeholder="Add recruiter note..."
+                        placeholder="Add recruiter feedback or review note..."
                         value={newNoteContent}
                         onChange={(e) => setNewNoteContent(e.target.value)}
                         className="flex-1"
@@ -732,62 +738,89 @@ export default function LeaderboardPage() {
                         disabled={!newNoteContent.trim() || addNoteMutation.isPending}
                         loading={addNoteMutation.isPending}
                       >
-                        Add
+                        Post
                       </Button>
                     </div>
                   </form>
-                </div>
 
-                {/* Status History Audit Trail */}
-                <div className="space-y-2 pt-4 border-t border-line">
-                  <button
-                    type="button"
-                    onClick={() => setShowAuditTrail(!showAuditTrail)}
-                    className="flex items-center justify-between w-full text-[13px] font-semibold text-ink hover:text-primary transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-ink-muted" />
-                      <span>Status history ({statusHistoryList.length})</span>
-                    </div>
-                    <span className="text-[12px] text-ink-muted font-normal">
-                      {showAuditTrail ? 'Hide' : 'Show'}
-                    </span>
-                  </button>
-
-                  {showAuditTrail && (
-                    <div className="space-y-3 pt-2 border-l-2 border-line ml-2 pl-3">
-                      {statusHistoryList.length === 0 ? (
-                        <p className="text-[12px] text-ink-muted italic">No transitions recorded.</p>
-                      ) : (
-                        statusHistoryList.map((h, i) => (
-                          <div key={h.history_id || i} className="relative text-[12px] space-y-0.5">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-ink">
-                                {h.from_stage
-                                  ? `${h.from_stage} → ${h.to_stage}`
-                                  : `Initial: ${h.to_stage}`}
-                              </span>
-                              <span className="text-ink-muted tabular-nums">
-                                {new Date(h.created_at).toLocaleDateString(undefined, {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </span>
-                            </div>
-                            <div className="text-ink-muted">
-                              by {h.changed_by}
-                              {h.note && <span className="italic text-ink"> — "{h.note}"</span>}
-                            </div>
+                  {/* Notes Feed */}
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {notesList.length === 0 ? (
+                      <p className="text-[13px] text-ink-muted italic py-1">No notes recorded yet.</p>
+                    ) : (
+                      notesList.map((n, i) => (
+                        <div
+                          key={n.note_id || i}
+                          className="p-3 rounded-[8px] bg-surface border border-line text-[13px] space-y-1"
+                        >
+                          <div className="flex items-center justify-between text-[13px] text-ink-muted">
+                            <span className="font-semibold text-ink">{n.author}</span>
+                            <span className="tabular-nums">
+                              {new Date(n.created_at).toLocaleDateString(undefined, {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
                           </div>
-                        ))
-                      )}
-                    </div>
-                  )}
+                          <p className="text-ink leading-relaxed text-[13px]">{n.content}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Status Audit Trail */}
+                  <div className="pt-2 border-t border-line">
+                    <button
+                      type="button"
+                      onClick={() => setShowAuditTrail(!showAuditTrail)}
+                      className="flex items-center justify-between w-full text-[13px] font-semibold text-ink hover:text-primary transition-colors cursor-pointer py-1"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-ink-muted" />
+                        <span>Status history ({statusHistoryList.length})</span>
+                      </div>
+                      <span className="text-[13px] text-ink-muted font-normal">
+                        {showAuditTrail ? 'Hide' : 'Show'}
+                      </span>
+                    </button>
+
+                    {showAuditTrail && (
+                      <div className="space-y-2.5 pt-2 border-l-2 border-line ml-2 pl-3">
+                        {statusHistoryList.length === 0 ? (
+                          <p className="text-[13px] text-ink-muted italic">No transitions recorded.</p>
+                        ) : (
+                          statusHistoryList.map((h, i) => (
+                            <div key={h.history_id || i} className="text-[13px] space-y-0.5">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-ink">
+                                  {h.from_stage
+                                    ? `${h.from_stage} → ${h.to_stage}`
+                                    : `Initial: ${h.to_stage}`}
+                                </span>
+                                <span className="text-ink-muted tabular-nums">
+                                  {new Date(h.created_at).toLocaleDateString(undefined, {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </span>
+                              </div>
+                              <div className="text-ink-muted">
+                                by {h.changed_by}
+                                {h.note && <span className="italic text-ink"> — "{h.note}"</span>}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* Actions */}
+                {/* 7. Compare Action Button */}
                 <div className="pt-4 border-t border-line flex items-center justify-between gap-3">
                   <Button
                     variant={
@@ -862,23 +895,28 @@ export default function LeaderboardPage() {
               <div className="flex items-center justify-between text-[13px]">
                 <span className="font-semibold text-ink">Review stage</span>
                 <span
-                  className={`px-2 py-0.5 rounded-[6px] text-[12px] ${
+                  className={`px-2 py-0.5 rounded-[6px] text-[13px] ${
                     (STAGE_CONFIG[currentCandidateStage] || STAGE_CONFIG.New).badge
                   }`}
                 >
                   {currentCandidateStage}
                 </span>
               </div>
-              <Select
-                value={currentCandidateStage}
-                onChange={(e) => handleDirectStageUpdate(e.target.value)}
-              >
+              <div className="grid grid-cols-2 gap-2 pt-1">
                 {STAGES.map((s) => (
-                  <option key={s} value={s}>
-                    Move to {s}
-                  </option>
+                  <Button
+                    key={s}
+                    variant={currentCandidateStage === s ? 'primary' : 'secondary'}
+                    size="sm"
+                    onClick={() => {
+                      handleStageButtonClick(s);
+                      setMobileDetailOpen(false);
+                    }}
+                  >
+                    {s}
+                  </Button>
                 ))}
-              </Select>
+              </div>
             </div>
 
             <div className="pt-2 flex justify-end gap-2">

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Plus, UploadCloud } from 'lucide-react';
+import { ArrowRight, Plus, UploadCloud, ChevronRight } from 'lucide-react';
 import { useOverviewAnalytics, useJobs, useRankings } from '../../hooks';
 import {
   StatStrip,
@@ -37,6 +37,7 @@ export default function OverviewPage() {
           <Skeleton className="h-4 w-72" />
         </div>
         <Skeleton className="h-28 w-full rounded-[14px]" />
+        <Skeleton className="h-36 w-full rounded-[14px]" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Skeleton className="h-64 rounded-[14px]" />
           <Skeleton className="h-64 rounded-[14px]" />
@@ -88,6 +89,7 @@ export default function OverviewPage() {
       application_id: 'sample-1',
       candidate_name: 'Sarah Jenkins',
       candidate_email: 'sarah.jenkins@example.com',
+      review_stage: 'Interview',
       rank: 1,
       final_score: 93.4,
       keyword_score: 95.0,
@@ -97,6 +99,7 @@ export default function OverviewPage() {
       application_id: 'sample-2',
       candidate_name: 'Alex Rivera',
       candidate_email: 'alex.rivera@example.com',
+      review_stage: 'Reviewing',
       rank: 2,
       final_score: 87.2,
       keyword_score: 88.0,
@@ -106,6 +109,7 @@ export default function OverviewPage() {
       application_id: 'sample-3',
       candidate_name: 'Jordan Lee',
       candidate_email: 'jordan.lee@example.com',
+      review_stage: 'New',
       rank: 3,
       final_score: 81.0,
       keyword_score: 82.0,
@@ -119,6 +123,47 @@ export default function OverviewPage() {
   const midTier = Math.round(totalApps * 0.38);
   const lowTier = Math.max(0, totalApps - highTier - midTier);
 
+  const stageDistribution = analytics?.stage_distribution || {
+    New: 0,
+    Reviewing: 0,
+    Interview: 0,
+    Hired: 0,
+    Rejected: 0,
+  };
+
+  const pipelineStages = [
+    {
+      stage: 'New',
+      count: stageDistribution.New ?? 0,
+      desc: 'Awaiting review',
+      borderTone: 'border-l-line',
+    },
+    {
+      stage: 'Reviewing',
+      count: stageDistribution.Reviewing ?? 0,
+      desc: 'Screen in progress',
+      borderTone: 'border-l-champagne',
+    },
+    {
+      stage: 'Interview',
+      count: stageDistribution.Interview ?? 0,
+      desc: 'Panel scheduled',
+      borderTone: 'border-l-primary',
+    },
+    {
+      stage: 'Hired',
+      count: stageDistribution.Hired ?? 0,
+      desc: 'Offer accepted',
+      borderTone: 'border-l-champagne',
+    },
+    {
+      stage: 'Rejected',
+      count: stageDistribution.Rejected ?? 0,
+      desc: 'Archived records',
+      borderTone: 'border-l-line/60',
+    },
+  ];
+
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Header */}
@@ -128,7 +173,7 @@ export default function OverviewPage() {
             Overview
           </h1>
           <p className="text-[14px] text-ink-muted mt-1">
-            Recruitment pipeline metrics and candidate quality benchmarks.
+            Recruitment pipeline metrics, applicant review stages, and candidate fit benchmarks.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -154,7 +199,51 @@ export default function OverviewPage() {
       {/* 1. Stat Strip (4 stats in a single bordered panel with dividers) */}
       <StatStrip items={statItems} />
 
-      {/* 2-Column Grid: Score Distribution + Top Candidates */}
+      {/* 2. Hiring Pipeline Funnel (Properly placed as central pipeline section) */}
+      <Panel className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-[16px] font-semibold text-ink">Applicant Review Pipeline</h2>
+            <p className="text-[13px] text-ink-muted mt-0.5">
+              Current candidate progress across review stages. Click a stage to inspect applicants.
+            </p>
+          </div>
+          {defaultJobId && (
+            <button
+              type="button"
+              onClick={() => navigate(`/studio/leaderboard/${defaultJobId}`)}
+              className="text-[13px] text-ink-muted hover:text-ink flex items-center gap-1 cursor-pointer font-medium"
+            >
+              <span>View Leaderboard</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1">
+          {pipelineStages.map((item, idx) => (
+            <div
+              key={item.stage}
+              onClick={() =>
+                defaultJobId &&
+                navigate(`/studio/leaderboard/${defaultJobId}?stage=${item.stage}`)
+              }
+              className={`p-4 rounded-[10px] bg-surface-alt/40 border border-line border-l-4 ${item.borderTone} hover:bg-surface-alt transition-colors cursor-pointer space-y-1.5`}
+            >
+              <div className="flex items-center justify-between text-[13px]">
+                <span className="font-semibold text-ink">{item.stage}</span>
+                <span className="text-[13px] text-ink-muted opacity-60">0{idx + 1}</span>
+              </div>
+              <div className="text-[26px] font-semibold text-ink tabular-nums leading-none">
+                {item.count}
+              </div>
+              <div className="text-[13px] text-ink-muted truncate">{item.desc}</div>
+            </div>
+          ))}
+        </div>
+      </Panel>
+
+      {/* 3. 2-Column Grid: Score Distribution + Top Candidates */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Score Distribution */}
         <Panel className="p-6 space-y-6">
@@ -240,6 +329,7 @@ export default function OverviewPage() {
             <div className="divide-y divide-line">
               {topCandidates.map((candidate, idx) => {
                 const breakdown = computeBreakdown(candidate);
+                const stage = candidate.review_stage || 'New';
                 return (
                   <div
                     key={candidate.application_id || idx}
@@ -250,11 +340,13 @@ export default function OverviewPage() {
                         {candidate.rank || idx + 1}
                       </span>
                       <div className="min-w-0">
-                        <div className="text-[14px] font-medium text-ink truncate">
+                        <div className="text-[14px] font-semibold text-ink truncate">
                           {cleanCandidateName(candidate.candidate_name)}
                         </div>
-                        <div className="text-[13px] text-ink-muted truncate">
-                          {candidate.candidate_email || 'Verified application'}
+                        <div className="text-[13px] text-ink-muted flex items-center gap-2 truncate">
+                          <span>{candidate.candidate_email || 'Verified application'}</span>
+                          <span className="text-ink-subtle">·</span>
+                          <span className="font-medium text-ink">{stage}</span>
                         </div>
                       </div>
                     </div>
@@ -277,67 +369,6 @@ export default function OverviewPage() {
           )}
         </Panel>
       </div>
-
-      {/* 3. Pipeline Review Stages */}
-      <Panel className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-[16px] font-semibold text-ink">Applicant review pipeline</h2>
-            <p className="text-[13px] text-ink-muted mt-0.5">
-              Active candidates distributed across hiring review stages.
-            </p>
-          </div>
-          {defaultJobId && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => navigate(`/studio/leaderboard/${defaultJobId}`)}
-            >
-              Open Leaderboard
-            </Button>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-          {[
-            {
-              stage: 'New',
-              count: analytics?.stage_distribution?.New ?? 0,
-              desc: 'Awaiting initial screen',
-            },
-            {
-              stage: 'Reviewing',
-              count: analytics?.stage_distribution?.Reviewing ?? 0,
-              desc: 'Under recruiter review',
-            },
-            {
-              stage: 'Interview',
-              count: analytics?.stage_distribution?.Interview ?? 0,
-              desc: 'Interview scheduled',
-            },
-            {
-              stage: 'Hired',
-              count: analytics?.stage_distribution?.Hired ?? 0,
-              desc: 'Accepted offer',
-            },
-            {
-              stage: 'Rejected',
-              count: analytics?.stage_distribution?.Rejected ?? 0,
-              desc: 'Archived / declined',
-            },
-          ].map((item) => (
-            <div
-              key={item.stage}
-              onClick={() => defaultJobId && navigate(`/studio/leaderboard/${defaultJobId}`)}
-              className="p-4 rounded-[10px] bg-surface-alt/40 border border-line hover:bg-surface-alt/70 transition-colors cursor-pointer space-y-1"
-            >
-              <div className="text-[13px] font-medium text-ink">{item.stage}</div>
-              <div className="text-[24px] font-semibold text-ink tabular-nums">{item.count}</div>
-              <div className="text-[12px] text-ink-muted">{item.desc}</div>
-            </div>
-          ))}
-        </div>
-      </Panel>
     </div>
   );
 }
