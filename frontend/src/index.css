@@ -1,19 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --bg-canvas: #FAF8F5;
-    --bg-surface: #FFFFFF;
-    --bg-surface-alt: #F3EFEA;
-    --ink-primary: #141413;
-    --ink-secondary: #524E46;
-    --ink-muted: #857F74;
-    --border-hairline: #E5DFD5;
-    --border-strong: #D4CCC0;
-    --accent-clay: #CC5A36;
-    --accent-clay-hover: #B84F2E;
-    --accent-clay-tint: #FDF3EE;
+    --bg-canvas: #0B0F19;
+    --bg-surface: #111827;
+    --bg-surface-elevated: #161F32;
+    --bg-surface-alt: #1E293B;
+    --ink-primary: #F8FAFC;
+    --ink-secondary: #94A3B8;
+    --ink-muted: #64748B;
+    --border-hairline: #1E293B;
+    --border-strong: #334155;
+    --accent-blue: #3B82F6;
+    --accent-blue-hover: #2563EB;
+    --accent-cyan: #06B6D4;
+    --accent-emerald: #10B981;
+    --accent-rose: #F43F5E;
   }
 
   body {
@@ -23,20 +26,19 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    selection-background-color: #CC5A36;
+    selection-background-color: #3B82F6;
     selection-color: #FFFFFF;
   }
 
-  h1, h2, h3, .font-serif {
-    font-family: 'Newsreader', Georgia, serif;
-    letter-spacing: -0.02em;
+  h1, h2, h3, h4, h5, h6, .font-serif, .font-sans {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.025em;
   }
 
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 
-  /* Copy rules from landing page design: balanced headings, pretty body */
   h1, h2, h3, h4, h5, h6 {
     text-wrap: balance;
   }
@@ -48,14 +50,19 @@
 /* Base motion curve from landing page design B7 */
 .transition-editorial {
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  transition-duration: 500ms;
+  transition-duration: 400ms;
 }
 
-/* Light theme headline gradient per B5 */
+/* Linear / Vercel style headline gradient */
 .hero-gradient-text {
-  background: linear-gradient(135deg, #141413 25%, #666666 100%);
+  background: linear-gradient(180deg, #FFFFFF 20%, #CBD5E1 70%, #94A3B8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Ambient glow container */
+.ambient-glow {
+  background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.18), transparent 70%);
 }
 
 /* Modern Web Guidance: Dialog scroll containment without locking body/html */
@@ -65,8 +72,8 @@ dialog:modal {
 dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
-  background-color: rgba(20, 20, 19, 0.65);
-  backdrop-filter: blur(4px);
+  background-color: rgba(3, 7, 18, 0.75);
+  backdrop-filter: blur(8px);
 }
 
 /* Custom table wrapper scroll region */
@@ -75,18 +82,18 @@ dialog::backdrop {
   max-inline-size: 100%;
 }
 
-/* Custom scrollbars - warm stone tactile feel */
+/* High-tech custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: #0B0F19;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4CCC0;
+  background: #1E293B;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B8B0A2;
+  background: #334155;
 }

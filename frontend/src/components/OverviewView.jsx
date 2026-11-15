@@ -31,7 +31,7 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-7 h-7 border-2 border-[#1A1915] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -41,53 +41,59 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
       label: 'Active Positions',
       value: analytics?.total_jobs || 0,
       subtext: 'Open requirements',
+      color: 'text-blue-400',
     },
     {
       label: 'Screened Candidates',
       value: analytics?.total_candidates || 0,
       subtext: 'Parsed & indexed',
+      color: 'text-emerald-400',
     },
     {
       label: 'Processed Resumes',
       value: analytics?.processed_resumes || 0,
       subtext: 'Completed screenings',
+      color: 'text-cyan-400',
     },
     {
       label: 'Average Score',
       value: `${analytics?.average_score || 0}%`,
       subtext: 'Hybrid benchmark',
+      color: 'text-indigo-400',
     },
   ];
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300">
       
-      {/* Inverted Hero Card (Claude signature near-black contrast moment) */}
-      <div className="bg-[#181816] text-[#FAF8F5] border border-[#2E2C28] rounded-xl p-8 sm:p-10 shadow-sm relative overflow-hidden">
-        <div className="max-w-2xl space-y-4">
-          <div className="inline-flex items-center space-x-2 text-[11px] uppercase tracking-wider font-mono text-[#D96B43]">
+      {/* Hero Studio Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-8 sm:p-10 shadow-2xl relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="max-w-2xl space-y-4 relative">
+          <div className="inline-flex items-center space-x-2 text-xs font-mono font-medium text-blue-400 uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
             <span>Empirical Candidate Evaluation</span>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#FAF8F5] leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
             Objective resume screening, explained by design.
           </h1>
-          <p className="text-sm text-[#B8B2A7] leading-relaxed font-sans max-w-xl">
+          <p className="text-sm text-slate-400 leading-relaxed font-sans max-w-xl">
             SmartATS eliminates arbitrary AI hallucinations through a verifiable screening model: deterministic required skill verification combined with contextual experience analysis.
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-3">
             <button
               onClick={() => setActiveTab('upload')}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-[#CC5A36] hover:bg-[#B84F2E] text-white rounded-md text-xs font-semibold tracking-wide transition shadow-xs"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white rounded-xl text-xs font-semibold tracking-wide transition-all shadow-[0_0_15px_rgba(37,99,235,0.35)]"
             >
               <UploadCloud className="w-4 h-4" />
               <span>Ingest Resumes</span>
             </button>
             <button
               onClick={() => setActiveTab('jobs')}
-              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-[#262522] hover:bg-[#33312C] text-[#FAF8F5] border border-[#3D3A34] rounded-md text-xs font-semibold tracking-wide transition"
+              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 active:scale-[0.98] text-slate-200 hover:text-white border border-slate-700 rounded-xl text-xs font-semibold tracking-wide transition"
             >
               <span>Manage Job Openings</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#B8B2A7]" />
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
             </button>
           </div>
         </div>
@@ -98,33 +104,33 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
         {kpis.map((kpi, idx) => (
           <div
             key={idx}
-            className="bg-white border border-[#E5DFD5] rounded-xl p-5 sm:p-6 shadow-xs flex flex-col justify-between hover:-translate-y-0.5 transition-all duration-300"
+            className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-lg flex flex-col justify-between hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-300"
           >
-            <span className="text-[11px] uppercase tracking-wider font-mono text-[#8A8477]">
+            <span className="text-xs uppercase tracking-wider font-mono text-slate-400">
               {kpi.label}
             </span>
             <div className="my-3">
-              <div className="font-serif text-3xl sm:text-4xl text-[#1A1915]">
+              <div className={`text-3xl sm:text-4xl font-bold tracking-tight ${kpi.color}`}>
                 {kpi.value}
               </div>
             </div>
-            <div className="text-[11px] text-[#59554D] border-t border-[#F3EFEA] pt-2">
+            <div className="text-xs text-slate-400 border-t border-slate-800/80 pt-2">
               {kpi.subtext}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Two-Column Editorial Section */}
+      {/* Two-Column Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Score Distribution Breakdown */}
-        <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 sm:p-7 shadow-xs space-y-6 lg:col-span-1">
-          <div className="border-b border-[#E5DFD5] pb-4">
-            <div className="text-[11px] uppercase font-mono tracking-wider text-[#8A8477]">
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-7 shadow-lg space-y-6 lg:col-span-1">
+          <div className="border-b border-slate-800 pb-4">
+            <div className="text-xs uppercase font-mono tracking-wider text-slate-400">
               Screening Distribution
             </div>
-            <h2 className="font-serif text-xl font-bold text-[#1A1915] mt-1">
+            <h2 className="text-xl font-bold text-white mt-1">
               Score Tiers
             </h2>
           </div>
@@ -138,14 +144,14 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
                 return (
                   <div key={range} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
-                      <span className="font-mono font-medium text-[#1A1915]">{range}</span>
-                      <span className="font-mono text-[#8A8477]">
+                      <span className="font-mono font-medium text-slate-200">{range}</span>
+                      <span className="font-mono text-slate-400">
                         {count} candidates ({percentage}%)
                       </span>
                     </div>
-                    <div className="w-full bg-[#F3EFEA] rounded-xs h-2 overflow-hidden border border-[#E5DFD5]">
+                    <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
                       <div
-                        className="h-full bg-[#1A1915] transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500"
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
@@ -154,35 +160,35 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
               })}
           </div>
 
-          <div className="pt-2 text-xs text-[#59554D] bg-[#FAF8F5] p-4 rounded-lg border border-[#E5DFD5] leading-relaxed">
-            <div className="font-mono text-[11px] uppercase text-[#8A8477] mb-1">
+          <div className="pt-2 text-xs text-slate-400 bg-slate-950/80 p-4 rounded-xl border border-slate-800 leading-relaxed">
+            <div className="font-mono text-[11px] uppercase text-blue-400 font-semibold mb-1">
               Scoring Standard
             </div>
-            Scores reflect weighted evaluation: 60% mandatory keyword matches and 40% TF-IDF cosine alignment against the job description.
+            Scores reflect weighted evaluation: verified mandatory keyword matches and contextual cosine alignment against the job description.
           </div>
         </div>
 
-        {/* Active Openings Editorial List */}
-        <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 sm:p-7 shadow-xs space-y-6 lg:col-span-2">
-          <div className="flex items-center justify-between border-b border-[#E5DFD5] pb-4">
+        {/* Active Openings List */}
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-7 shadow-lg space-y-6 lg:col-span-2">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
             <div>
-              <div className="text-[11px] uppercase font-mono tracking-wider text-[#8A8477]">
+              <div className="text-xs uppercase font-mono tracking-wider text-slate-400">
                 Live Postings
               </div>
-              <h2 className="font-serif text-xl font-bold text-[#1A1915] mt-1">
+              <h2 className="text-xl font-bold text-white mt-1">
                 Active Job Openings
               </h2>
             </div>
             <button
               onClick={() => setActiveTab('jobs')}
-              className="text-xs font-semibold text-[#CC5A36] hover:text-[#B84F2E] inline-flex items-center space-x-1 transition"
+              className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center space-x-1 transition"
             >
               <span>View Directory</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="divide-y divide-[#E5DFD5]">
+          <div className="divide-y divide-slate-800">
             {jobs.slice(0, 4).map((job) => (
               <div
                 key={job.job_id}
@@ -190,25 +196,25 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
               >
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2.5">
-                    <h3 className="font-serif text-base font-bold text-[#1A1915] group-hover:text-[#CC5A36] transition">
+                    <h3 className="text-base font-bold text-white group-hover:text-blue-400 transition">
                       {job.title}
                     </h3>
-                    <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-[#D6CEBF] bg-[#F3EFEA] text-[#59554D]">
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400">
                       {job.applications_count || 0} applicants
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {job.required_skills.slice(0, 5).map((skill, i) => (
                       <span
                         key={i}
-                        className="px-2 py-0.5 rounded text-[11px] font-sans font-medium bg-[#FAF8F5] text-[#59554D] border border-[#E5DFD5]"
+                        className="px-2 py-0.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700/60"
                       >
                         {skill}
                       </span>
                     ))}
                     {job.required_skills.length > 5 && (
-                      <span className="px-1.5 py-0.5 text-[10px] text-[#8A8477] font-mono">
+                      <span className="px-1.5 py-0.5 text-xs text-slate-500 font-mono">
                         +{job.required_skills.length - 5}
                       </span>
                     )}
@@ -218,13 +224,13 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings }) {
                 <div className="flex items-center space-x-2 self-start sm:self-center">
                   <button
                     onClick={() => onSelectJobForRankings(job.job_id)}
-                    className="px-3 py-1.5 bg-[#FAF8F5] hover:bg-[#1A1915] text-[#1A1915] hover:text-white border border-[#D6CEBF] rounded text-xs font-semibold transition shadow-2xs"
+                    className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold transition active:scale-[0.98] shadow-xs"
                   >
                     Leaderboard
                   </button>
                   <button
                     onClick={() => setActiveTab('upload')}
-                    className="px-3 py-1.5 bg-white hover:bg-[#FAF8F5] text-[#59554D] hover:text-[#1A1915] border border-[#E5DFD5] rounded text-xs font-medium transition"
+                    className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 rounded-lg text-xs font-medium transition active:scale-[0.98]"
                   >
                     Upload
                   </button>

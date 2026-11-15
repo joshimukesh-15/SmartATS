@@ -7,6 +7,7 @@ import {
   GitCompare,
   BarChart3,
   Globe,
+  Sparkles,
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
@@ -20,9 +21,9 @@ export default function Navbar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur border-b border-[#E5DFD5]">
+    <header className="sticky top-0 z-40 bg-[#0B0F19]/80 backdrop-blur-xl border-b border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-18">
+        <div className="flex items-center justify-between h-16">
           
           {/* Brand */}
           <div className="flex items-center space-x-3.5">
@@ -31,20 +32,20 @@ export default function Navbar({ activeTab, setActiveTab }) {
               title="Return to Product Landing Page"
               className="flex items-center space-x-3 text-left focus:outline-none group"
             >
-              <div className="w-9 h-9 rounded-md bg-[#141413] group-hover:bg-[#2B2A27] flex items-center justify-center text-[#FAF8F5] shadow-xs transition-colors">
-                <span className="font-serif text-lg font-bold">S</span>
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] group-hover:scale-105 transition-transform duration-300">
+                <span className="font-bold text-sm tracking-tight">S</span>
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-serif text-xl font-bold tracking-tight text-[#141413]">
+                  <span className="text-base font-bold tracking-tight text-white group-hover:text-blue-400 transition-colors">
                     SmartATS
                   </span>
-                  <span className="text-[10px] uppercase font-mono font-medium tracking-wider px-2 py-0.5 rounded border border-[#D4CCC0] bg-[#F3EFEA] text-[#524E46]">
+                  <span className="text-[10px] uppercase font-mono font-semibold tracking-wider px-2 py-0.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400">
                     Studio
                   </span>
                 </div>
-                <p className="text-[11px] font-sans text-[#857F74]">
-                  Deterministic Screening System
+                <p className="text-[11px] text-slate-400">
+                  Explainable Resume Matching
                 </p>
               </div>
             </button>
@@ -60,10 +61,10 @@ export default function Navbar({ activeTab, setActiveTab }) {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all active:scale-[0.98] ${
+                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-all active:scale-[0.98] ${
                       isActive
-                        ? 'bg-[#141413] text-[#FAF8F5] shadow-xs'
-                        : 'text-[#524E46] hover:text-[#141413] hover:bg-[#F3EFEA]'
+                        ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.35)]'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -73,13 +74,13 @@ export default function Navbar({ activeTab, setActiveTab }) {
               })}
             </nav>
 
-            <div className="h-5 w-px bg-[#E5DFD5] mx-1 hidden sm:block"></div>
+            <div className="h-5 w-px bg-slate-800 mx-1 hidden sm:block"></div>
 
             <button
               onClick={() => setActiveTab('landing')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border border-[#D4CCC0] bg-white hover:bg-[#F3EFEA] active:scale-[0.98] text-[#141413] transition shadow-xs focus:outline-none focus:ring-2 focus:ring-[#CC5A36]"
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700/80 bg-slate-850 hover:bg-slate-800 active:scale-[0.98] text-slate-200 hover:text-white transition-all shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <Globe className="w-3.5 h-3.5 text-[#CC5A36]" />
+              <Globe className="w-3.5 h-3.5 text-blue-400" />
               <span className="hidden sm:inline">Landing Page</span>
             </button>
           </div>
