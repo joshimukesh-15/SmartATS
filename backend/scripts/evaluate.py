@@ -19,8 +19,8 @@ from app.ml.evaluation import (
     evaluate_extraction_metrics
 )
 
-DATASET_FILE = os.path.abspath("data/evaluation_dataset/dataset.json")
-REPORT_PATH = os.path.abspath("reports/evaluation_report.csv")
+DATASET_FILE = os.path.join(PROJECT_ROOT, "data", "evaluation_dataset", "dataset.json")
+REPORT_PATH = os.path.join(PROJECT_ROOT, "reports", "evaluation_report.csv")
 
 
 def run_evaluation():

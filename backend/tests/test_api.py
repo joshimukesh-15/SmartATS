@@ -58,6 +58,8 @@ def test_resume_processing_and_ranking_flow(db_session):
 
     # Use generated test resume
     pdf_path = os.path.abspath("data/test_resumes/sarah_jenkins_resume.pdf")
+    if not os.path.exists(pdf_path):
+        pdf_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "test_resumes", "sarah_jenkins_resume.pdf"))
     assert os.path.exists(pdf_path)
 
     # Create candidate and application

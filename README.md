@@ -164,94 +164,84 @@ Full benchmark data is saved in [`reports/evaluation_report.csv`](reports/evalua
 ## 6. Directory Structure
 
 ```
-smart-ats/
-├── app/
-│   ├── main.py                     # FastAPI application entrypoint & static mount
-│   ├── api/
-│   │   ├── jobs.py                 # Job CRUD endpoints
-│   │   ├── candidates.py           # Candidate profile endpoints
-│   │   ├── resumes.py              # Resume upload & application handling
-│   │   └── matches.py              # Rankings, comparison, analytics & CSV export
-│   ├── core/
-│   │   ├── config.py               # Pydantic BaseSettings & environment variables
-│   │   └── security.py             # File sanitization & extension validation
-│   ├── database/
-│   │   ├── database.py             # SQLAlchemy session & engine
-│   │   └── models.py               # Relational models (Job, Candidate, Application, MatchResult)
-│   ├── schemas/
-│   │   ├── job.py                  # Pydantic schemas for jobs
-│   │   ├── candidate.py            # Pydantic schemas for candidates
-│   │   ├── application.py          # Application upload & response schemas
-│   │   └── match.py                # Ranking, comparison & explainability schemas
-│   ├── services/
-│   │   ├── parser.py               # PDF (PyMuPDF) and DOCX (python-docx) extraction
-│   │   ├── ocr.py                  # Tesseract OCR fallback handler
-│   │   ├── extractor.py            # Contact & token-boundary skill extraction
-│   │   ├── taxonomy.py             # Comprehensive technical skill canonical dictionary
-│   │   ├── duplicate.py            # SHA-256 duplicate detection & deduplication
-│   │   ├── matcher.py              # Hybrid scoring & explainable breakdown generator
-│   │   ├── ranking.py              # Leaderboard ranking service
-│   │   ├── comparison.py           # Multi-candidate comparison service
-│   │   └── processor.py            # Asynchronous background resume processor
-│   ├── ml/
-│   │   ├── preprocessing.py        # Text normalization
-│   │   ├── vectorizer.py           # TF-IDF cosine similarity computation
-│   │   └── evaluation.py           # Precision@K, Recall@K, NDCG@K metrics
-│   └── utils/
-│       ├── file_handler.py         # Streaming file save with size validation
-│       └── exporters.py            # Pandas CSV leaderboard exporter
+SmartATS/
+├── backend/                        # Dedicated Python 3.11+ FastAPI Backend
+│   ├── app/                        # Core FastAPI application
+│   │   ├── main.py                 # FastAPI application entrypoint & static mount
+│   │   ├── api/
+│   │   │   ├── jobs.py             # Job CRUD endpoints
+│   │   │   ├── candidates.py       # Candidate profile endpoints
+│   │   │   ├── resumes.py          # Resume upload & application handling
+│   │   │   └── matches.py          # Rankings, comparison, analytics & CSV export
+│   │   ├── core/
+│   │   │   ├── config.py           # Pydantic BaseSettings & environment variables
+│   │   │   └── security.py         # File sanitization & extension validation
+│   │   ├── database/
+│   │   │   ├── database.py         # SQLAlchemy session & engine
+│   │   │   └── models.py           # Relational models (Job, Candidate, Application, MatchResult)
+│   │   ├── schemas/
+│   │   │   ├── job.py              # Pydantic schemas for jobs
+│   │   │   ├── candidate.py        # Pydantic schemas for candidates
+│   │   │   ├── application.py      # Application upload & response schemas
+│   │   │   └── match.py            # Ranking, comparison & explainability schemas
+│   │   ├── services/
+│   │   │   ├── parser.py           # PDF (PyMuPDF) and DOCX (python-docx) extraction
+│   │   │   ├── ocr.py              # Tesseract OCR fallback handler
+│   │   │   ├── extractor.py        # Contact & token-boundary skill extraction
+│   │   │   ├── taxonomy.py         # Comprehensive technical skill canonical dictionary
+│   │   │   ├── duplicate.py        # SHA-256 duplicate detection & deduplication
+│   │   │   ├── matcher.py          # Hybrid scoring & explainable breakdown generator
+│   │   │   ├── ranking.py          # Leaderboard ranking service
+│   │   │   ├── comparison.py       # Multi-candidate comparison service
+│   │   │   └── processor.py        # Asynchronous background resume processor
+│   │   ├── ml/
+│   │   │   ├── preprocessing.py    # Text normalization
+│   │   │   ├── vectorizer.py       # TF-IDF cosine similarity computation
+│   │   │   └── evaluation.py       # Precision@K, Recall@K, NDCG@K metrics
+│   │   └── utils/
+│   │       ├── file_handler.py     # Streaming file save with size validation
+│   │       └── exporters.py        # Pandas CSV leaderboard exporter
+│   ├── alembic/                    # Database migration scripts
+│   ├── tests/                      # 17 Automated pytest unit & integration tests
+│   ├── data/
+│   │   ├── resumes/                # Storage directory for uploaded resumes
+│   │   ├── test_resumes/           # Sample PDF & DOCX test resumes
+│   │   └── evaluation_dataset/     # Labeled evaluation dataset
+│   ├── reports/
+│   │   └── evaluation_report.csv   # Exported benchmark metrics
+│   ├── scripts/
+│   │   ├── evaluate.py             # Evaluation & benchmarking runner
+│   │   ├── generate_sample_resumes.py # Generates test PDF & DOCX documents
+│   │   └── seed_demo_data.py       # Populates DB with initial jobs and candidates
+│   ├── requirements.txt            # Python dependencies
+│   ├── Dockerfile                  # Backend container build
+│   ├── alembic.ini                 # Alembic database migration config
+│   ├── pytest.ini                  # Pytest runner configuration
+│   └── .env.example                # Environment variables template
 │
-├── frontend/                       # Modern React 19 Frontend (Vite + Tailwind CSS)
+├── frontend/                       # Modern React 19 Frontend (Vite 8 + Tailwind CSS v4)
 │   ├── src/
-│   │   ├── utils/
-│   │   │   └── smoothScroll.js     # Lenis-style smooth virtual scroll engine (RAF lerp)
 │   │   ├── components/
 │   │   │   ├── Navbar.jsx          # Top luxury navigation & view switcher
-│   │   │   ├── LandingPageView.jsx # Master landing page orchestrator
-│   │   │   ├── OverviewView.jsx    # Recruiter KPI dashboard with Score Tiers chart
-│   │   │   ├── JobsView.jsx        # Job opening bento cards & tag editor
-│   │   │   ├── UploadView.jsx      # Gold dashed dropzone & duplicate alerts
+│   │   │   ├── LandingPageView.jsx # Master landing page orchestrator (8 quiet luxury sections)
+│   │   │   ├── OverviewView.jsx    # Recruiter KPI dashboard with Score Tiers chart & mini leaderboard
+│   │   │   ├── JobsView.jsx        # Job opening cards & tag editor
+│   │   │   ├── UploadView.jsx      # Upload dropzone & duplicate detection alerts
 │   │   │   ├── RankingsView.jsx    # Candidate leaderboard with tier score badges
 │   │   │   ├── CompareView.jsx     # Side-by-side technical skill matrix with winner highlight
-│   │   │   ├── AnalyticsView.jsx   # Skill gap frequency diagnostics & identical stat cards
+│   │   │   ├── AnalyticsView.jsx   # Skill gap frequency diagnostics & stat cards
 │   │   │   ├── CandidateModal.jsx  # Native <dialog> explainability breakdown
 │   │   │   ├── CreateJobModal.jsx  # Native <dialog> job creation modal
-│   │   │   └── landing/            # Modular Award-Style Landing Page Sections
-│   │   │       ├── FloatingNav.jsx     # Pill-shaped nav with 40px scroll shrink & mobile drawer
-│   │   │       ├── HeroSection.jsx     # 2-col split + 3D tilted card + 3 parallax floating chips
-│   │   │       ├── SkillsMarquee.jsx   # Infinite marquee with dual-edge mask gradient
-│   │   │       ├── BentoBenefits.jsx   # 4-col bento grid + 2x2 cut-corner card with spotlight
-│   │   │       ├── WorkflowSticky.jsx  # Sticky left col + scroll progress line + 3 step panels
-│   │   │       ├── StatsBand.jsx       # Full-width diagonal band + count-up + thin gold dividers
-│   │   │       ├── ProductShowcase.jsx # Browser mockup with clip-path inset reveal on scroll
-│   │   │       ├── FAQSection.jsx      # Sticky pitch left + smooth height accordion right
-│   │   │       ├── CTASection.jsx      # Arched top ellipse + subtle grain + gold button
-│   │   │       ├── FooterSection.jsx   # Minimal links + 18vw cropped serif wordmark
-│   │   │       ├── Reveal.jsx          # Shared Viewport Entry & 80ms Stagger Wrapper
-│   │   │       └── MagneticButton.jsx  # Magnetic cursor tracking (max 8px) + sliding arrow
+│   │   │   └── landing/            # 8 Quiet Luxury Landing Page Sections
 │   │   ├── api.js                  # Frontend API client
-│   │   ├── App.jsx                 # Master application controller
-│   │   ├── index.css               # Tailwind v4, CSS variables & clip-path utilities
-│   │   └── index.html              # Google Fonts (Playfair Display, Fraunces, Inter, Mono)
-│   ├── tailwind.config.js          # Extended theme tokens for luxury palette
+│   │   ├── App.jsx                 # Master application shell
+│   │   ├── index.css               # Single @theme token source (wine, cream, gold)
+│   │   └── index.html              # Instrument Serif, Geist Sans, Geist Mono typography
 │   ├── package.json
 │   └── vite.config.js
 │
-├── alembic/                        # Database migration scripts
-├── tests/                          # 17 Automated pytest unit & integration tests
-├── data/
-│   ├── resumes/                    # Storage directory for uploaded resumes
-│   ├── test_resumes/               # Sample PDF & DOCX test resumes
-│   └── evaluation_dataset/         # Labeled evaluation dataset
-├── reports/
-│   └── evaluation_report.csv       # Exported benchmark metrics
-├── scripts/
-│   ├── evaluate.py                 # Evaluation & benchmarking runner
-│   ├── generate_sample_resumes.py  # Generates test PDF & DOCX documents
-│   └── seed_demo_data.py           # Populates DB with initial jobs and candidates
-├── requirements.txt                # Python dependencies
-├── Dockerfile                      # Production container build
 ├── docker-compose.yml              # Multi-container orchestration (App + PostgreSQL)
+├── .gitignore
 └── README.md
 ```
 
@@ -265,28 +255,29 @@ smart-ats/
 
 ### Option A: Local Development Setup
 
-1. **Clone the repository and install backend dependencies:**
+1. **Install backend dependencies:**
    ```bash
-   git clone https://github.com/joshimukesh-15/SmartATS.git
-   cd SmartATS
+   cd backend
    pip install -r requirements.txt
    ```
 
 2. **Initialize Database Migrations & Seed Demo Data:**
    ```bash
-   alembic upgrade head
+   # From the backend directory:
+   python -m alembic upgrade head
    python scripts/seed_demo_data.py
    ```
 
 3. **Start the FastAPI Backend Server:**
    ```bash
-   uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+   # From the backend directory:
+   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
    ```
    Interactive OpenAPI Documentation available at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 4. **Start the React Frontend Dev Server:**
    ```bash
-   cd frontend
+   cd ../frontend
    npm install
    npm run dev
    ```
@@ -308,17 +299,20 @@ Access the application directly at [http://localhost:8000](http://localhost:8000
 
 Run the automated test suite covering parsing, extraction, duplicate detection, hybrid matching, and API endpoints:
 ```bash
+cd backend
 python -m pytest -v tests/
 ```
 
 Run the benchmark evaluation script:
 ```bash
+cd backend
 python scripts/evaluate.py
 ```
 
-Build the production frontend bundle:
+Build and lint the production frontend bundle:
 ```bash
 npm --prefix frontend run build
+npm --prefix frontend run lint
 ```
 
 ---

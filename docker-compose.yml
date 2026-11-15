@@ -15,7 +15,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   smartats-app:
-    build: .
+    build: ./backend
     container_name: smartats-web
     restart: always
     depends_on:
@@ -26,7 +26,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./data/resumes:/app/data/resumes
+      - ./backend/data/resumes:/app/data/resumes
 
 volumes:
   postgres_data:

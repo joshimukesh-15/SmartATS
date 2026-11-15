@@ -3,9 +3,10 @@ import json
 import fitz  # PyMuPDF
 import docx
 
-DATASET_PATH = os.path.abspath("data/evaluation_dataset/dataset.json")
-OUTPUT_DIR = os.path.abspath("data/test_resumes")
-RESUMES_DIR = os.path.abspath("data/resumes")
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+DATASET_PATH = os.path.join(PROJECT_ROOT, "data", "evaluation_dataset", "dataset.json")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "data", "test_resumes")
+RESUMES_DIR = os.path.join(PROJECT_ROOT, "data", "resumes")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(RESUMES_DIR, exist_ok=True)

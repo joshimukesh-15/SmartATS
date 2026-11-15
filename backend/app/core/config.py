@@ -4,6 +4,11 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DEFAULT_DB_PATH = os.path.join(BACKEND_DIR, "smartats.db").replace("\\", "/")
+DEFAULT_UPLOAD_DIR = os.path.join(BACKEND_DIR, "data", "resumes")
+
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "SmartATS"
     API_V1_STR: str = "/api/v1"
@@ -11,10 +16,10 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # Database
-    DATABASE_URL: str = "sqlite:///./smartats.db"
+    DATABASE_URL: str = f"sqlite:///{DEFAULT_DB_PATH}"
 
     # File Uploads
-    UPLOAD_DIR: str = os.path.abspath("./data/resumes")
+    UPLOAD_DIR: str = DEFAULT_UPLOAD_DIR
     MAX_UPLOAD_SIZE_MB: int = 15
 
     # Matching Weights

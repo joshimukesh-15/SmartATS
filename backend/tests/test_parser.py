@@ -18,6 +18,8 @@ def test_clean_extracted_text():
 
 def test_extract_pdf_text():
     sample_pdf = os.path.abspath("data/test_resumes/sarah_jenkins_resume.pdf")
+    if not os.path.exists(sample_pdf):
+        sample_pdf = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "test_resumes", "sarah_jenkins_resume.pdf"))
     if os.path.exists(sample_pdf):
         text, used_ocr = extract_pdf_text(sample_pdf)
         assert len(text) > 100
@@ -27,6 +29,8 @@ def test_extract_pdf_text():
 
 def test_extract_docx_text():
     sample_docx = os.path.abspath("data/test_resumes/alex_rivera_resume.docx")
+    if not os.path.exists(sample_docx):
+        sample_docx = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "test_resumes", "alex_rivera_resume.docx"))
     if os.path.exists(sample_docx):
         text, used_ocr = extract_docx_text(sample_docx)
         assert len(text) > 100

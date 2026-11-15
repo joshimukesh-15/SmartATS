@@ -1,0 +1,6 @@
+Algorithm,Weight_Keyword,Weight_TFIDF,Precision@1,Precision@2,Precision@3,Recall@3,NDCG@3,Avg_Latency_ms,Skill_F1,Email_Accuracy,Phone_Accuracy
+Keyword Only (Baseline),1.0,0.0,1.0,1.0,1.0,0.8667,1.0,1.78,0.9881,1.0,1.0
+TF-IDF Only (Baseline),0.0,1.0,1.0,1.0,0.8889,0.7556,0.9742,1.59,0.9881,1.0,1.0
+Hybrid (70% KW / 30% TFIDF),0.7,0.3,1.0,1.0,1.0,0.8667,1.0,1.64,0.9881,1.0,1.0
+Hybrid (60% KW / 40% TFIDF),0.6,0.4,1.0,1.0,1.0,0.8667,1.0,1.86,0.9881,1.0,1.0
+Hybrid (50% KW / 50% TFIDF),0.5,0.5,1.0,1.0,1.0,0.8667,1.0,1.8,0.9881,1.0,1.0

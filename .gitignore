@@ -31,15 +31,22 @@ wheels/
 # Uploads and temporary data
 data/resumes/*
 !data/resumes/.gitkeep
+backend/data/resumes/*
+!backend/data/resumes/.gitkeep
 
 # Environments
 .env
 .venv
+backend/.env
+backend/.venv
 
 # Testing and coverage
 .pytest_cache/
+backend/.pytest_cache/
 .coverage
+backend/.coverage
 htmlcov/
+backend/htmlcov/
 
 # Node / Frontend
 frontend/node_modules/
