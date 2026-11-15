@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchOverviewAnalytics, fetchJobs, fetchJobAnalytics } from '../api';
 
 export default function AnalyticsView({ selectedJobId }) {
@@ -67,7 +67,6 @@ export default function AnalyticsView({ selectedJobId }) {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-200">
-      
       {/* Page Header: Serif H1 (36-40px) + One Muted Sentence */}
       <div className="pb-6 border-b border-line">
         <h1 className="font-serif text-[36px] sm:text-[40px] font-normal text-ink tracking-tight leading-none">
@@ -81,19 +80,12 @@ export default function AnalyticsView({ selectedJobId }) {
       {/* 4 Quiet Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {kpis.map((kpi, idx) => (
-          <div
-            key={idx}
-            className="quiet-card p-6 bg-surface space-y-2"
-          >
+          <div key={idx} className="quiet-card p-6 bg-surface space-y-2">
             <span className="text-[13px] font-sans font-medium text-ink-muted block">
               {kpi.label}
             </span>
-            <div className="font-mono text-3xl font-semibold text-ink">
-              {kpi.value}
-            </div>
-            <div className="text-[13px] text-ink-muted/80 font-sans">
-              {kpi.subtext}
-            </div>
+            <div className="font-mono text-3xl font-semibold text-ink">{kpi.value}</div>
+            <div className="text-[13px] text-ink-muted/80 font-sans">{kpi.subtext}</div>
           </div>
         ))}
       </div>
@@ -126,14 +118,14 @@ export default function AnalyticsView({ selectedJobId }) {
 
         {jobAnalytics && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            
             {/* Top Matched Skills: Wine Bars */}
             <div className="space-y-4">
               <span className="text-[13px] font-mono uppercase text-ink-muted block">
                 Top Matched Competencies
               </span>
               <div className="space-y-3.5">
-                {jobAnalytics.most_common_matched_skills && jobAnalytics.most_common_matched_skills.length > 0 ? (
+                {jobAnalytics.most_common_matched_skills &&
+                jobAnalytics.most_common_matched_skills.length > 0 ? (
                   jobAnalytics.most_common_matched_skills.map((item, idx) => {
                     const max = jobAnalytics.total_processed || 1;
                     const percent = Math.round((item.count / max) * 100);
@@ -155,7 +147,9 @@ export default function AnalyticsView({ selectedJobId }) {
                     );
                   })
                 ) : (
-                  <p className="text-[13px] text-ink-muted font-sans">No matching records available.</p>
+                  <p className="text-[13px] text-ink-muted font-sans">
+                    No matching records available.
+                  </p>
                 )}
               </div>
             </div>
@@ -166,7 +160,8 @@ export default function AnalyticsView({ selectedJobId }) {
                 Frequently Missing Requirements
               </span>
               <div className="space-y-3.5">
-                {jobAnalytics.most_frequently_missing_skills && jobAnalytics.most_frequently_missing_skills.length > 0 ? (
+                {jobAnalytics.most_frequently_missing_skills &&
+                jobAnalytics.most_frequently_missing_skills.length > 0 ? (
                   jobAnalytics.most_frequently_missing_skills.map((item, idx) => {
                     const max = jobAnalytics.total_processed || 1;
                     const percent = Math.round((item.count / max) * 100);
@@ -188,15 +183,15 @@ export default function AnalyticsView({ selectedJobId }) {
                     );
                   })
                 ) : (
-                  <p className="text-[13px] text-ink font-sans">No competency gaps detected in applicants.</p>
+                  <p className="text-[13px] text-ink font-sans">
+                    No competency gaps detected in applicants.
+                  </p>
                 )}
               </div>
             </div>
-
           </div>
         )}
       </div>
-
     </div>
   );
 }

@@ -1,16 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import {
-  FileSpreadsheet,
-  GitCompare,
-  Search,
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { FileSpreadsheet, GitCompare, Search } from 'lucide-react';
 import { fetchJobs, fetchJobRankings, getExportCsvUrl } from '../api';
 
-export default function RankingsView({
-  selectedJobId,
-  onViewCandidate,
-  onCompareCandidates,
-}) {
+export default function RankingsView({ selectedJobId, onViewCandidate, onCompareCandidates }) {
   const [jobs, setJobs] = useState([]);
   const [jobId, setJobId] = useState(selectedJobId || '');
   const [rankingsData, setRankingsData] = useState(null);
@@ -59,15 +51,15 @@ export default function RankingsView({
   };
 
   const candidates = rankingsData?.rankings || [];
-  const filteredCandidates = candidates.filter((c) =>
-    (c.candidate_name && c.candidate_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (c.candidate_email && c.candidate_email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    c.matched_skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredCandidates = candidates.filter(
+    (c) =>
+      (c.candidate_name && c.candidate_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (c.candidate_email && c.candidate_email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      c.matched_skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      
       {/* Page Header: Serif H1 (36-40px) + One Muted Sentence + Action Right */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
         <div>
@@ -75,7 +67,8 @@ export default function RankingsView({
             Candidate Leaderboard
           </h1>
           <p className="text-[15px] text-ink-muted mt-2 font-sans">
-            Ranked candidate recommendations with verified keyword coverage and normalized text similarity.
+            Ranked candidate recommendations with verified keyword coverage and normalized text
+            similarity.
           </p>
         </div>
 
@@ -106,10 +99,12 @@ export default function RankingsView({
 
       {/* Control Bar: Job Selector & Search */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-surface border border-line p-5 rounded-[16px] shadow-xs">
-        
         {/* Job Dropdown */}
         <div className="md:col-span-1">
-          <label htmlFor="job-filter" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
+          <label
+            htmlFor="job-filter"
+            className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5"
+          >
             Target Job Opening
           </label>
           <select
@@ -128,7 +123,10 @@ export default function RankingsView({
 
         {/* Search */}
         <div className="md:col-span-2">
-          <label htmlFor="candidate-search" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
+          <label
+            htmlFor="candidate-search"
+            className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5"
+          >
             Search Applicants
           </label>
           <div className="relative">
@@ -143,21 +141,24 @@ export default function RankingsView({
             />
           </div>
         </div>
-
       </div>
 
       {/* Main Leaderboard Content */}
       {loading ? (
         <div className="quiet-card bg-surface overflow-hidden p-6 space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 bg-surface-alt/50 rounded-[8px] animate-pulse flex items-center px-4 justify-between" />
+            <div
+              key={i}
+              className="h-16 bg-surface-alt/50 rounded-[8px] animate-pulse flex items-center px-4 justify-between"
+            />
           ))}
         </div>
       ) : filteredCandidates.length === 0 ? (
         <div className="quiet-card bg-surface p-12 text-center space-y-3">
           <h3 className="font-serif text-2xl text-ink font-normal">No Evaluation Records</h3>
           <p className="text-[14px] text-ink-muted max-w-sm mx-auto font-sans">
-            No candidates processed for this position yet. Upload documents via the Ingestion tab to generate scores.
+            No candidates processed for this position yet. Upload documents via the Ingestion tab to
+            generate scores.
           </p>
         </div>
       ) : (
@@ -169,13 +170,27 @@ export default function RankingsView({
                   <th scope="col" className="p-4 w-12 text-center">
                     <span className="sr-only">Select</span>
                   </th>
-                  <th scope="col" className="py-4 px-3 w-16 text-center font-normal">Rank</th>
-                  <th scope="col" className="py-4 px-3 font-normal">Candidate</th>
-                  <th scope="col" className="py-4 px-3 text-center font-normal">Composite Score</th>
-                  <th scope="col" className="py-4 px-3 text-center font-normal">Required Coverage</th>
-                  <th scope="col" className="py-4 px-3 text-center font-normal">Similarity</th>
-                  <th scope="col" className="py-4 px-3 font-normal">Verified Skills</th>
-                  <th scope="col" className="py-4 px-4 text-right font-normal">Dossier</th>
+                  <th scope="col" className="py-4 px-3 w-16 text-center font-normal">
+                    Rank
+                  </th>
+                  <th scope="col" className="py-4 px-3 font-normal">
+                    Candidate
+                  </th>
+                  <th scope="col" className="py-4 px-3 text-center font-normal">
+                    Composite Score
+                  </th>
+                  <th scope="col" className="py-4 px-3 text-center font-normal">
+                    Required Coverage
+                  </th>
+                  <th scope="col" className="py-4 px-3 text-center font-normal">
+                    Similarity
+                  </th>
+                  <th scope="col" className="py-4 px-3 font-normal">
+                    Verified Skills
+                  </th>
+                  <th scope="col" className="py-4 px-4 text-right font-normal">
+                    Dossier
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line text-[14px]">
@@ -206,9 +221,7 @@ export default function RankingsView({
                       {/* Rank */}
                       <td className="py-4 px-3 text-center font-mono">
                         {isTop1 ? (
-                          <span className="text-wine font-semibold text-[13px]">
-                            #1
-                          </span>
+                          <span className="text-wine font-semibold text-[13px]">#1</span>
                         ) : (
                           <span className="text-ink-muted text-[13px]">#{cand.rank}</span>
                         )}
@@ -227,7 +240,9 @@ export default function RankingsView({
                       {/* Composite Score with Slim 4px Bar (No filled pill badges!) */}
                       <td className="py-4 px-3 text-center font-mono w-32">
                         <div className="space-y-1">
-                          <div className={`text-[16px] font-semibold ${isTop1 ? 'text-wine' : 'text-ink'}`}>
+                          <div
+                            className={`text-[16px] font-semibold ${isTop1 ? 'text-wine' : 'text-ink'}`}
+                          >
                             {cand.final_score.toFixed(1)}%
                           </div>
                           <div className="w-20 mx-auto bg-line h-1 rounded-full overflow-hidden">
@@ -287,7 +302,6 @@ export default function RankingsView({
           </div>
         </div>
       )}
-
     </div>
   );
 }

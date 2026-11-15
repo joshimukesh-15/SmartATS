@@ -4,15 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartATS — Explainable Resume Screening & Matching</title>
-    <meta name="description" content="Deterministic, auditable resume screening and candidate ranking for engineering hiring teams." />
-    <meta name="theme-color" content="#FBF7F2" />
-    <meta property="og:title" content="SmartATS — Explainable Resume Screening & Matching" />
-    <meta property="og:description" content="Transparent, auditable resume screening with deterministic keyword coverage and vector text similarity." />
+    <title>SmartATS | Explainable resume screening</title>
+    <meta name="description" content="Deterministic resume screening and candidate ranking for engineering teams with transparent skill coverage and lexical text matching." />
+    <meta name="theme-color" content="#F7F6F3" />
+    <meta property="og:title" content="SmartATS | Explainable resume screening" />
+    <meta property="og:description" content="Deterministic resume screening and candidate ranking for engineering teams with transparent skill coverage and lexical text matching." />
     <meta property="og:type" content="website" />
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('smartats_theme');
+          if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>

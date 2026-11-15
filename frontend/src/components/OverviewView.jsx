@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {
-  UploadCloud,
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { UploadCloud } from 'lucide-react';
 import { fetchOverviewAnalytics, fetchJobs, fetchJobRankings } from '../api';
 
 export default function OverviewView({ setActiveTab, onSelectJobForRankings, onViewCandidate }) {
@@ -106,7 +104,6 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings, onV
 
   return (
     <div className="space-y-10 animate-in fade-in duration-200">
-      
       {/* Page Header: Serif H1 (36-40px) + One Muted Sentence + Action Right */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
         <div>
@@ -132,32 +129,22 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings, onV
       {/* 4 Quiet Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {kpis.map((kpi, idx) => (
-          <div
-            key={idx}
-            className="quiet-card p-6 bg-surface space-y-2"
-          >
+          <div key={idx} className="quiet-card p-6 bg-surface space-y-2">
             <span className="text-[13px] font-sans font-medium text-ink-muted block">
               {kpi.label}
             </span>
-            <div className="font-mono text-3xl font-semibold text-ink">
-              {kpi.value}
-            </div>
-            <div className="text-[13px] text-ink-muted/80 font-sans">
-              {kpi.subtext}
-            </div>
+            <div className="font-mono text-3xl font-semibold text-ink">{kpi.value}</div>
+            <div className="text-[13px] text-ink-muted/80 font-sans">{kpi.subtext}</div>
           </div>
         ))}
       </div>
 
       {/* Grid: Score Tiers Breakdown Chart & Top Candidates List */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
         {/* Left: Score Tiers Chart */}
         <div className="lg:col-span-5 quiet-card p-6 sm:p-8 space-y-6 bg-surface">
           <div>
-            <h2 className="font-serif text-2xl text-ink font-normal">
-              Score Tiers Distribution
-            </h2>
+            <h2 className="font-serif text-2xl text-ink font-normal">Score Tiers Distribution</h2>
             <p className="text-[13px] text-ink-muted font-sans mt-1">
               Candidate volume categorized by matching thresholds.
             </p>
@@ -213,9 +200,7 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings, onV
         <div className="lg:col-span-7 quiet-card p-6 sm:p-8 space-y-6 bg-surface">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-serif text-2xl text-ink font-normal">
-                Leading Candidates
-              </h2>
+              <h2 className="font-serif text-2xl text-ink font-normal">Leading Candidates</h2>
               <p className="text-[13px] text-ink-muted font-sans mt-1">
                 Highest ranked applicants across active specifications.
               </p>
@@ -246,9 +231,7 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings, onV
                       {cand.candidate_name}
                     </span>
                   </div>
-                  <div className="text-[13px] text-ink-muted font-mono">
-                    {cand.candidate_email}
-                  </div>
+                  <div className="text-[13px] text-ink-muted font-mono">{cand.candidate_email}</div>
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {cand.matched_skills?.slice(0, 3).map((s, i) => (
                       <span
@@ -275,11 +258,8 @@ export default function OverviewView({ setActiveTab, onSelectJobForRankings, onV
               </div>
             ))}
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }

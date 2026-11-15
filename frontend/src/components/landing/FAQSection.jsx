@@ -1,104 +1,79 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
-import Reveal from './Reveal';
+import { useState } from 'react';
+import { Plus, Minus } from 'lucide-react';
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(0);
 
   const faqs = [
     {
-      q: 'How does SmartATS ensure rankings are auditable?',
-      a: 'Rankings are governed by a mathematical equation rather than generative prompts. Every candidate score decomposes cleanly into exact keyword coverage of mandatory criteria (60%) and normalized text similarity (40%), with direct citations to document text.',
+      q: 'How does SmartATS calculate candidate scores?',
+      a: 'Scores are generated using a deterministic dual-track formula: 60% of the score represents exact verified keyword coverage of required skills from project and work experience; 40% represents lexical vector cosine similarity (TF-IDF) across candidate text and the job description.',
     },
     {
-      q: 'What resume document formats are supported?',
-      a: 'SmartATS extracts both PDF and DOCX files up to 15MB. The ingestion pipeline uses PyMuPDF for high-speed vector stream text extraction and triggers an automated Tesseract OCR engine for scanned image resumes.',
+      q: 'Does SmartATS use black-box generative AI to rank resumes?',
+      a: 'No. SmartATS intentionally avoids LLM hallucinations and black-box scoring. Every recommendation is auditable and backed by mathematical evidence that can be shown directly to engineering hiring managers.',
     },
     {
-      q: 'How does duplicate detection operate?',
-      a: 'During upload, a SHA-256 binary hash is computed from the raw file payload. If an identical file is uploaded by another team member or recruiting agency, it is identified immediately without redundant reprocessing.',
+      q: 'How does duplicate resume detection operate?',
+      a: 'When an applicant file is uploaded, SmartATS immediately calculates its SHA-256 cryptographic hash. If the identical file has previously been submitted by another agency or source, it is flagged and skipped without redundant reprocessing.',
     },
     {
-      q: 'Can the 60% / 40% scoring formula weights be audited?',
-      a: 'Yes. Every candidate card in the studio provides a transparent breakdown of matched mandatory skills, preferred bonus qualifications, and contextual document depth.',
+      q: 'What resume file formats are supported?',
+      a: 'Native PDF files (via PyMuPDF) and Microsoft Word documents (.docx via python-docx) are parsed directly. Scanned documents automatically use OCR fallback when text density is low.',
     },
     {
-      q: 'Is candidate data stored locally or shared with external models?',
-      a: 'Candidate resumes are parsed and indexed entirely within your private database. No document text or personal candidate data is transmitted to third-party generative foundation models.',
+      q: 'Can rankings be exported for team review?',
+      a: 'Yes. Complete leaderboards and evaluation data can be exported as structured CSV files with one click, or formatted for print and PDF reporting.',
     },
   ];
 
   return (
-    <section id="faq" className="py-24 sm:py-36 bg-canvas border-t border-line">
+    <section id="faq" className="py-24 sm:py-32 bg-canvas border-t border-line">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          
-          {/* Left Column: Heading & Contact */}
-          <div className="lg:col-span-5 space-y-6">
-            <Reveal>
-              <div className="text-[13px] font-mono tracking-[0.1em] text-ink-muted uppercase">
-                FAQ
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2 className="text-[clamp(2.25rem,4vw,3.5rem)] leading-[1.1] font-serif font-normal text-ink">
-                Questions & Specifications
-              </h2>
-            </Reveal>
-            <Reveal delay={160}>
-              <p className="text-[17px] text-ink-muted leading-[1.65] font-sans">
-                For compliance guidelines, on-premises deployment, or algorithmic adjustments, get in touch with our team.
-              </p>
-            </Reveal>
-            <Reveal delay={200}>
-              <a
-                href="mailto:engineering@smartats.internal"
-                className="inline-block text-[15px] font-medium text-ink hover:text-wine transition-colors border-b border-ink/30 pb-0.5"
-              >
-                engineering@smartats.internal
-              </a>
-            </Reveal>
+          {/* Left Column (Sticky Heading) */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4 text-left">
+            <div className="text-[13px] font-medium text-ink-muted">Common questions</div>
+            <h2 className="text-[32px] sm:text-[38px] font-semibold text-ink tracking-tight leading-tight">
+              Frequently asked questions
+            </h2>
+            <p className="text-[16px] text-ink-muted leading-relaxed">
+              Everything you need to know about our deterministic resume evaluation engine and
+              architecture.
+            </p>
           </div>
 
-          {/* Right Column: Clean Accordion with Plus Icon & Hairlines */}
-          <div className="lg:col-span-7 divide-y divide-line border-t border-b border-line">
+          {/* Right Column: Accessible Accordion */}
+          <div className="lg:col-span-7 divide-y divide-line border-y border-line text-left">
             {faqs.map((faq, idx) => {
               const isOpen = openIndex === idx;
               return (
-                <div key={idx} className="py-6">
+                <div key={idx} className="py-5">
                   <button
                     type="button"
                     onClick={() => setOpenIndex(isOpen ? -1 : idx)}
-                    className="w-full flex items-center justify-between text-left space-x-6 cursor-pointer focus:outline-none group"
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-4 text-left font-medium text-[16px] text-ink transition-colors cursor-pointer select-none"
                   >
-                    <span className="font-serif text-xl sm:text-2xl text-ink font-normal group-hover:text-wine transition-colors">
-                      {faq.q}
-                    </span>
-                    <span
-                      className={`text-ink-muted transition-transform duration-300 flex-shrink-0 ${
-                        isOpen ? 'rotate-45 text-wine' : ''
-                      }`}
-                    >
-                      <Plus className="w-5 h-5" />
+                    <span>{faq.q}</span>
+                    <span className="p-1 rounded-[6px] text-ink-muted shrink-0">
+                      {isOpen ? (
+                        <Minus className="w-4 h-4 text-champagne" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
                     </span>
                   </button>
 
-                  <div
-                    className={`grid transition-all duration-300 ease-in-out ${
-                      isOpen ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0'
-                    }`}
-                  >
-                    <div className="overflow-hidden">
-                      <p className="text-[15px] text-ink-muted font-sans leading-[1.65]">
-                        {faq.a}
-                      </p>
+                  {isOpen && (
+                    <div className="pt-3 pr-8 text-[15px] text-ink-muted leading-relaxed animate-fadeIn">
+                      {faq.a}
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
           </div>
-
         </div>
       </div>
     </section>

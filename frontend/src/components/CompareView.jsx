@@ -1,16 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Check,
-  X,
-  ArrowLeft,
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Check, X, ArrowLeft } from 'lucide-react';
 import { fetchJobs, fetchJobRankings, compareCandidates } from '../api';
 
-export default function CompareView({
-  jobId: initialJobId,
-  preselectedAppIds = [],
-  setActiveTab,
-}) {
+export default function CompareView({ jobId: initialJobId, preselectedAppIds = [], setActiveTab }) {
   const [jobId, setJobId] = useState(initialJobId || '');
   const [allCandidates, setAllCandidates] = useState([]);
   const [selectedAppIds, setSelectedAppIds] = useState(preselectedAppIds);
@@ -74,13 +66,14 @@ export default function CompareView({
   };
 
   // Identify highest scoring candidate as winner
-  const winnerCandidateId = comparisonResult?.candidates && comparisonResult.candidates.length > 0
-    ? [...comparisonResult.candidates].sort((a, b) => b.final_score - a.final_score)[0]?.application_id
-    : null;
+  const winnerCandidateId =
+    comparisonResult?.candidates && comparisonResult.candidates.length > 0
+      ? [...comparisonResult.candidates].sort((a, b) => b.final_score - a.final_score)[0]
+          ?.application_id
+      : null;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      
       {/* Page Header: Serif H1 (36-40px) + One Muted Sentence + Action Right */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
         <div>
@@ -144,7 +137,6 @@ export default function CompareView({
         </div>
       ) : (
         <div className="space-y-8">
-          
           {/* Comparison Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {comparisonResult.candidates.map((c) => {
@@ -178,7 +170,9 @@ export default function CompareView({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-ink-muted">Context:</span>
-                      <span className="font-semibold text-ink-muted">{c.tfidf_score.toFixed(1)}%</span>
+                      <span className="font-semibold text-ink-muted">
+                        {c.tfidf_score.toFixed(1)}%
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-ink-muted">Total Skills:</span>
@@ -186,7 +180,9 @@ export default function CompareView({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-ink-muted">Missing Req:</span>
-                      <span className={`font-semibold ${c.missing_skills.length === 0 ? 'text-wine' : 'text-ink-muted'}`}>
+                      <span
+                        className={`font-semibold ${c.missing_skills.length === 0 ? 'text-wine' : 'text-ink-muted'}`}
+                      >
                         {c.missing_skills.length}
                       </span>
                     </div>
@@ -197,23 +193,24 @@ export default function CompareView({
           </div>
 
           {/* Common Skills Highlight Box */}
-          {comparisonResult.common_matched_skills && comparisonResult.common_matched_skills.length > 0 && (
-            <div className="quiet-card bg-surface p-5 space-y-2">
-              <span className="text-[13px] font-sans font-medium text-ink-muted block">
-                Shared Technical Competencies (Possessed by all selected candidates)
-              </span>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {comparisonResult.common_matched_skills.map((s, idx) => (
-                  <span
-                    key={idx}
-                    className="px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans"
-                  >
-                    ✓ {s}
-                  </span>
-                ))}
+          {comparisonResult.common_matched_skills &&
+            comparisonResult.common_matched_skills.length > 0 && (
+              <div className="quiet-card bg-surface p-5 space-y-2">
+                <span className="text-[13px] font-sans font-medium text-ink-muted block">
+                  Shared Technical Competencies (Possessed by all selected candidates)
+                </span>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {comparisonResult.common_matched_skills.map((s, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans"
+                    >
+                      ✓ {s}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Full Side-by-Side Skill Matrix Table */}
           <div className="space-y-4">
@@ -225,8 +222,12 @@ export default function CompareView({
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-line bg-surface-alt/40 text-[13px] font-mono text-ink-muted">
-                      <th scope="col" className="p-4 font-normal">Skill Requirement</th>
-                      <th scope="col" className="p-4 w-28 text-center font-normal">Standard</th>
+                      <th scope="col" className="p-4 font-normal">
+                        Skill Requirement
+                      </th>
+                      <th scope="col" className="p-4 w-28 text-center font-normal">
+                        Standard
+                      </th>
                       {comparisonResult.candidates.map((c) => {
                         const isWinner = c.application_id === winnerCandidateId;
                         return (
@@ -291,10 +292,8 @@ export default function CompareView({
               </div>
             </div>
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

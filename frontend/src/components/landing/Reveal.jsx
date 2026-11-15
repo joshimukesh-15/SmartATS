@@ -1,25 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
- * Quiet Editorial Reveal Component
- * - 12px rise + opacity fade (600-800ms ease-out-expo)
+ * Editorial Reveal Component
+ * - 8px rise + opacity fade
  * - Automatically disables when prefers-reduced-motion is active
  */
-export default function Reveal({
-  children,
-  className = '',
-  delay = 0,
-  as: Component = 'div',
-}) {
+export default function Reveal({ children, className = '', delay = 0, as: Component = 'div' }) {
   const ref = useRef(null);
-  const [inView, setInView] = useState(false);
+  const [inView, setInView] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mq.matches) {
-      setInView(true);
-      return;
-    }
+    if (inView) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -33,7 +27,7 @@ export default function Reveal({
 
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, []);
+  }, [inView]);
 
   return (
     <Component

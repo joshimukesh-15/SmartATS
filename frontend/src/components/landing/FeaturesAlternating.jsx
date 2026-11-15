@@ -1,223 +1,174 @@
-import React from 'react';
-import { Check, X } from 'lucide-react';
-import Reveal from './Reveal';
+import { Check, Minus, GitCompare, BarChart3, Award } from 'lucide-react';
+import { Panel, ScoreBar, ScoreValue } from '../ui';
 
 export default function FeaturesAlternating() {
   return (
-    <section id="features" className="py-24 sm:py-36 bg-canvas border-t border-line space-y-28 sm:space-y-36">
-      <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12 space-y-28 sm:space-y-36">
-        
-        {/* Row 1: Candidate Leaderboard (Text Left, Screenshot Right) */}
+    <section
+      id="features"
+      className="py-24 sm:py-32 bg-canvas border-t border-line space-y-24 sm:space-y-32"
+    >
+      <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12 space-y-24 sm:space-y-32">
+        {/* Row 1: Leaderboard (Text Left, Mock Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          <div className="lg:col-span-5 space-y-6">
-            <Reveal>
-              <div className="text-[13px] font-mono tracking-[0.1em] text-ink-muted uppercase">
-                01 // Shortlisting
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2 className="text-[clamp(2rem,3.5vw,3rem)] leading-[1.1] font-serif font-normal text-ink">
-                Rankings that leave zero room for ambiguity.
-              </h2>
-            </Reveal>
-            <Reveal delay={160}>
-              <p className="text-[17px] text-ink-muted leading-[1.65] font-sans">
-                Every applicant is indexed with granular keyword coverage, contextual similarity, and explicit skill verification. Tier boundaries (High, Mid, Low) ensure hiring committees align quickly on who to advance.
-              </p>
-            </Reveal>
+          <div className="lg:col-span-5 space-y-4 text-left">
+            <div className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-muted">
+              <Award className="w-4 h-4 text-champagne" />
+              <span>Master-detail leaderboard</span>
+            </div>
+            <h3 className="text-[28px] sm:text-[34px] font-semibold text-ink tracking-tight leading-tight">
+              Audit every score down to exact competencies.
+            </h3>
+            <p className="text-[16px] text-ink-muted leading-relaxed">
+              Recruiters can inspect each applicant with full mathematical transparency. See exactly
+              which skills contributed points, which are missing, and how text similarity was
+              calculated.
+            </p>
           </div>
 
           <div className="lg:col-span-7">
-            <Reveal delay={120}>
-              <div className="quiet-card bg-surface overflow-hidden p-6 sm:p-8 space-y-4">
-                <div className="flex items-center justify-between pb-4 border-b border-line text-[13px] font-mono text-ink-muted">
-                  <span>ROLE: SR. BACKEND ENGINEER</span>
-                  <span>1,248 APPLICANTS INDEXED</span>
+            <Panel className="p-6 space-y-4 bg-surface shadow-xs">
+              <div className="flex items-center justify-between pb-3 border-b border-line">
+                <div>
+                  <div className="text-[15px] font-semibold text-ink">Sarah Jenkins</div>
+                  <div className="text-[13px] text-ink-muted">Senior Backend Developer</div>
                 </div>
-                
-                <div className="divide-y divide-line text-[14px]">
-                  <div className="py-3.5 flex items-center justify-between bg-wine-soft/30 px-3 rounded-[8px]">
-                    <div className="flex items-center space-x-3">
-                      <span className="font-mono text-wine font-semibold text-[13px]">#01</span>
-                      <span className="font-serif text-ink text-[17px]">Elena Rostova</span>
-                    </div>
-                    <div className="flex items-center space-x-6 font-mono text-[13px]">
-                      <span className="text-ink-muted">100% Skills</span>
-                      <span className="font-semibold text-wine text-[16px]">94.6%</span>
-                    </div>
-                  </div>
-
-                  <div className="py-3.5 flex items-center justify-between px-3">
-                    <div className="flex items-center space-x-3">
-                      <span className="font-mono text-ink-muted text-[13px]">#02</span>
-                      <span className="font-serif text-ink text-[17px]">Marcus Vance</span>
-                    </div>
-                    <div className="flex items-center space-x-6 font-mono text-[13px]">
-                      <span className="text-ink-muted">90% Skills</span>
-                      <span className="font-semibold text-ink text-[16px]">88.2%</span>
-                    </div>
-                  </div>
-
-                  <div className="py-3.5 flex items-center justify-between px-3">
-                    <div className="flex items-center space-x-3">
-                      <span className="font-mono text-ink-muted text-[13px]">#03</span>
-                      <span className="font-serif text-ink text-[17px]">Sophia Chen</span>
-                    </div>
-                    <div className="flex items-center space-x-6 font-mono text-[13px]">
-                      <span className="text-ink-muted">80% Skills</span>
-                      <span className="font-semibold text-ink-muted text-[16px]">79.4%</span>
-                    </div>
-                  </div>
+                <ScoreValue score={94.6} size="lg" />
+              </div>
+              <ScoreBar
+                skillsPoints={58.0}
+                textMatchPoints={36.6}
+                finalScore={94.6}
+                height="h-2"
+                showLabel={true}
+              />
+              <div className="grid grid-cols-2 gap-2 pt-2 text-[13px]">
+                <div className="p-3 rounded-[8px] bg-surface-alt border border-line">
+                  <div className="text-ink-muted">Skills covered</div>
+                  <div className="text-[16px] font-semibold text-ink">96.7% (58.0 pts)</div>
                 </div>
-
-                <div className="pt-2 flex items-center justify-between text-[13px] font-mono text-ink-muted">
-                  <span>Export: CSV dossier available</span>
-                  <span className="text-ink">Instant committee review</span>
+                <div className="p-3 rounded-[8px] bg-surface-alt border border-line">
+                  <div className="text-ink-muted">Text match</div>
+                  <div className="text-[16px] font-semibold text-ink">91.5% (36.6 pts)</div>
                 </div>
               </div>
-            </Reveal>
+            </Panel>
           </div>
         </div>
 
-        {/* Row 2: Differential Compare Matrix (Screenshot Left, Text Right) */}
+        {/* Row 2: Compare Matrix (Mock Left, Text Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           <div className="lg:col-span-7 order-2 lg:order-1">
-            <Reveal delay={120}>
-              <div className="quiet-card bg-surface overflow-hidden p-6 sm:p-8 space-y-4">
-                <div className="flex items-center justify-between pb-4 border-b border-line text-[13px] font-mono text-ink-muted">
-                  <span>COMPETENCY ALIGNMENT MATRIX</span>
-                  <span>2 PROFILES COMPARED</span>
+            <Panel className="p-6 bg-surface shadow-xs overflow-hidden">
+              <div className="text-[13px] font-medium text-ink pb-3 border-b border-line flex justify-between">
+                <span>Side-by-side competency matrix</span>
+                <span className="text-champagne font-semibold">Leading: Sarah Jenkins</span>
+              </div>
+              <div className="divide-y divide-line pt-2 text-[13px]">
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="font-medium text-ink">Python & FastAPI</span>
+                  <div className="flex gap-8">
+                    <span className="text-ink flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    </span>
+                    <span className="text-ink flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    </span>
+                  </div>
                 </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-[13px]">
-                    <thead>
-                      <tr className="border-b border-line font-mono text-ink-muted">
-                        <th className="pb-3 font-normal">Requirement</th>
-                        <th className="pb-3 text-center font-normal">Elena (94.6%)</th>
-                        <th className="pb-3 text-center font-normal">Marcus (88.2%)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-line/60">
-                      <tr>
-                        <td className="py-3 font-medium text-ink">FastAPI Architecture</td>
-                        <td className="py-3 text-center text-wine"><Check className="w-4 h-4 mx-auto" /></td>
-                        <td className="py-3 text-center text-wine"><Check className="w-4 h-4 mx-auto" /></td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 font-medium text-ink">PostgreSQL Optimization</td>
-                        <td className="py-3 text-center text-wine"><Check className="w-4 h-4 mx-auto" /></td>
-                        <td className="py-3 text-center text-wine"><Check className="w-4 h-4 mx-auto" /></td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 font-medium text-ink">Docker & Containers</td>
-                        <td className="py-3 text-center text-wine"><Check className="w-4 h-4 mx-auto" /></td>
-                        <td className="py-3 text-center text-ink-muted"><X className="w-4 h-4 mx-auto" /></td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 font-medium text-ink">Kubernetes Clustering</td>
-                        <td className="py-3 text-center text-wine"><Check className="w-4 h-4 mx-auto" /></td>
-                        <td className="py-3 text-center text-wine"><Check className="w-4 h-4 mx-auto" /></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="font-medium text-ink">PostgreSQL</span>
+                  <div className="flex gap-8">
+                    <span className="text-ink flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    </span>
+                    <span className="text-ink-muted flex items-center gap-1">
+                      <Minus className="w-3.5 h-3.5" /> Missing
+                    </span>
+                  </div>
                 </div>
-
-                <div className="pt-2 text-[13px] font-mono text-ink-muted">
-                  Winner column identified by composite scoring threshold
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="font-medium text-ink">Docker & Kubernetes</span>
+                  <div className="flex gap-8">
+                    <span className="text-ink flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    </span>
+                    <span className="text-ink flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5 text-champagne" /> Found
+                    </span>
+                  </div>
                 </div>
               </div>
-            </Reveal>
+            </Panel>
           </div>
 
-          <div className="lg:col-span-5 order-1 lg:order-2 space-y-6">
-            <Reveal>
-              <div className="text-[13px] font-mono tracking-[0.1em] text-ink-muted uppercase">
-                02 // Comparison
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2 className="text-[clamp(2rem,3.5vw,3rem)] leading-[1.1] font-serif font-normal text-ink">
-                Direct differential analysis between finalists.
-              </h2>
-            </Reveal>
-            <Reveal delay={160}>
-              <p className="text-[17px] text-ink-muted leading-[1.65] font-sans">
-                Select any two to five candidates to evaluate them side-by-side on an objective skill matrix. Inspect shared technical competencies and identify missing requirements without opening five separate PDF tabs.
-              </p>
-            </Reveal>
+          <div className="lg:col-span-5 space-y-4 text-left order-1 lg:order-2">
+            <div className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-muted">
+              <GitCompare className="w-4 h-4 text-champagne" />
+              <span>Candidate comparison</span>
+            </div>
+            <h3 className="text-[28px] sm:text-[34px] font-semibold text-ink tracking-tight leading-tight">
+              Compare finalists with a side-by-side skill matrix.
+            </h3>
+            <p className="text-[16px] text-ink-muted leading-relaxed">
+              Select 2 to 5 shortlisted applicants to compare required technical qualifications side
+              by side. Toggle to display differences only, highlighting exact trade-offs.
+            </p>
           </div>
         </div>
 
-        {/* Row 3: Diagnostics & Analytics (Text Left, Screenshot Right) */}
+        {/* Row 3: Analytics (Text Left, Mock Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          <div className="lg:col-span-5 space-y-6">
-            <Reveal>
-              <div className="text-[13px] font-mono tracking-[0.1em] text-ink-muted uppercase">
-                03 // Intelligence
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2 className="text-[clamp(2rem,3.5vw,3rem)] leading-[1.1] font-serif font-normal text-ink">
-                Platform analytics that spot pipeline bottlenecks.
-              </h2>
-            </Reveal>
-            <Reveal delay={160}>
-              <p className="text-[17px] text-ink-muted leading-[1.65] font-sans">
-                Audit aggregate candidate quality across job openings. Track the most frequently matched competencies, pinpoint common skill shortages, and monitor duplicate submission rates via cryptographic binary validation.
-              </p>
-            </Reveal>
+          <div className="lg:col-span-5 space-y-4 text-left">
+            <div className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-muted">
+              <BarChart3 className="w-4 h-4 text-champagne" />
+              <span>Skill gap analytics</span>
+            </div>
+            <h3 className="text-[28px] sm:text-[34px] font-semibold text-ink tracking-tight leading-tight">
+              Spot talent pool strengths and pipeline gaps.
+            </h3>
+            <p className="text-[16px] text-ink-muted leading-relaxed">
+              Analyze aggregate candidate data across positions to identify which required
+              competencies are plentiful and which skills require adjusted sourcing criteria.
+            </p>
           </div>
 
           <div className="lg:col-span-7">
-            <Reveal delay={120}>
-              <div className="quiet-card bg-surface overflow-hidden p-6 sm:p-8 space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-line text-[13px] font-mono text-ink-muted">
-                  <span>SCREENING DIAGNOSTICS</span>
-                  <span>AGGREGATE TALENT POOL</span>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[13px]">
-                      <span className="font-sans font-medium text-ink">Python (Core Language)</span>
-                      <span className="font-mono text-ink-muted">92% of Applicants</span>
-                    </div>
-                    <div className="w-full bg-surface-alt h-2 rounded-full overflow-hidden border border-line">
-                      <div className="bg-wine h-full w-[92%]" />
-                    </div>
+            <Panel className="p-6 space-y-4 bg-surface shadow-xs">
+              <div className="text-[14px] font-semibold text-ink">
+                Verified skills coverage rate
+              </div>
+              <div className="space-y-3 pt-1">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[13px]">
+                    <span className="font-medium text-ink">Python</span>
+                    <span className="text-ink-muted tabular-nums">83%</span>
                   </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[13px]">
-                      <span className="font-sans font-medium text-ink">FastAPI / Async REST</span>
-                      <span className="font-mono text-ink-muted">74% of Applicants</span>
-                    </div>
-                    <div className="w-full bg-surface-alt h-2 rounded-full overflow-hidden border border-line">
-                      <div className="bg-wine h-full w-[74%]" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[13px]">
-                      <span className="font-sans font-medium text-ink">Distributed Systems Architecture</span>
-                      <span className="font-mono text-ink-muted">38% of Applicants (Frequent Gap)</span>
-                    </div>
-                    <div className="w-full bg-surface-alt h-2 rounded-full overflow-hidden border border-line">
-                      <div className="bg-ink-muted/50 h-full w-[38%]" />
-                    </div>
+                  <div className="h-2 w-full rounded-full bg-surface-alt">
+                    <div className="h-full bg-primary rounded-full w-[83%]" />
                   </div>
                 </div>
-
-                <div className="pt-2 flex items-center justify-between text-[13px] font-mono text-ink-muted border-t border-line">
-                  <span>SHA-256 Duplication Filter Active</span>
-                  <span className="text-ink font-medium">0.0% Redundancy</span>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[13px]">
+                    <span className="font-medium text-ink">FastAPI</span>
+                    <span className="text-ink-muted tabular-nums">67%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-surface-alt">
+                    <div className="h-full bg-primary rounded-full w-[67%]" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[13px]">
+                    <span className="font-medium text-ink">Kubernetes (Common gap)</span>
+                    <span className="text-ink-muted tabular-nums">33%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-surface-alt">
+                    <div className="h-full bg-champagne rounded-full w-[33%]" />
+                  </div>
                 </div>
               </div>
-            </Reveal>
+            </Panel>
           </div>
         </div>
-
       </div>
     </section>
   );

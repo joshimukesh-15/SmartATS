@@ -1,10 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Plus,
-  Trash2,
-  FileSpreadsheet,
-  Search,
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Trash2, FileSpreadsheet, Search } from 'lucide-react';
 import { fetchJobs, deleteJob, getExportCsvUrl } from '../api';
 import CreateJobModal from './CreateJobModal';
 
@@ -45,14 +40,14 @@ export default function JobsView({ onSelectJobForRankings, _setActiveTab }) {
     }
   };
 
-  const filteredJobs = jobs.filter((j) =>
-    j.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    j.required_skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredJobs = jobs.filter(
+    (j) =>
+      j.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      j.required_skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      
       {/* Page Header: Serif H1 (36-40px) + One Muted Sentence + Action Right */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-line">
         <div>
@@ -95,7 +90,9 @@ export default function JobsView({ onSelectJobForRankings, _setActiveTab }) {
         <div className="quiet-card bg-surface p-12 text-center space-y-3">
           <h3 className="font-serif text-2xl text-ink font-normal">No Positions Found</h3>
           <p className="text-[14px] text-ink-muted max-w-sm mx-auto font-sans">
-            {searchQuery ? 'No job records match the search filter.' : 'Create an opening to begin candidate screening.'}
+            {searchQuery
+              ? 'No job records match the search filter.'
+              : 'Create an opening to begin candidate screening.'}
           </p>
         </div>
       ) : (
@@ -108,9 +105,7 @@ export default function JobsView({ onSelectJobForRankings, _setActiveTab }) {
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <h2 className="font-serif text-2xl text-ink font-normal">
-                      {job.title}
-                    </h2>
+                    <h2 className="font-serif text-2xl text-ink font-normal">{job.title}</h2>
                     <div className="flex items-center space-x-1.5 text-[13px] text-ink-muted font-mono">
                       <span className="font-semibold text-ink">{job.applications_count || 0}</span>
                       <span>evaluated candidates</span>
@@ -183,7 +178,6 @@ export default function JobsView({ onSelectJobForRankings, _setActiveTab }) {
           }}
         />
       )}
-
     </div>
   );
 }

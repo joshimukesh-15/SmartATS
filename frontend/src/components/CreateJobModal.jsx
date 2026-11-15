@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { createJob } from '../api';
 
@@ -115,11 +115,13 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
       className="fixed inset-0 m-auto bg-surface border border-line rounded-[16px] w-full max-w-xl p-0 text-ink shadow-[0_1px_2px_rgba(42,16,21,0.04),0_24px_64px_rgba(42,16,21,0.12)] backdrop:bg-ink/40 backdrop:backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200"
     >
       <div className="flex flex-col max-h-[85vh] overflow-hidden">
-        
         {/* Header */}
         <div className="p-6 border-b border-line flex items-center justify-between bg-surface-alt">
           <div>
-            <h2 id="create-job-modal-title" className="text-2xl font-serif font-normal text-ink tracking-tight">
+            <h2
+              id="create-job-modal-title"
+              className="text-2xl font-serif font-normal text-ink tracking-tight"
+            >
               Create Job Specification
             </h2>
             <p className="text-[13px] text-ink-muted font-sans mt-0.5">
@@ -145,7 +147,10 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
           )}
 
           <div>
-            <label htmlFor="job-title" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
+            <label
+              htmlFor="job-title"
+              className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5"
+            >
               Position Title *
             </label>
             <input
@@ -160,7 +165,10 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
           </div>
 
           <div>
-            <label htmlFor="job-desc" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
+            <label
+              htmlFor="job-desc"
+              className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5"
+            >
               Role Description *
             </label>
             <textarea
@@ -176,7 +184,10 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
 
           {/* Mandatory Skills */}
           <div>
-            <label htmlFor="req-skills-input" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
+            <label
+              htmlFor="req-skills-input"
+              className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5"
+            >
               Required Technical Skills * (Press Enter or comma)
             </label>
             <input
@@ -209,7 +220,10 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
 
           {/* Preferred Skills */}
           <div>
-            <label htmlFor="pref-skills-input" className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5">
+            <label
+              htmlFor="pref-skills-input"
+              className="block text-[13px] font-sans font-medium text-ink-muted mb-1.5"
+            >
               Preferred Qualifications (Optional)
             </label>
             <input
@@ -258,7 +272,6 @@ export default function CreateJobModal({ isOpen, onClose, onJobCreated }) {
             </button>
           </div>
         </form>
-
       </div>
     </dialog>
   );

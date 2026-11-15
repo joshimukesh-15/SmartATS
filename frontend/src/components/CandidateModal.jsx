@@ -1,14 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  X,
-  Check,
-  Mail,
-  Phone,
-  Calendar,
-  FileText,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Check, Mail, Phone, Calendar, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { fetchCandidateDetails } from '../api';
 
 export default function CandidateModal({ candidate, onClose }) {
@@ -65,12 +56,14 @@ export default function CandidateModal({ candidate, onClose }) {
       className="fixed inset-0 m-auto bg-surface border border-line rounded-[16px] w-full max-w-3xl p-0 text-ink shadow-[0_1px_2px_rgba(42,16,21,0.04),0_24px_64px_rgba(42,16,21,0.12)] backdrop:bg-ink/40 backdrop:backdrop-blur-xs animate-in fade-in zoom-in-95 duration-200"
     >
       <div className="flex flex-col max-h-[85vh] overflow-hidden">
-        
         {/* Header */}
         <div className="p-6 border-b border-line flex items-start justify-between bg-surface-alt">
           <div>
             <div className="flex items-center space-x-3">
-              <h2 id="candidate-modal-title" className="text-2xl sm:text-3xl font-serif text-ink font-normal tracking-tight">
+              <h2
+                id="candidate-modal-title"
+                className="text-2xl sm:text-3xl font-serif text-ink font-normal tracking-tight"
+              >
                 {candidate.candidate_name}
               </h2>
               {candidate.rank && (
@@ -112,7 +105,6 @@ export default function CandidateModal({ candidate, onClose }) {
 
         {/* Content */}
         <div className="p-6 sm:p-8 space-y-7 overflow-y-auto">
-          
           {/* Score Summary Metrics: Quiet Tonal Layering */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-4 rounded-[12px] bg-surface-alt text-center space-y-1">
@@ -122,9 +114,7 @@ export default function CandidateModal({ candidate, onClose }) {
               <div className="text-3xl font-mono font-semibold text-ink">
                 {finalScore.toFixed(1)}%
               </div>
-              <div className="text-[13px] text-ink-muted font-sans">
-                60% Skills + 40% Vector
-              </div>
+              <div className="text-[13px] text-ink-muted font-sans">60% Skills + 40% Vector</div>
             </div>
 
             <div className="p-4 rounded-[12px] bg-surface-alt text-center space-y-1">
@@ -146,9 +136,7 @@ export default function CandidateModal({ candidate, onClose }) {
               <div className="text-3xl font-mono font-semibold text-ink">
                 {tfidfScore.toFixed(1)}%
               </div>
-              <div className="text-[13px] text-ink-muted font-sans">
-                TF-IDF Cosine Depth
-              </div>
+              <div className="text-[13px] text-ink-muted font-sans">TF-IDF Cosine Depth</div>
             </div>
           </div>
 
@@ -164,10 +152,8 @@ export default function CandidateModal({ candidate, onClose }) {
 
           {/* Skill Gap Analysis Section */}
           <div className="space-y-4">
-            <h3 className="text-xl font-serif text-ink font-normal">
-              Competency Breakdown
-            </h3>
-            
+            <h3 className="text-xl font-serif text-ink font-normal">Competency Breakdown</h3>
+
             {/* Matched Required Skills */}
             <div className="space-y-2">
               <div className="text-[13px] font-mono uppercase text-ink-muted flex items-center justify-between">
@@ -186,7 +172,9 @@ export default function CandidateModal({ candidate, onClose }) {
                     </span>
                   ))
                 ) : (
-                  <span className="text-[13px] text-ink-muted font-sans">No mandatory skills identified</span>
+                  <span className="text-[13px] text-ink-muted font-sans">
+                    No mandatory skills identified
+                  </span>
                 )}
               </div>
             </div>
@@ -208,29 +196,32 @@ export default function CandidateModal({ candidate, onClose }) {
                     </span>
                   ))
                 ) : (
-                  <span className="text-[13px] text-wine font-medium font-sans">None. Candidate satisfies 100% of required competencies.</span>
+                  <span className="text-[13px] text-wine font-medium font-sans">
+                    None. Candidate satisfies 100% of required competencies.
+                  </span>
                 )}
               </div>
             </div>
 
             {/* Preferred Skills */}
-            {candidate.preferred_matched_skills && candidate.preferred_matched_skills.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-line">
-                <div className="text-[13px] font-mono uppercase text-ink-muted">
-                  Preferred Qualifications ({candidate.preferred_matched_skills.length})
+            {candidate.preferred_matched_skills &&
+              candidate.preferred_matched_skills.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-line">
+                  <div className="text-[13px] font-mono uppercase text-ink-muted">
+                    Preferred Qualifications ({candidate.preferred_matched_skills.length})
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {candidate.preferred_matched_skills.map((skill, i) => (
+                      <span
+                        key={i}
+                        className="px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans"
+                      >
+                        + {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {candidate.preferred_matched_skills.map((skill, i) => (
-                    <span
-                      key={i}
-                      className="px-2.5 py-1 rounded-[6px] text-[13px] bg-surface-alt text-ink font-sans"
-                    >
-                      + {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+              )}
           </div>
 
           {/* Original Resume Text Toggle */}
@@ -244,7 +235,11 @@ export default function CandidateModal({ candidate, onClose }) {
                 <FileText className="w-4 h-4 text-ink-muted" />
                 <span>Original Document Text View</span>
               </div>
-              {showRawText ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {showRawText ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
             </button>
 
             {showRawText && (
@@ -253,7 +248,6 @@ export default function CandidateModal({ candidate, onClose }) {
               </div>
             )}
           </div>
-
         </div>
 
         {/* Footer */}
@@ -266,7 +260,6 @@ export default function CandidateModal({ candidate, onClose }) {
             Dismiss
           </button>
         </div>
-
       </div>
     </dialog>
   );

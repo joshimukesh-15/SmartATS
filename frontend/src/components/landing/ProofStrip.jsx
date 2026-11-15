@@ -1,45 +1,38 @@
-import React from 'react';
-import Reveal from './Reveal';
+import { Panel } from '../ui/Panel';
 
 export default function ProofStrip() {
   const metrics = [
     {
-      value: '98.8%',
-      label: 'Skill Extraction F1-Score',
-      caption: 'Evaluated across 150+ labeled resumes with 97.7% precision and 100% recall.',
+      stat: '98.8%',
+      label: 'Skill extraction F1-score',
+      caption: 'Benchmark on evaluation_dataset (8 labeled candidate profiles)',
     },
     {
-      value: '1.00',
-      label: 'Precision@1 on Benchmark Sets',
-      caption: 'The highest-ranked applicant consistently satisfies 100% of required technical criteria.',
+      stat: '1.000',
+      label: 'NDCG@3 ranking accuracy',
+      caption: 'Evaluated across 5 hybrid scoring configurations',
     },
     {
-      value: '3.85 ms',
-      label: 'Average Extraction Latency',
-      caption: 'Native PyMuPDF vector stream parsing with automated Tesseract OCR fallback.',
+      stat: '3.6 ms',
+      label: 'Average parsing latency',
+      caption: 'PyMuPDF and python-docx benchmark across sample files',
     },
   ];
 
   return (
-    <section id="evidence" className="py-16 sm:py-24 bg-canvas border-y border-line">
+    <section className="py-16 sm:py-20 bg-canvas">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
-          {metrics.map((item, idx) => (
-            <Reveal key={idx} delay={idx * 80}>
-              <div className="space-y-3">
-                <div className="font-serif text-5xl sm:text-6xl text-ink tracking-tight font-normal">
-                  {item.value}
-                </div>
-                <div className="text-[15px] font-sans font-medium text-ink">
-                  {item.label}
-                </div>
-                <p className="text-[13px] font-sans text-ink-muted leading-[1.6]">
-                  {item.caption}
-                </p>
+        <Panel className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-line">
+          {metrics.map((m, idx) => (
+            <div key={idx} className="p-8 space-y-1.5 text-left">
+              <div className="text-[36px] sm:text-[42px] font-semibold text-ink leading-tight tabular-nums tracking-tight">
+                {m.stat}
               </div>
-            </Reveal>
+              <div className="text-[14px] font-medium text-ink">{m.label}</div>
+              <div className="text-[13px] text-ink-muted leading-relaxed">{m.caption}</div>
+            </div>
           ))}
-        </div>
+        </Panel>
       </div>
     </section>
   );

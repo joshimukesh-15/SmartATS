@@ -56,37 +56,47 @@ SmartATS is an enterprise resume-screening and candidate-ranking platform engine
 
 ## 3. Visual Design System & Color Tokens
 
-SmartATS adheres to a strict luxury B2B design language inspired by premium editorial publications and high-density financial data tools. Generic primary colors (blue, green, purple, bright red) are completely prohibited.
+SmartATS adheres to a quiet, data-first B2B design language built for talent partners and hiring managers. Serif typography, all-caps eyebrows, and saturated red/green/amber tiers are strictly avoided. All numbers use `tabular-nums` alignment, and all UI text meets or exceeds the strict 13px accessibility floor.
 
 ```
-Canvas & Base:
-  ├── Root Canvas (bg):        #FBF7F2 (Warm Cream)
-  ├── Cards & Surfaces:        #FFFFFF (Pure White)
-  ├── Surface-Alt:             #F5EEE6 (Subtle Warm Tint)
-  └── Hairline Borders:        #E8DDD0 (Warm Architectural Taupe)
+Light Mode Tokens:
+  ├── Canvas:                  #F7F6F3 (Warm Architectural Paper)
+  ├── Surface:                 #FFFFFF (Pure Surface)
+  ├── Surface-Alt:             #F0EEEA (Subtle Tonal Tint)
+  ├── Line / Border:           #E3E0DA (Hairline Structure)
+  ├── Ink (Primary Text):      #14141A (Graphite-Ink)
+  ├── Ink-Muted:               #62626B (Accessible Secondary Ink)
+  ├── Ink-Subtle:              #8A8A93 (Tertiary Labeling)
+  ├── Primary:                 #14141A (On-Primary: #FFFFFF)
+  ├── Champagne (Accent):      #B8963E (Text Match & Highlight)
+  ├── Champagne-Soft:          #F4ECD8 (Tonal Chip Background)
+  └── Danger:                  #B42318 (Destructive Actions Only)
 
-Typography Ink:
-  ├── Primary Ink:             #2A1015 (Deep Wine-Black)
-  ├── Secondary / Muted:       #6B5A55 (Warm Taupe-Gray, WCAG AA Compliant)
-  └── Headings:                Playfair Display / Fraunces (Editorial Serif)
-  └── UI & Body:               Inter
-  └── Numbers & Chips:         JetBrains Mono
+Dark Mode Tokens (via .dark class on <html>):
+  ├── Canvas:                  #0E0E12
+  ├── Surface:                 #17171C
+  ├── Surface-Alt:             #1F1F26
+  ├── Line / Border:           #2A2A32
+  ├── Ink (Primary Text):      #F4F3F0
+  ├── Ink-Muted:               #A1A1AA
+  ├── Ink-Subtle:              #75757E
+  ├── Primary:                 #F4F3F0 (On-Primary: #0E0E12)
+  ├── Champagne (Accent):      #D4B15A
+  ├── Champagne-Soft:          #2A2412
+  └── Danger:                  #B42318
 
-Brand Accents (Max 10% Ratio):
-  ├── Primary Wine:            #7B1E3A (Hover: #5E1229 | Soft: #F8ECEF)
-  └── Accent Gold:             #B8893B (Hover: #9A7230 | Soft: #F7EDD8 | Text: #8A6420)
-
-Score Badges & Progress Tiers:
-  ├── High Tier (≥ 80%):       #7B1E3A bg, White text, Wine bar
-  ├── Mid Tier (60%–79%):      #F7EDD8 bg, #8A6420 text, Gold bar
-  └── Low Tier (< 60%):        #EFE7E1 bg, #6B5A55 text, Warm-gray bar
+Two-Segment Score System (Everywhere):
+  ├── Primary Segment:         Skills Covered Points (0.60 × Coverage %)
+  └── Champagne Segment:       Text Match Points (0.40 × Similarity %)
+  Note: No red/green/amber tiers are used. Both bars compose the 100% progress.
 ```
 
-### Motion & Interaction Rules
-- **Smooth Virtual Scroll**: Hardware-accelerated `requestAnimationFrame` linear interpolation (ease: `0.085`).
-- **Magnetic Buttons**: Follows cursor within a 8px radius with spring-back physics and sliding arrow icon.
-- **Viewport Reveals**: 24px vertical translation with 80ms stagger delay via `IntersectionObserver`.
-- **Reduced Motion Support**: Automatically detects and respects `prefers-reduced-motion: reduce`.
+### Design Primitives & Controls
+- **Typography**: Single unified font family: **Geist** (`400`, `500`, `600`, `700`). All numerical scores rendered with `tabular-nums`.
+- **Radii**: `14px` for structural panels (`panel`, `stat-strip`), `10px` for interactive controls (`button`, `input`, `select`).
+- **Panels**: `1px` line border with zero drop-shadow for a calm, quiet layout.
+- **Focus Rings**: `2px solid var(--primary)` with `2px offset` on every interactive control.
+- **Motion Budget**: One hero entrance, score-bar fills, list re-ordering, and native dialogs. Fully respects `prefers-reduced-motion`.
 
 ---
 
@@ -309,10 +319,11 @@ cd backend
 python scripts/evaluate.py
 ```
 
-Build and lint the production frontend bundle:
+Build, test, and lint the production frontend bundle:
 ```bash
-npm --prefix frontend run build
+npm --prefix frontend run test
 npm --prefix frontend run lint
+npm --prefix frontend run build
 ```
 
 ---

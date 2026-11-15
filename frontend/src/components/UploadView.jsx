@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   UploadCloud,
   FileText,
@@ -95,22 +95,20 @@ export default function UploadView({ selectedJobId, onSelectJobForRankings }) {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      
       {/* Page Header: Serif H1 (36-40px) + One Muted Sentence */}
       <div className="pb-6 border-b border-line">
         <h1 className="font-serif text-[36px] sm:text-[40px] font-normal text-ink tracking-tight leading-none">
           Resume Ingestion & Parsing
         </h1>
         <p className="text-[15px] text-ink-muted mt-2 font-sans">
-          Batch parse PDF and DOCX files with automated SHA-256 duplicate validation and OCR fallback.
+          Batch parse PDF and DOCX files with automated SHA-256 duplicate validation and OCR
+          fallback.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Upload Form Column */}
         <div className="lg:col-span-2 space-y-6">
-          
           {/* Job Selection Dropdown */}
           <div className="quiet-card p-6 bg-surface space-y-3">
             <label className="block text-[13px] font-sans font-medium text-ink-muted">
@@ -245,18 +243,18 @@ export default function UploadView({ selectedJobId, onSelectJobForRankings }) {
               </button>
             </div>
           )}
-
         </div>
 
         {/* Results & Architecture Sidebar */}
         <div className="space-y-6">
-          
           {/* Upload Status Card */}
           {uploadResults.length > 0 && (
             <div className="quiet-card bg-surface p-6 space-y-4">
               <div className="flex items-center justify-between border-b border-line pb-3">
                 <h3 className="text-lg font-serif font-normal text-ink">Ingestion Status</h3>
-                <span className="text-[13px] font-mono text-ink-muted">{uploadResults.length} files</span>
+                <span className="text-[13px] font-mono text-ink-muted">
+                  {uploadResults.length} files
+                </span>
               </div>
 
               <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
@@ -309,23 +307,29 @@ export default function UploadView({ selectedJobId, onSelectJobForRankings }) {
             <ul className="space-y-3.5 text-[14px] text-ink-muted leading-relaxed font-sans">
               <li className="flex items-start space-x-2.5">
                 <span className="font-serif text-gold font-normal text-lg leading-none">01.</span>
-                <span><strong className="text-ink font-medium">Binary Hashing:</strong> SHA-256 binary validation blocks identical uploads before GPU computation.</span>
+                <span>
+                  <strong className="text-ink font-medium">Binary Hashing:</strong> SHA-256 binary
+                  validation blocks identical uploads before GPU computation.
+                </span>
               </li>
               <li className="flex items-start space-x-2.5">
                 <span className="font-serif text-gold font-normal text-lg leading-none">02.</span>
-                <span><strong className="text-ink font-medium">Text Extraction:</strong> PyMuPDF extracts page text; Tesseract OCR activates automatically on scanned images.</span>
+                <span>
+                  <strong className="text-ink font-medium">Text Extraction:</strong> PyMuPDF
+                  extracts page text; Tesseract OCR activates automatically on scanned images.
+                </span>
               </li>
               <li className="flex items-start space-x-2.5">
                 <span className="font-serif text-gold font-normal text-lg leading-none">03.</span>
-                <span><strong className="text-ink font-medium">Dual-Track Scoring:</strong> Computes mandatory keyword coverage and contextual cosine similarity vectors.</span>
+                <span>
+                  <strong className="text-ink font-medium">Dual-Track Scoring:</strong> Computes
+                  mandatory keyword coverage and contextual cosine similarity vectors.
+                </span>
               </li>
             </ul>
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }

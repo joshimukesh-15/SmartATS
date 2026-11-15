@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import FloatingNav from './landing/FloatingNav';
 import HeroSection from './landing/HeroSection';
 import ProofStrip from './landing/ProofStrip';
@@ -19,7 +19,7 @@ export default function LandingPageView({ onLaunchApp }) {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-canvas text-ink overflow-x-hidden selection:bg-wine selection:text-white">
+    <div className="relative min-h-screen bg-canvas text-ink overflow-x-hidden selection:bg-primary selection:text-on-primary">
       {/* 1. Floating Nav */}
       <FloatingNav onEnterApp={onLaunchApp} />
 
