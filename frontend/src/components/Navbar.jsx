@@ -5,6 +5,7 @@ import {
   Briefcase,
   UploadCloud,
   Award,
+  UserCheck,
   GitCompare,
   BarChart3,
   Globe,
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { path: '/studio/jobs', label: 'Job Openings', icon: Briefcase },
   { path: '/studio/upload', label: 'Upload Resumes', icon: UploadCloud },
   { path: '/studio/leaderboard', label: 'Leaderboard', icon: Award },
+  { path: '/studio/review', label: 'Candidate Review', icon: UserCheck },
   { path: '/studio/compare', label: 'Compare', icon: GitCompare },
   { path: '/studio/analytics', label: 'Analytics', icon: BarChart3 },
 ];

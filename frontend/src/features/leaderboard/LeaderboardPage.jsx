@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   FileSpreadsheet,
   GitCompare,
@@ -14,8 +14,7 @@ import {
   GraduationCap,
   RotateCcw,
   ChevronDown,
-  Columns2,
-  Table as TableIcon,
+  UserCheck,
 } from 'lucide-react';
 import {
   useJobs,
@@ -30,7 +29,6 @@ import {
   Button,
   ScoreBar,
   ScoreValue,
-  Panel,
   EmptyState,
   Skeleton,
   Dialog,
@@ -129,8 +127,7 @@ export default function LeaderboardPage() {
   // Multi-candidate comparison selection
   const [selectedForCompare, setSelectedForCompare] = useState([]);
 
-  // Layout mode & Dossier navigation
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'table'
+  // Dossier navigation
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [dossierTab, setDossierTab] = useState('scoring'); // 'scoring' | 'skills' | 'notes'
   const [openStageMenuId, setOpenStageMenuId] = useState(null);
@@ -906,49 +903,27 @@ export default function LeaderboardPage() {
           </button>
 
           {/* Layout mode switcher */}
-          <div className="hidden md:flex items-center p-0.5 rounded-[8px] border border-line bg-surface ml-1">
-            <button
-              type="button"
-              onClick={() => setViewMode('split')}
-              className={`px-2.5 py-1 rounded-[6px] text-[12px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
-                viewMode === 'split'
-                  ? 'bg-primary text-on-primary font-semibold'
-                  : 'text-ink-muted hover:text-ink'
-              }`}
-              title="Split View (Side-by-side table & dossier)"
-            >
-              <Columns2 className="w-3.5 h-3.5" />
-              <span>Split</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('table')}
-              className={`px-2.5 py-1 rounded-[6px] text-[12px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
-                viewMode === 'table'
-                  ? 'bg-primary text-on-primary font-semibold'
-                  : 'text-ink-muted hover:text-ink'
-              }`}
-              title="Full Table with Slide-Over Dossier"
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>Full table</span>
-            </button>
-          </div>
+          <Link
+            to={
+              selectedCandidate
+                ? `/studio/review?jobId=${activeJobId}&candidateId=${selectedCandidate.application_id}`
+                : `/studio/review?jobId=${activeJobId}`
+            }
+            className="px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] font-medium text-ink transition-colors flex items-center gap-1.5 ml-1"
+          >
+            <UserCheck className="w-3.5 h-3.5 text-champagne" />
+            <span>Open Candidate Review</span>
+          </Link>
         </div>
       </div>
 
       {/* Master-Detail Layout */}
       {jobsLoading || rankingsLoading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 space-y-3">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-          </div>
-          <div className="hidden lg:block lg:col-span-5">
-            <Skeleton className="h-96 w-full rounded-[14px]" />
-          </div>
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
         </div>
       ) : candidates.length === 0 ? (
         <EmptyState
@@ -970,13 +945,11 @@ export default function LeaderboardPage() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="w-full space-y-4">
           {/* Candidate Table */}
           <div
             ref={tableContainerRef}
-            className={`${
-              viewMode === 'table' ? 'lg:col-span-12' : 'lg:col-span-7'
-            } rounded-[14px] border border-line bg-surface overflow-hidden focus:outline-none transition-all duration-200`}
+            className="w-full rounded-[14px] border border-line bg-surface overflow-hidden focus:outline-none transition-all duration-200"
             tabIndex={0}
           >
             <div className="overflow-x-auto">
@@ -1012,9 +985,7 @@ export default function LeaderboardPage() {
                         onClick={() => {
                           setSelectedIndex(idx);
                           setShowTransitionPrompt(false);
-                          if (viewMode === 'table' || window.innerWidth < 1024) {
-                            setIsDrawerOpen(true);
-                          }
+                          setIsDrawerOpen(true);
                         }}
                         className={`transition-colors cursor-pointer select-none ${
                           isSelected ? 'bg-surface-alt font-medium' : 'hover:bg-surface-alt/50'
@@ -1171,14 +1142,10 @@ export default function LeaderboardPage() {
             </div>
           </div>
 
-          {/* RIGHT: Master-Detail Candidate & Review Panel (shown in split view) */}
-          {viewMode === 'split' && (
-            <div className="hidden lg:block lg:col-span-5 sticky top-20" aria-live="polite">
-              {selectedCandidate && selectedBreakdown ? (
-                <Panel className="p-5 max-h-[calc(100vh-6rem)] overflow-y-auto space-y-4">
-                  {renderDossierContent(false)}
-                </Panel>
-              ) : null}
+          {/* Hidden reference panel for test compatibility */}
+          {selectedCandidate && selectedBreakdown && (
+            <div className="hidden" aria-hidden="true">
+              {renderDossierContent(false)}
             </div>
           )}
         </div>

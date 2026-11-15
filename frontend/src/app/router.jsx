@@ -10,6 +10,7 @@ const OverviewPage = lazy(() => import('../features/overview/OverviewPage'));
 const JobsPage = lazy(() => import('../features/jobs/JobsPage'));
 const UploadPage = lazy(() => import('../features/upload/UploadPage'));
 const LeaderboardPage = lazy(() => import('../features/leaderboard/LeaderboardPage'));
+const ReviewPage = lazy(() => import('../features/review/ReviewPage'));
 const ComparePage = lazy(() => import('../features/compare/ComparePage'));
 const AnalyticsPage = lazy(() => import('../features/analytics/AnalyticsPage'));
 
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
       {
         path: 'leaderboard/:jobId',
         element: wrap(<LeaderboardPage />),
+      },
+      {
+        path: 'review',
+        element: wrap(<ReviewPage />),
       },
       {
         path: 'compare',
