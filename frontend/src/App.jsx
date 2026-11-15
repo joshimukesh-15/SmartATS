@@ -30,7 +30,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen bg-[#FAF8F5] text-[#191716] flex flex-col font-sans selection:bg-[#191716] selection:text-[#FAF8F5]">
       
       {/* Navigation */}
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -89,18 +89,18 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 bg-white">
+      <footer className="border-t border-[#E6E1D7] py-8 text-center text-xs text-[#79736B] bg-[#FAF8F5]">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center space-x-2 text-sm text-slate-800">
+          <div className="flex items-center space-x-2 text-sm text-[#191716]">
             <span className="font-bold">SmartATS</span>
-            <span className="text-slate-500 text-xs">&mdash; Explainable Hybrid Screening System</span>
+            <span className="text-[#79736B] text-xs">&mdash; Research-Grade Explainable Screening</span>
           </div>
-          <div className="flex items-center space-x-3 font-mono text-[11px] text-slate-500">
-            <span>Explainable Screening</span>
+          <div className="flex items-center space-x-3 font-mono text-[11px] text-[#79736B]">
+            <span>Deterministic Scoring</span>
             <span>&bull;</span>
             <span>Private & Local</span>
             <span>&bull;</span>
-            <span>v1.0 Studio</span>
+            <span>Anthropic-Caliber Editorial</span>
           </div>
         </div>
       </footer>

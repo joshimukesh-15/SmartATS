@@ -1,20 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-canvas: #FAF8F5;
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #F6F3ED;
+  --color-surface-warm: #EFEAE1;
+  --color-ink: #191716;
+  --color-ink-secondary: #4A4641;
+  --color-ink-muted: #79736B;
+  --color-stone-border: #E6E1D7;
+  --color-stone-border-strong: #D5CEBE;
+  
+  --color-clay: #C96442;
+  --color-clay-hover: #B55433;
+  --color-clay-subtle: #FAF0EB;
+  --color-clay-border: #F0D5CA;
+  
+  --color-sage: #276749;
+  --color-sage-subtle: #F0F6F2;
+  --color-sage-border: #C8E3D4;
+  
+  --color-brick: #B93826;
+  --color-brick-subtle: #FDF3F1;
+  --color-brick-border: #F8D2CC;
+
+  --color-amber-accent: #B45309;
+  --color-amber-subtle: #FEF8EE;
+  --color-amber-border: #F9E3B4;
+
+  --font-serif: 'Newsreader', 'Georgia', serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
 
 @layer base {
   :root {
-    --bg-canvas: #FFFFFF;
+    --bg-canvas: #FAF8F5;
     --bg-surface: #FFFFFF;
-    --bg-surface-subtle: #F8FAFC;
-    --bg-surface-muted: #F1F5F9;
-    --ink-primary: #0F172A;
-    --ink-secondary: #475569;
-    --ink-muted: #94A3B8;
-    --border-subtle: #E2E8F0;
-    --border-strong: #CBD5E1;
-    --accent-black: #0F172A;
-    --accent-emerald: #059669;
-    --accent-rose: #E11D48;
+    --bg-surface-subtle: #F6F3ED;
+    --bg-surface-muted: #EFEAE1;
+    --ink-primary: #191716;
+    --ink-secondary: #4A4641;
+    --ink-muted: #79736B;
+    --border-subtle: #E6E1D7;
+    --border-strong: #D5CEBE;
+    --accent-clay: #C96442;
+    --accent-sage: #276749;
+    --accent-brick: #B93826;
+    --accent-amber: #B45309;
   }
 
   body {
@@ -24,8 +58,8 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    selection-background-color: #0F172A;
-    selection-color: #FFFFFF;
+    selection-background-color: #191716;
+    selection-color: #FAF8F5;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -57,7 +91,7 @@ dialog:modal {
 dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
-  background-color: rgba(15, 23, 42, 0.45);
+  background-color: rgba(25, 23, 22, 0.4);
   backdrop-filter: blur(4px);
 }
 
@@ -73,12 +107,12 @@ dialog::backdrop {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #FFFFFF;
+  background: #FAF8F5;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #D5CEBE;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #A8A29A;
 }
