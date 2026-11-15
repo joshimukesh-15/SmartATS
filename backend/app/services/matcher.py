@@ -147,18 +147,68 @@ def compute_experience_score(exp_years: float, candidate_seniority: str, job_des
     return round(score, 2)
 
 
+def get_required_education_level(job_description: str) -> int:
+    """
+    Infers mandatory/preferred educational credential level from job description:
+    5: PhD / Doctorate
+    4: Master's Degree
+    3: Bachelor's Degree
+    2: Associate Degree / Diploma
+    0: No degree requirement stated
+    """
+    if not job_description:
+        return 0
+
+    jd_lower = job_description.lower()
+    if re.search(r"\b(?:no degree required|degree not required|degree is not required|without a degree)\b", jd_lower):
+        return 0
+
+    if re.search(r"\b(?:ph\.?d|doctorate|doctor of philosophy)\b", jd_lower):
+        return 5
+    if re.search(r"\b(?:master(?:'s)?|m\.?s\.?|mba|m\.?tech|m\.?eng)\b", jd_lower):
+        return 4
+    if re.search(r"\b(?:bachelor(?:'s)?|b\.?s\.?|b\.?tech|b\.?e\.?|b\.?a\.?|degree in (?:computer|software|engineering|data|science|math|information)|university degree|college degree)\b", jd_lower):
+        return 3
+    if re.search(r"\b(?:associate(?:'s)?|diploma)\b", jd_lower):
+        return 2
+
+    return 0
+
+
 def compute_education_score(education: Dict[str, Any], job_description: str) -> float:
     """
-    Evaluates candidate academic degree and field relevance.
+    Evaluates candidate academic degree and field relevance against explicit job requirements.
+    - If job does not specify or require a degree, candidates are not penalized (100% neutral credit).
+    - If candidate meets or exceeds required level, awards 100%.
+    - If candidate possesses a lower degree than required, awards proportional credit.
+    - If candidate has no detected education and degree is required, awards 0%.
     """
-    degree_level = education.get("degree_level", 1)
-    field = education.get("field")
+    degree_level = education.get("degree_level", 1) if education else 1
+    field = education.get("field") if education else None
+    req_level = get_required_education_level(job_description)
 
-    base_scores = {5: 100.0, 4: 90.0, 3: 80.0, 2: 65.0, 1: 50.0}
-    score = base_scores.get(degree_level, 50.0)
+    if req_level == 0:
+        # Job does not require a formal degree: no penalty for uncredentialed candidates
+        score = 100.0
+    else:
+        # Degree explicitly required by job description
+        if degree_level <= 1:
+            # Candidate has no degree detected when job requires degree
+            score = 0.0
+        elif degree_level >= req_level:
+            score = 100.0
+        elif degree_level == req_level - 1:
+            score = 65.0
+        elif degree_level == req_level - 2:
+            score = 40.0
+        else:
+            score = 0.0
 
-    # Relevant technical field bonus
-    if field in {"Computer Science", "Software Engineering", "Data Science", "Electrical Engineering", "Information Technology", "Mathematics"}:
+    # Relevant technical field bonus if candidate has an education record
+    if degree_level > 1 and field in {
+        "Computer Science", "Software Engineering", "Data Science",
+        "Electrical Engineering", "Information Technology", "Mathematics"
+    }:
         score = min(100.0, score + 10.0)
 
     return round(score, 2)

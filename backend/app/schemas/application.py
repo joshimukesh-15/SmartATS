@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, ConfigDict
-from app.schemas.candidate import CandidateResponse
+from app.schemas.candidate import CandidateResponse, CandidateListItemResponse
 
 
 class MatchResultResponse(BaseModel):
@@ -65,12 +65,13 @@ class ApplicationResponse(BaseModel):
     application_id: int
     job_id: int
     candidate_id: int
-    resume_path: str
+    has_resume: bool = True
+    download_url: Optional[str] = None
     file_hash: str
     processing_status: str
     review_stage: str = "New"
     applied_at: datetime
-    candidate: Optional[CandidateResponse] = None
+    candidate: Optional[CandidateListItemResponse] = None
     match_result: Optional[MatchResultResponse] = None
     status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
     notes: List[ApplicationNoteResponse] = Field(default_factory=list)

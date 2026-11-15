@@ -1,7 +1,10 @@
 import os
+import io
+import zipfile
 import inspect
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.database.models import Job, Application, Candidate, ApplicationStatusHistory, ApplicationNote
@@ -17,6 +20,7 @@ from app.core.config import settings
 from app.core.security import sanitize_filename, validate_file_extension
 from app.services.duplicate import calculate_bytes_hash, check_duplicate_application
 from app.services.processor import process_resume_application
+from app.api.deps import get_current_recruiter
 
 router = APIRouter(tags=["Resumes & Applications"])
 
@@ -28,7 +32,8 @@ async def upload_resumes(
     job_id: int,
     background_tasks: BackgroundTasks,
     files: List[UploadFile] = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
 ):
     """
     Accepts multiple PDF or DOCX resume files for a job.
@@ -55,23 +60,105 @@ async def upload_resumes(
             continue
 
         try:
-            # 2. Read bytes and calculate SHA-256 hash
-            raw_read = file.read()
-            content = await raw_read if inspect.isawaitable(raw_read) else raw_read
-            if len(content) > settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024:
-                results.append(ApplicationUploadResult(
-                    filename=filename,
-                    status="REJECTED",
-                    message=f"File exceeds maximum allowed size ({settings.MAX_UPLOAD_SIZE_MB}MB)."
-                ))
-                continue
+            # 2. Bounded streaming read up to max limit + 1 byte
+            max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+            if isinstance(file, UploadFile):
+                chunks = []
+                total_read = 0
+                is_oversize = False
+                file.file.seek(0)
+                while True:
+                    chunk = file.file.read(65536)
+                    if not chunk:
+                        break
+                    total_read += len(chunk)
+                    if total_read > max_bytes:
+                        is_oversize = True
+                        break
+                    chunks.append(chunk)
+
+                if is_oversize:
+                    results.append(ApplicationUploadResult(
+                        filename=filename,
+                        status="REJECTED",
+                        message=f"File exceeds maximum allowed size ({settings.MAX_UPLOAD_SIZE_MB}MB)."
+                    ))
+                    continue
+                content = b"".join(chunks)
+            else:
+                raw_read = file.read()
+                content = await raw_read if inspect.isawaitable(raw_read) else raw_read
+                if len(content) > max_bytes:
+                    results.append(ApplicationUploadResult(
+                        filename=filename,
+                        status="REJECTED",
+                        message=f"File exceeds maximum allowed size ({settings.MAX_UPLOAD_SIZE_MB}MB)."
+                    ))
+                    continue
+
+            # 3. Magic bytes / file signature validation
+            ext = os.path.splitext(filename.lower())[1]
+            if ext == ".pdf":
+                if not content.startswith(b"%PDF-"):
+                    results.append(ApplicationUploadResult(
+                        filename=filename,
+                        status="REJECTED",
+                        message="Invalid PDF signature. File content does not match standard PDF specification."
+                    ))
+                    continue
+            elif ext == ".docx":
+                if not content.startswith(b"PK\x03\x04"):
+                    results.append(ApplicationUploadResult(
+                        filename=filename,
+                        status="REJECTED",
+                        message="Invalid DOCX signature. File content does not match OpenXML zip container."
+                    ))
+                    continue
+
+                # Defend against zip decompression bombs in DOCX
+                try:
+                    with zipfile.ZipFile(io.BytesIO(content)) as zf:
+                        uncompressed_size = sum(info.file_size for info in zf.infolist())
+                        compressed_size = sum(info.compress_size for info in zf.infolist()) or 1
+                        if uncompressed_size > 50 * 1024 * 1024:
+                            results.append(ApplicationUploadResult(
+                                filename=filename,
+                                status="REJECTED",
+                                message="DOCX rejected: uncompressed payload exceeds safe limits (decompression bomb protection)."
+                            ))
+                            continue
+                        if (uncompressed_size / compressed_size) > 100:
+                            results.append(ApplicationUploadResult(
+                                filename=filename,
+                                status="REJECTED",
+                                message="DOCX rejected: abnormal compression ratio detected."
+                            ))
+                            continue
+                except zipfile.BadZipFile:
+                    results.append(ApplicationUploadResult(
+                        filename=filename,
+                        status="REJECTED",
+                        message="Corrupt or malformed DOCX archive."
+                    ))
+                    continue
 
             file_hash = calculate_bytes_hash(content)
 
-            # 3. Check for duplicate resume in this job
+            # 4. Check for duplicate resume in this job
             existing_app = check_duplicate_application(db, job_id, file_hash)
             if existing_app:
                 cand_name = existing_app.candidate.name if existing_app.candidate else "Existing Candidate"
+                # Record duplicate attempt for audit & analytics
+                dup_history = ApplicationStatusHistory(
+                    application_id=existing_app.application_id,
+                    from_stage=existing_app.review_stage,
+                    to_stage=existing_app.review_stage,
+                    note=f"Duplicate resume upload detected ({filename}). Skipped redundant processing.",
+                    changed_by="System"
+                )
+                db.add(dup_history)
+                db.commit()
+
                 results.append(ApplicationUploadResult(
                     filename=filename,
                     status="DUPLICATE",
@@ -172,7 +259,8 @@ def get_application(application_id: int, db: Session = Depends(get_db)):
 def update_application_stage(
     application_id: int,
     payload: ApplicationStatusUpdateRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
 ):
     """
     Updates the candidate's review stage in the hiring pipeline.
@@ -222,7 +310,8 @@ def update_application_stage(
 def add_application_note(
     application_id: int,
     payload: ApplicationNoteCreateRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
 ):
     """Adds a recruiter note to an application with timestamp and author."""
     app = db.query(Application).filter(Application.application_id == application_id).first()
@@ -263,7 +352,11 @@ def get_application_workflow_history(
 
 
 @router.delete("/applications/{application_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_application(application_id: int, db: Session = Depends(get_db)):
+def delete_application(
+    application_id: int,
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
+):
     """Deletes an application and cleans up the stored file."""
     app = db.query(Application).filter(Application.application_id == application_id).first()
     if not app:
@@ -279,3 +372,39 @@ def delete_application(application_id: int, db: Session = Depends(get_db)):
     db.delete(app)
     db.commit()
     return None
+
+
+@router.get("/applications/{application_id}/download")
+def download_resume(application_id: int, db: Session = Depends(get_db)):
+    """Securely downloads candidate resume file without exposing internal filesystem paths."""
+    app = db.query(Application).filter(Application.application_id == application_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found.")
+    if not app.resume_path or not os.path.exists(app.resume_path):
+        raise HTTPException(status_code=404, detail="Resume file not found on server.")
+
+    cand_name = (app.candidate.name if app.candidate and app.candidate.name else "Candidate").replace(" ", "_")
+    ext = os.path.splitext(app.resume_path)[1]
+    filename = f"{cand_name}_Resume{ext}"
+    return FileResponse(
+        path=app.resume_path,
+        filename=filename,
+        media_type="application/octet-stream"
+    )
+
+
+@router.get("/applications/{application_id}/preview")
+def preview_resume(application_id: int, db: Session = Depends(get_db)):
+    """Streams resume document directly for secure browser preview."""
+    app = db.query(Application).filter(Application.application_id == application_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found.")
+    if not app.resume_path or not os.path.exists(app.resume_path):
+        raise HTTPException(status_code=404, detail="Resume file not found on server.")
+
+    ext = os.path.splitext(app.resume_path)[1].lower()
+    media_type = "application/pdf" if ext == ".pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    return FileResponse(
+        path=app.resume_path,
+        media_type=media_type
+    )

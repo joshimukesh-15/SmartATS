@@ -13,6 +13,7 @@ from app.schemas.job import (
 )
 from app.services.taxonomy import normalize_skill_name
 from app.services.job_quality import check_job_description_quality
+from app.api.deps import get_current_recruiter
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
@@ -33,7 +34,11 @@ def check_job_quality_endpoint(payload: JobQualityCheckRequest):
 
 
 @router.post("/", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
-def create_job(job_in: JobCreate, db: Session = Depends(get_db)):
+def create_job(
+    job_in: JobCreate,
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
+):
     """Creates a new job opening with required and preferred skills."""
     # Normalize skill names
     normalized_req = [normalize_skill_name(s) for s in job_in.required_skills if s.strip()]
@@ -90,7 +95,8 @@ def get_existing_job_quality(job_id: int, db: Session = Depends(get_db)):
 def update_job_weights(
     job_id: int,
     payload: JobWeightsUpdateRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
 ):
     """
     Updates and persists the default scoring weights for a specific job opening:
@@ -143,7 +149,12 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{job_id}", response_model=JobResponse)
-def update_job(job_id: int, job_update: JobUpdate, db: Session = Depends(get_db)):
+def update_job(
+    job_id: int,
+    job_update: JobUpdate,
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
+):
     """Updates an existing job opening."""
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if not job:
@@ -175,7 +186,11 @@ def update_job(job_id: int, job_update: JobUpdate, db: Session = Depends(get_db)
 
 
 @router.delete("/{job_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_job(job_id: int, db: Session = Depends(get_db)):
+def delete_job(
+    job_id: int,
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
+):
     """Deletes a job opening and its associated applications and match results."""
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if not job:

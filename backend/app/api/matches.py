@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.database.database import get_db
-from app.database.models import Job, Application, Candidate, MatchResult
+from app.database.models import Job, Application, Candidate, MatchResult, ApplicationStatusHistory
 from app.schemas.match import (
     JobRankingsResponse,
     MatchResultResponse,
@@ -13,6 +13,7 @@ from app.schemas.match import (
 from app.services.ranking import get_job_rankings
 from app.services.comparison import compare_candidates_service
 from app.utils.exporters import export_rankings_to_csv
+from app.api.deps import get_current_recruiter
 
 router = APIRouter(tags=["Screening, Matching & Analytics"])
 
@@ -74,7 +75,11 @@ def compare_candidates_endpoint(
 
 
 @router.get("/jobs/{job_id}/export/csv")
-def export_job_rankings_csv(job_id: int, db: Session = Depends(get_db)):
+def export_job_rankings_csv(
+    job_id: int,
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
+):
     """Generates and downloads a CSV spreadsheet of the job candidate leaderboard."""
     try:
         rankings_data = get_job_rankings(db, job_id)
@@ -133,6 +138,14 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
 
     avg_score = round(sum(all_scores) / len(all_scores), 1) if all_scores else 0.0
 
+    # Duplicate counts include any explicit DUPLICATE application records plus tracked duplicate upload events
+    overview_dup_events = (
+        db.query(ApplicationStatusHistory)
+        .filter(ApplicationStatusHistory.note.like("%Duplicate resume upload%"))
+        .count()
+    )
+    total_duplicates = status_counts.get("DUPLICATE", 0) + overview_dup_events
+
     return {
         "total_jobs": total_jobs,
         "total_candidates": total_candidates,
@@ -140,8 +153,8 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
         "processed_resumes": status_counts.get("COMPLETED", 0),
         "pending_resumes": status_counts.get("PENDING", 0) + status_counts.get("PROCESSING", 0),
         "failed_resumes": status_counts.get("FAILED", 0),
-        "duplicate_resumes": status_counts.get("DUPLICATE", 0),
-        "duplicate_count": status_counts.get("DUPLICATE", 0),
+        "duplicate_resumes": total_duplicates,
+        "duplicate_count": total_duplicates,
         "average_score": avg_score,
         "avg_final_score": avg_score,
         "score_distribution": score_ranges,
@@ -185,7 +198,18 @@ def get_job_specific_analytics(job_id: int, db: Session = Depends(get_db)):
         st = a.review_stage or "New"
         job_stage_counts[st] = job_stage_counts.get(st, 0) + 1
 
-    duplicate_count = sum(1 for a in apps if a.processing_status == "DUPLICATE")
+    app_ids = [a.application_id for a in apps]
+    duplicate_events = 0
+    if app_ids:
+        duplicate_events = (
+            db.query(ApplicationStatusHistory)
+            .filter(
+                ApplicationStatusHistory.application_id.in_(app_ids),
+                ApplicationStatusHistory.note.like("%Duplicate resume upload%")
+            )
+            .count()
+        )
+    duplicate_count = sum(1 for a in apps if a.processing_status == "DUPLICATE") + duplicate_events
     keyword_scores = [m.keyword_score for m in matches if m.keyword_score is not None]
     avg_keyword_score = round(sum(keyword_scores) / len(keyword_scores), 1) if keyword_scores else 0.0
     avg_final = round(sum(scores) / len(scores), 1) if scores else 0.0

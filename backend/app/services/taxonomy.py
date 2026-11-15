@@ -120,32 +120,56 @@ def normalize_skill_name(raw_name: str) -> str:
     return raw_name.strip().title()
 
 
-# Equivalent / Complementary Skill Clusters for Stronger Matching
+# Genuine Equivalent Skill Families (Strict Technical Equivalents)
+# Excludes unrelated or distinct technologies (e.g. React != Vue, Docker != Kubernetes)
 EQUIVALENT_SKILL_FAMILIES: Dict[str, Set[str]] = {
-    "React": {"Next.js", "Vue.js", "Angular", "Svelte"},
+    # React ecosystem: Next.js is built directly on React
+    "React": {"Next.js"},
     "Next.js": {"React"},
+
+    # JavaScript / TypeScript superset
     "TypeScript": {"JavaScript"},
     "JavaScript": {"TypeScript"},
+
+    # Relational ANSI SQL Databases
     "PostgreSQL": {"MySQL", "SQLite", "SQL", "Oracle Database"},
     "MySQL": {"PostgreSQL", "SQLite", "SQL"},
     "SQL": {"PostgreSQL", "MySQL", "SQLite"},
-    "FastAPI": {"Flask", "Django"},
-    "Django": {"FastAPI", "Flask"},
-    "Flask": {"FastAPI", "Django"},
+
+    # Python REST Frameworks (lightweight ASGI/WSGI microframeworks)
+    "FastAPI": {"Flask"},
+    "Flask": {"FastAPI"},
+
+    # Hyperscale Cloud Infrastructure (75% transferable architectural competence)
     "AWS": {"Google Cloud", "Azure"},
     "Google Cloud": {"AWS", "Azure"},
     "Azure": {"AWS", "Google Cloud"},
-    "Docker": {"Kubernetes"},
-    "Kubernetes": {"Docker"},
+
+    # Deep Learning Frameworks
     "PyTorch": {"TensorFlow"},
     "TensorFlow": {"PyTorch"},
-    "REST API": {"GraphQL", "gRPC"},
-    "GraphQL": {"REST API", "gRPC"},
-    "MongoDB": {"DynamoDB", "Cassandra", "Firebase", "Redis"},
-    "Tailwind CSS": {"CSS", "Bootstrap"},
-    "CSS": {"Tailwind CSS", "Bootstrap"},
-    "Pandas": {"NumPy", "Apache Spark"},
+
+    # Scientific Python
+    "Pandas": {"NumPy"},
     "NumPy": {"Pandas"},
+}
+
+EQUIVALENCE_EXPLANATIONS: Dict[str, str] = {
+    "React": "Next.js incorporates React components, architecture, and hooks.",
+    "Next.js": "React provides the foundational runtime for Next.js applications.",
+    "TypeScript": "TypeScript is a typed superset of JavaScript with direct syntax compatibility.",
+    "JavaScript": "JavaScript foundational knowledge transfers directly to TypeScript development.",
+    "PostgreSQL": "Relational SQL database sharing standard ANSI SQL query semantics and ACID principles.",
+    "MySQL": "Relational SQL database sharing standard ANSI SQL query semantics and ACID principles.",
+    "FastAPI": "Lightweight Python microframework for RESTful API services.",
+    "Flask": "Lightweight Python microframework for RESTful API services.",
+    "AWS": "Hyperscale cloud platform with transferable IaaS/PaaS architecture.",
+    "Google Cloud": "Hyperscale cloud platform with transferable IaaS/PaaS architecture.",
+    "Azure": "Hyperscale cloud platform with transferable IaaS/PaaS architecture.",
+    "PyTorch": "High-level tensor computation and deep learning neural network framework.",
+    "TensorFlow": "High-level tensor computation and deep learning neural network framework.",
+    "Pandas": "Core Python data analysis and array computation ecosystem.",
+    "NumPy": "Core Python numerical computation and array manipulation ecosystem.",
 }
 
 
@@ -153,6 +177,7 @@ def get_equivalent_skill_match(required_skill: str, candidate_skills: List[str])
     """
     Checks if a candidate possesses a functionally equivalent skill to the requirement.
     For instance, if PostgreSQL is required and candidate has MySQL, returns 'MySQL'.
+    Guarantees no false equivalence between distinct technologies (e.g. React vs Vue, Docker vs Kubernetes).
     """
     canonical_req = normalize_skill_name(required_skill)
     equivalents = EQUIVALENT_SKILL_FAMILIES.get(canonical_req, set())
@@ -164,4 +189,13 @@ def get_equivalent_skill_match(required_skill: str, candidate_skills: List[str])
         if eq in cand_canonical_set:
             return eq
     return None
+
+
+def get_equivalent_skill_explanation(required_skill: str, equivalent_skill: str) -> str:
+    """Returns an explainable recruiter-facing justification for equivalent skill credit."""
+    canonical_req = normalize_skill_name(required_skill)
+    explanation = EQUIVALENCE_EXPLANATIONS.get(canonical_req)
+    if explanation:
+        return f"{equivalent_skill} awarded 75% equivalent credit for {required_skill}: {explanation}"
+    return f"{equivalent_skill} recognized as transferable equivalent for {required_skill}."
 

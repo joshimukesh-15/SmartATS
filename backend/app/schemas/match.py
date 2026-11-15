@@ -57,6 +57,8 @@ class CandidateCompareItem(BaseModel):
     final_score: float
     keyword_score: float
     tfidf_score: float
+    experience_score: Optional[float] = 0.0
+    education_score: Optional[float] = 0.0
     experience_years: Optional[float] = 0.0
     seniority_level: Optional[str] = "Junior / Entry"
     education_level: Optional[str] = "Unspecified"
@@ -64,6 +66,8 @@ class CandidateCompareItem(BaseModel):
     missing_skills: List[str]
     equivalent_skills: Dict[str, str] = Field(default_factory=dict)
     preferred_matched_skills: List[str]
+    score_breakdown: Optional[Dict[str, float]] = None
+    score_explanation: Optional[str] = None
     total_extracted_skills: int
     applied_at: datetime
 

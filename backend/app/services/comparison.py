@@ -5,12 +5,8 @@ from app.schemas.match import (
     CandidateCompareResponse,
     CandidateCompareItem
 )
-from app.services.taxonomy import normalize_skill_name, get_equivalent_skill_match
-from app.services.extractor import (
-    extract_experience_years,
-    extract_seniority_level,
-    extract_education
-)
+from app.services.taxonomy import normalize_skill_name
+from app.services.scoring import resolve_scoring_weights, evaluate_application_scoring
 
 
 def compare_candidates_service(
@@ -20,8 +16,8 @@ def compare_candidates_service(
 ) -> CandidateCompareResponse:
     """
     Compares 2 to 5 candidates side-by-side:
-    - Normalizes requirements and candidate extracted skills.
-    - Generates unified comparison matrix across skills.
+    - Uses identical scoring formula and weights as the Leaderboard.
+    - Generates unified comparison matrix across skills with equivalent skill awareness.
     - Finds common matched skills.
     """
     job = db.query(Job).filter(Job.job_id == job_id).first()
@@ -40,34 +36,16 @@ def compare_candidates_service(
     if not applications:
         raise ValueError("No matching applications found for comparison.")
 
+    # Shared recruiter weights configuration
+    applied_weights = resolve_scoring_weights(job_custom_weights=job.custom_weights)
+
     candidates_list: List[CandidateCompareItem] = []
     all_matched_sets = []
 
     for app in applications:
         cand = app.candidate
-        match = app.match_result
         name = cand.name if cand and cand.name else f"Candidate #{app.candidate_id}"
-
-        matched_skills = match.matched_skills if match else []
-        missing_skills = match.missing_skills if match else []
-        pref_skills = match.preferred_matched_skills if match else []
-        final_score = match.final_score if match else 0.0
-        kw_score = match.keyword_score if match else 0.0
-        tfidf_score = match.tfidf_score if match else 0.0
-        total_extracted = len(cand.extracted_skills) if cand and cand.extracted_skills else 0
-
-        raw_resume = cand.raw_text if cand and cand.raw_text else ""
-        exp_years = extract_experience_years(raw_resume)
-        seniority = extract_seniority_level(raw_resume, exp_years)
-        edu_data = extract_education(raw_resume)
-
-        cand_all_skills = cand.extracted_skills if cand and cand.extracted_skills else []
-        eq_skills = {}
-        for req in (job.required_skills or []):
-            if req not in matched_skills:
-                eq = get_equivalent_skill_match(req, cand_all_skills)
-                if eq:
-                    eq_skills[req] = eq
+        eval_res = evaluate_application_scoring(app, job, applied_weights)
 
         candidates_list.append(
             CandidateCompareItem(
@@ -75,21 +53,25 @@ def compare_candidates_service(
                 candidate_id=app.candidate_id,
                 candidate_name=name,
                 review_stage=app.review_stage or "New",
-                final_score=final_score,
-                keyword_score=kw_score,
-                tfidf_score=tfidf_score,
-                experience_years=exp_years,
-                seniority_level=seniority,
-                education_level=edu_data.get("degree", "Unspecified"),
-                matched_skills=matched_skills,
-                missing_skills=missing_skills,
-                equivalent_skills=eq_skills,
-                preferred_matched_skills=pref_skills,
-                total_extracted_skills=total_extracted,
+                final_score=eval_res["final_score"],
+                keyword_score=eval_res["keyword_score"],
+                tfidf_score=eval_res["tfidf_score"],
+                experience_score=eval_res["experience_score"],
+                education_score=eval_res["education_score"],
+                experience_years=eval_res["experience_years"],
+                seniority_level=eval_res["seniority_level"],
+                education_level=eval_res["education_level"],
+                matched_skills=eval_res["matched_skills"],
+                missing_skills=eval_res["missing_skills"],
+                equivalent_skills=eval_res["equivalent_skills"],
+                preferred_matched_skills=eval_res["preferred_matched_skills"],
+                score_breakdown=eval_res["score_breakdown"],
+                score_explanation=eval_res["score_explanation"],
+                total_extracted_skills=len(cand.extracted_skills) if cand and cand.extracted_skills else 0,
                 applied_at=app.applied_at
             )
         )
-        all_matched_sets.append(set(matched_skills))
+        all_matched_sets.append(set(eval_res["matched_skills"]))
 
     # Common matched skills (intersection)
     common_matched = list(set.intersection(*all_matched_sets)) if all_matched_sets else []
@@ -102,7 +84,11 @@ def compare_candidates_service(
         norm_skill = normalize_skill_name(skill)
         skill_matrix[norm_skill] = {}
         for c in candidates_list:
-            has_skill = norm_skill in c.matched_skills or norm_skill in c.preferred_matched_skills
+            has_skill = (
+                any(norm_skill.lower() == s.lower() for s in c.matched_skills)
+                or any(norm_skill.lower() == s.lower() for s in c.preferred_matched_skills)
+                or norm_skill in c.equivalent_skills
+            )
             skill_matrix[norm_skill][c.candidate_name] = has_skill
 
     return CandidateCompareResponse(

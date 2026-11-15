@@ -1,5 +1,6 @@
 import re
-from typing import List, Optional, Set, Dict, Any
+from datetime import datetime
+from typing import List, Optional, Set, Dict, Any, Tuple
 from app.services.taxonomy import SKILLS_TAXONOMY, normalize_skill_name
 
 
@@ -133,14 +134,41 @@ def extract_skills(text: str, custom_taxonomy: Optional[dict] = None) -> List[st
     return sorted(list(matched_skills))
 
 
+def merge_employment_intervals(intervals: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+    """Merges overlapping or contiguous employment date intervals."""
+    if not intervals:
+        return []
+    sorted_intervals = sorted(intervals, key=lambda x: (x[0], x[1]))
+    merged = [sorted_intervals[0]]
+    for start, end in sorted_intervals[1:]:
+        prev_start, prev_end = merged[-1]
+        if start <= prev_end:
+            merged[-1] = (prev_start, max(prev_end, end))
+        else:
+            merged.append((start, end))
+    return merged
+
+
+EDUCATION_LINE_TERMS = {
+    "university", "college", "institute", "school", "bachelor", "master",
+    "phd", "doctorate", "degree", "diploma", "graduated", "gpa", "cgpa",
+    "b.tech", "b.e", "b.s", "m.tech", "m.s", "mba"
+}
+
+
 def extract_experience_years(text: str) -> float:
     """
-    Extracts total professional experience years from resume text
-    via explicit statement mentions or work history date spans.
+    Extracts total professional experience years from resume text.
+    - Dynamically detects current year (no hardcoded dates).
+    - Rejects dates in the future (> current_year).
+    - Separates education dates from employment where possible.
+    - Merges overlapping employment intervals to avoid double-counting.
+    - Bounds extracted experience to realistic limits (0 to 45 years).
     """
     if not text:
         return 0.0
 
+    current_year = datetime.now().year
     max_years = 0.0
 
     # 1. Check explicit mentions (e.g. "6+ years of experience", "5.5 yrs experience")
@@ -151,34 +179,53 @@ def extract_experience_years(text: str) -> float:
     for match in explicit_pattern.finditer(text):
         try:
             val = float(match.group(1))
-            if 0.5 <= val <= 35.0 and val > max_years:
+            if 0.5 <= val <= 45.0 and val > max_years:
                 max_years = val
         except (ValueError, IndexError):
             pass
 
     # 2. Check employment date spans (e.g. "2018 - 2024", "2019 – Present")
     year_span_pattern = re.compile(
-        r"\b(20[0-2]\d|199\d)\s*(?:[-–—to]+|\s+to\s+)\s*(20[0-2]\d|present|current)\b",
+        r"\b(20[0-2]\d|199\d|198\d)\s*(?:[-–—to]+|\s+to\s+)\s*(20[0-2]\d|present|current)\b",
         re.IGNORECASE
     )
-    current_year = 2026
-    total_span_years = 0.0
 
-    spans = []
-    for match in year_span_pattern.finditer(text):
-        start_y = int(match.group(1))
-        end_str = match.group(2).lower()
-        end_y = current_year if end_str in {"present", "current"} else int(end_str)
-        if 1990 <= start_y <= end_y <= current_year + 1:
-            diff = max(0.5, float(end_y - start_y))
-            spans.append(diff)
+    lines = text.split("\n")
+    intervals: List[Tuple[float, float]] = []
 
-    if spans:
-        span_total = min(35.0, sum(spans))
+    for line in lines:
+        line_clean = line.strip().lower()
+        if not line_clean:
+            continue
+
+        # Skip date ranges on explicit education lines to avoid treating college years as work exp
+        is_education_line = any(term in line_clean for term in EDUCATION_LINE_TERMS)
+
+        for match in year_span_pattern.finditer(line):
+            start_y = int(match.group(1))
+            end_str = match.group(2).lower()
+            end_y = current_year if end_str in {"present", "current"} else int(end_str)
+
+            # Reject future dates beyond current year
+            if end_y > current_year:
+                end_y = current_year
+            if start_y > current_year:
+                continue
+
+            # Valid employment interval (between 1980 and current_year)
+            if 1980 <= start_y <= end_y and not is_education_line:
+                diff = max(0.5, float(end_y - start_y))
+                if diff > 0:
+                    intervals.append((float(start_y), float(end_y)))
+
+    if intervals:
+        merged_intervals = merge_employment_intervals(intervals)
+        span_total = sum(end - start for start, end in merged_intervals)
+        span_total = min(45.0, span_total)
         if span_total > max_years:
             max_years = span_total
 
-    return round(max_years, 1)
+    return round(min(45.0, max_years), 1)
 
 
 def extract_seniority_level(text: str, experience_years: float = 0.0) -> str:

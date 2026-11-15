@@ -38,6 +38,9 @@ def extract_pdf_text(file_path: str) -> Tuple[str, bool]:
     extracted_pages = []
     try:
         doc = fitz.open(file_path)
+        if doc.is_encrypted:
+            doc.close()
+            raise ValueError("Document is password-protected or encrypted. Please provide an unencrypted document.")
         for page_num in range(len(doc)):
             page = doc.load_page(page_num)
             page_text = page.get_text("text")

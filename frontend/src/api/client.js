@@ -12,9 +12,39 @@ export class ApiError extends Error {
 }
 
 const DEFAULT_BASE_URL = '/api/v1';
+const AUTH_TOKEN_KEY = 'smartats_token';
 
 export function getApiBaseUrl() {
   return import.meta.env.VITE_API_BASE || DEFAULT_BASE_URL;
+}
+
+export function getAuthToken() {
+  try {
+    return localStorage.getItem(AUTH_TOKEN_KEY) || sessionStorage.getItem(AUTH_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token, persist = true) {
+  try {
+    if (persist) {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+    } else {
+      sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+    }
+  } catch {
+    // Ignore storage quota/security errors
+  }
+}
+
+export function clearAuthToken() {
+  try {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  } catch {
+    // Ignore
+  }
 }
 
 export async function apiClient(endpoint, options = {}) {
@@ -23,11 +53,15 @@ export async function apiClient(endpoint, options = {}) {
 
   const { method = 'GET', headers = {}, body, ...customConfig } = options;
 
+  const token = getAuthToken();
+  const authHeaders = token && !headers.Authorization ? { Authorization: `Bearer ${token}` } : {};
+
   const isFormData = body instanceof FormData;
   const config = {
     method,
     headers: {
       ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
+      ...authHeaders,
       ...headers,
     },
     ...customConfig,

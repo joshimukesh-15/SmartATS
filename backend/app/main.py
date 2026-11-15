@@ -8,7 +8,7 @@ from sqlalchemy import text, inspect
 from app.core.config import settings
 from app.database.database import engine, Base
 from app.database import models  # ensure models are registered
-from app.api import jobs, resumes, candidates, matches
+from app.api import jobs, resumes, candidates, matches, auth
 
 # Configure logging
 logging.basicConfig(
@@ -66,6 +66,7 @@ app.add_middleware(
 )
 
 # Mount API Routers
+app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(jobs.router, prefix=settings.API_V1_STR)
 app.include_router(resumes.router, prefix=settings.API_V1_STR)
 app.include_router(candidates.router, prefix=settings.API_V1_STR)
