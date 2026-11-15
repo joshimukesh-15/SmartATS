@@ -17,8 +17,9 @@ from app.database import models  # ensure models are registered
 # access to the values within the .ini file in use.
 config = context.config
 
-# Set sqlalchemy.url from our application settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Set sqlalchemy.url from our application settings if not explicitly provided
+if not config.get_main_option("sqlalchemy.url"):
+    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Interpret the config file for Python logging.
 if config.config_file_name is not None:

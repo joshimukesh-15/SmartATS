@@ -13,20 +13,30 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smartats -d smartats"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   smartats-app:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: smartats-web
     restart: always
     depends_on:
-      - smartats-db
+      smartats-db:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://smartats:smartatspassword@smartats-db:5432/smartats
       - ENVIRONMENT=production
+      - SECRET_KEY=smartats-production-secret-replace-with-openssl-rand-hex-32
+      - ALLOWED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/data/resumes:/app/data/resumes
+      - ./backend/data/resumes:/app/backend/data/resumes
 
 volumes:
   postgres_data:

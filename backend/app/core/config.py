@@ -1,6 +1,6 @@
 import os
 from typing import List, Union
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,13 +36,12 @@ class Settings(BaseSettings):
     TESSERACT_CMD: str = ""
     OCR_MIN_TEXT_LENGTH: int = 60
 
-    # CORS
+    # CORS Allowed Origins (No wildcard '*' by default with credentials)
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://localhost:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
-        "*"
     ]
 
     model_config = SettingsConfigDict(
@@ -51,6 +50,47 @@ class Settings(BaseSettings):
         case_sensitive=True,
         extra="ignore"
     )
+
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        if isinstance(v, str):
+            v_strip = v.strip()
+            if v_strip.startswith("[") and v_strip.endswith("]"):
+                import json
+                try:
+                    parsed = json.loads(v_strip)
+                    if isinstance(parsed, list):
+                        return [str(item).strip() for item in parsed if str(item).strip()]
+                except Exception:
+                    pass
+            return [origin.strip() for origin in v_strip.split(",") if origin.strip()]
+        if isinstance(v, (list, tuple)):
+            return [str(origin).strip() for origin in v if str(origin).strip()]
+        return []
+
+    @model_validator(mode="after")
+    def validate_production_configuration(self):
+        is_prod = str(self.ENVIRONMENT).strip().lower() in ("production", "prod")
+        insecure_keys = {
+            "smartats-secret-key-change-in-production",
+            "secret",
+            "changeme",
+            "default",
+            "admin",
+            "password",
+            ""
+        }
+        if is_prod:
+            if not self.SECRET_KEY or self.SECRET_KEY.strip() in insecure_keys or len(self.SECRET_KEY.strip()) < 16:
+                raise ValueError(
+                    "Production environment requires a strong, explicit SECRET_KEY (at least 16 characters). Default or insecure secret keys are prohibited."
+                )
+            if any(origin == "*" for origin in self.ALLOWED_ORIGINS):
+                raise ValueError(
+                    "Wildcard '*' in ALLOWED_ORIGINS is prohibited in production when credentials are enabled. Specify explicit domain origins."
+                )
+        return self
 
     @field_validator("DATABASE_URL")
     @classmethod

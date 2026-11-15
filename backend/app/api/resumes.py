@@ -408,3 +408,38 @@ def preview_resume(application_id: int, db: Session = Depends(get_db)):
         path=app.resume_path,
         media_type=media_type
     )
+
+
+@router.post("/applications/{application_id}/retry", response_model=ApplicationResponse)
+def retry_application_processing(
+    application_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_recruiter: dict = Depends(get_current_recruiter)
+):
+    """
+    Recruiter action to retry processing for a candidate application that failed or stalled.
+    Resets status to PENDING, logs audit history, and enqueues background processing.
+    """
+    app = db.query(Application).filter(Application.application_id == application_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found.")
+
+    if not app.resume_path or not os.path.exists(app.resume_path):
+        raise HTTPException(status_code=400, detail="Resume file is missing or inaccessible on server.")
+
+    app.processing_status = "PENDING"
+    audit = ApplicationStatusHistory(
+        application_id=app.application_id,
+        from_stage=app.review_stage or "New",
+        to_stage=app.review_stage or "New",
+        note="Manual processing retry initiated by recruiter",
+        changed_by=current_recruiter.get("email", "Recruiter")
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(app)
+
+    background_tasks.add_task(process_resume_application, app.application_id)
+    return app
+

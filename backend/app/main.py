@@ -1,13 +1,14 @@
 import os
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import text, inspect
+from fastapi.responses import FileResponse
 from app.core.config import settings
-from app.database.database import engine, Base
+from app.database.database import engine, Base, SessionLocal
 from app.database import models  # ensure models are registered
+from app.database.models import Application, ApplicationStatusHistory
 from app.api import jobs, resumes, candidates, matches, auth
 
 # Configure logging
@@ -18,31 +19,41 @@ logging.basicConfig(
 logger = logging.getLogger("smartats")
 
 
+def recover_stale_processing_tasks():
+    """
+    Durability check: Any applications left in PROCESSING when the server starts
+    indicate an interrupted background task (due to a server kill, OOM, or unhandled crash).
+    Transitions them to FAILED with an audit history log so they are not left hanging indefinitely.
+    """
+    try:
+        with SessionLocal() as db:
+            stale_apps = db.query(Application).filter(Application.processing_status == "PROCESSING").all()
+            if stale_apps:
+                logger.warning("Found %d applications in stale PROCESSING state on startup; recovering...", len(stale_apps))
+                for app in stale_apps:
+                    app.processing_status = "FAILED"
+                    audit = ApplicationStatusHistory(
+                        application_id=app.application_id,
+                        from_stage=app.review_stage or "New",
+                        to_stage=app.review_stage or "New",
+                        note="Processing interrupted by server restart or worker crash; recovered on startup",
+                        changed_by="System Recovery"
+                    )
+                    db.add(audit)
+                db.commit()
+                logger.info("Successfully recovered %d stale applications to FAILED status.", len(stale_apps))
+    except Exception as e:
+        logger.error("Error during startup task recovery: %s", e)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize database tables on startup
+    # Initialize database schemas cleanly without ad hoc ALTER TABLE queries
     logger.info("Initializing database schemas...")
     Base.metadata.create_all(bind=engine)
 
-    # Safe schema migration check for applications review_stage
-    try:
-        with engine.connect() as conn:
-            inspector = inspect(engine)
-            if "applications" in inspector.get_table_names():
-                columns = [col["name"] for col in inspector.get_columns("applications")]
-                if "review_stage" not in columns:
-                    logger.info("Adding missing column review_stage to applications table...")
-                    conn.execute(text("ALTER TABLE applications ADD COLUMN review_stage VARCHAR(50) DEFAULT 'New' NOT NULL"))
-                    conn.commit()
-
-            if "jobs" in inspector.get_table_names():
-                job_columns = [col["name"] for col in inspector.get_columns("jobs")]
-                if "custom_weights" not in job_columns:
-                    logger.info("Adding missing column custom_weights to jobs table...")
-                    conn.execute(text("ALTER TABLE jobs ADD COLUMN custom_weights JSON NULL"))
-                    conn.commit()
-    except Exception as e:
-        logger.warning("Schema migration notice: %s", e)
+    # Durability recovery for interrupted background processing
+    recover_stale_processing_tasks()
 
     logger.info("Database initialized successfully.")
     yield
@@ -56,11 +67,17 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware for modern frontend (React/Vite)
+# CORS middleware configuration: modern browsers reject allow_credentials=True with allow_origins=["*"]
+cors_origins = [o for o in settings.ALLOWED_ORIGINS if o != "*"]
+allow_creds = True
+if not cors_origins and "*" in settings.ALLOWED_ORIGINS:
+    cors_origins = ["*"]
+    allow_creds = False
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=allow_creds,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -78,10 +95,33 @@ def health_check():
     return {"status": "healthy", "service": settings.PROJECT_NAME}
 
 
-# Mount built React frontend if distribution files exist
-frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))
-if os.path.exists(frontend_dist):
-    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
+# Mount built React frontend if distribution files exist (SPA support)
+frontend_dist_candidates = [
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")),
+    "/app/frontend/dist"
+]
+frontend_dist = next((p for p in frontend_dist_candidates if os.path.isdir(p)), None)
+
+if frontend_dist:
+    assets_dir = os.path.join(frontend_dist, "assets")
+    if os.path.isdir(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}", tags=["Frontend"])
+    async def serve_frontend(full_path: str):
+        # Do not intercept API endpoints or Swagger documentation
+        if full_path.startswith("api/") or full_path in ("docs", "redoc", "openapi.json", "health"):
+            raise HTTPException(status_code=404, detail="Endpoint not found")
+
+        file_path = os.path.join(frontend_dist, full_path)
+        if full_path and os.path.isfile(file_path):
+            return FileResponse(file_path)
+
+        index_file = os.path.join(frontend_dist, "index.html")
+        if os.path.isfile(index_file):
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404, detail="Page not found")
 else:
     @app.get("/", tags=["System"])
     def root():
