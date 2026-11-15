@@ -165,6 +165,12 @@ export function computeBreakdown(candidate = {}, job = {}) {
     weightText: wText,
     weightExperience: wExp,
     weightEducation: wEdu,
+    weights: {
+      weight_skills: wSkills,
+      weight_text: wText,
+      weight_experience: wExp,
+      weight_education: wEdu,
+    },
     finalScore,
     matchedSkills,
     missingSkills,

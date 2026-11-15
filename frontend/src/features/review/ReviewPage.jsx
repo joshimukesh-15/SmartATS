@@ -564,7 +564,7 @@ export default function ReviewPage() {
                           <div className="flex items-center justify-between text-ink-muted">
                             <span className="flex items-center gap-1.5">
                               <span className="w-2 h-2 rounded-full bg-primary" />
-                              Skills Coverage ({Math.round(selectedBreakdown.weights.weight_skills * 100)}%)
+                              Skills Coverage ({Math.round((selectedBreakdown.weightSkills ?? 0.40) * 100)}%)
                             </span>
                             <span className="text-[12px] tabular-nums">
                               {selectedBreakdown.skillsCoveredPercent.toFixed(1)}% match
@@ -579,7 +579,7 @@ export default function ReviewPage() {
                           <div className="flex items-center justify-between text-ink-muted">
                             <span className="flex items-center gap-1.5">
                               <span className="w-2 h-2 rounded-full bg-champagne" />
-                              Semantic Text ({Math.round(selectedBreakdown.weights.weight_text * 100)}%)
+                              Semantic Text ({Math.round((selectedBreakdown.weightText ?? 0.20) * 100)}%)
                             </span>
                             <span className="text-[12px] tabular-nums">
                               {selectedBreakdown.textMatchPercent.toFixed(1)}% match
@@ -594,7 +594,7 @@ export default function ReviewPage() {
                           <div className="flex items-center justify-between text-ink-muted">
                             <span className="flex items-center gap-1.5">
                               <span className="w-2 h-2 rounded-full bg-ink-muted" />
-                              Experience Fit ({Math.round(selectedBreakdown.weights.weight_experience * 100)}%)
+                              Experience Fit ({Math.round((selectedBreakdown.weightExperience ?? 0.25) * 100)}%)
                             </span>
                             <span className="text-[12px] tabular-nums">
                               {selectedBreakdown.experiencePercent.toFixed(1)}% score
@@ -609,7 +609,7 @@ export default function ReviewPage() {
                           <div className="flex items-center justify-between text-ink-muted">
                             <span className="flex items-center gap-1.5">
                               <span className="w-2 h-2 rounded-full bg-champagne/70" />
-                              Education ({Math.round(selectedBreakdown.weights.weight_education * 100)}%)
+                              Education ({Math.round((selectedBreakdown.weightEducation ?? 0.15) * 100)}%)
                             </span>
                             <span className="text-[12px] tabular-nums">
                               {selectedBreakdown.educationPercent.toFixed(1)}% credential
