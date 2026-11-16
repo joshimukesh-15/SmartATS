@@ -2,6 +2,14 @@ import { Link } from 'react-router-dom';
 import { Award, GitCompare, BarChart3, ArrowRight, Check, Minus, AlertCircle } from 'lucide-react';
 import ProductFrame from './ProductFrame';
 import { Avatar, ScoreBar, ScoreValue, Tag } from '../ui';
+import { DEFAULT_WEIGHTS } from '../../lib/constants';
+
+const weights = DEFAULT_WEIGHTS || {
+  skills: 0.40,
+  text: 0.20,
+  experience: 0.25,
+  education: 0.15,
+};
 
 export default function FeaturesAlternating() {
   return (
@@ -21,8 +29,8 @@ export default function FeaturesAlternating() {
               Audit every score down to exact competencies.
             </h3>
             <p className="text-[15px] leading-[1.6] text-ink-muted">
-              Inspect each applicant with mathematical transparency across verified skills and textual
-              relevance. Every points breakdown is visible and defensible during engineering review.
+              Inspect each applicant with mathematical transparency across all 4 deterministic pillars:
+              {` required skills (${Math.round(weights.skills * 100)}%), semantic text alignment (${Math.round(weights.text * 100)}%), experience fit (${Math.round(weights.experience * 100)}%), and education (${Math.round(weights.education * 100)}%). Every points breakdown is visible and defensible during engineering review.`}
             </p>
             <div className="pt-2">
               <Link
@@ -57,38 +65,60 @@ export default function FeaturesAlternating() {
                   <ScoreValue score={94.6} size="lg" />
                 </div>
 
-                {/* Score Bar Breakdown */}
+                {/* Score Bar Breakdown (4 Pillars) */}
                 <div className="space-y-1.5">
                   <ScoreBar
-                    skillsPoints={58.0}
-                    textMatchPoints={36.6}
+                    skillsPoints={38.0}
+                    textMatchPoints={18.0}
+                    experiencePoints={24.0}
+                    educationPoints={14.6}
                     finalScore={94.6}
                     height="h-2.5"
                     showLabel={true}
                   />
                 </div>
 
-                {/* Breakdown Cards */}
-                <div className="grid grid-cols-2 gap-3 text-[13px]">
+                {/* Breakdown Cards (4 Pillars) */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px]">
                   <div className="p-3.5 rounded-[10px] bg-surface-alt border border-line space-y-1.5">
-                    <div className="text-ink-muted font-medium">Skills covered (60% wt)</div>
+                    <div className="text-ink-muted font-medium">Skills ({Math.round(weights.skills * 100)}% wt)</div>
                     <div className="text-[17px] font-semibold text-ink tabular-nums leading-[1.35]">
-                      96.7% <span className="text-[13px] font-normal text-ink-muted">(58.0 pts)</span>
+                      95.0% <span className="text-[13px] font-normal text-ink-muted">(38.0 pts)</span>
                     </div>
                     <div className="flex flex-wrap gap-1 pt-1">
-                      <span className="px-2 py-0.5 rounded-[6px] bg-surface text-ink text-[13px] border border-line">Python</span>
-                      <span className="px-2 py-0.5 rounded-[6px] bg-surface text-ink text-[13px] border border-line">FastAPI</span>
-                      <span className="px-2 py-0.5 rounded-[6px] bg-surface text-ink text-[13px] border border-line">PostgreSQL</span>
+                      <span className="px-2 py-0.5 rounded-[6px] bg-surface text-ink text-[12px] border border-line">Python</span>
+                      <span className="px-2 py-0.5 rounded-[6px] bg-surface text-ink text-[12px] border border-line">FastAPI</span>
+                      <span className="px-2 py-0.5 rounded-[6px] bg-surface text-ink text-[12px] border border-line">PostgreSQL</span>
                     </div>
                   </div>
 
                   <div className="p-3.5 rounded-[10px] bg-surface-alt border border-line space-y-1.5">
-                    <div className="text-ink-muted font-medium">Text match (40% wt)</div>
+                    <div className="text-ink-muted font-medium">Text ({Math.round(weights.text * 100)}% wt)</div>
                     <div className="text-[17px] font-semibold text-ink tabular-nums leading-[1.35]">
-                      91.5% <span className="text-[13px] font-normal text-ink-muted">(36.6 pts)</span>
+                      90.0% <span className="text-[13px] font-normal text-ink-muted">(18.0 pts)</span>
                     </div>
-                    <p className="text-[13px] text-ink-muted pt-1 leading-snug">
-                      High cosine similarity in distributed systems design and data pipelines.
+                    <p className="text-[12px] text-ink-muted pt-1 leading-snug">
+                      High cosine similarity in distributed systems and pipelines.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-[10px] bg-surface-alt border border-line space-y-1.5">
+                    <div className="text-ink-muted font-medium">Exp ({Math.round(weights.experience * 100)}% wt)</div>
+                    <div className="text-[17px] font-semibold text-ink tabular-nums leading-[1.35]">
+                      96.0% <span className="text-[13px] font-normal text-ink-muted">(24.0 pts)</span>
+                    </div>
+                    <p className="text-[12px] text-ink-muted pt-1 leading-snug">
+                      6 yrs verified experience meets Senior Backend threshold (5+ yrs).
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-[10px] bg-surface-alt border border-line space-y-1.5">
+                    <div className="text-ink-muted font-medium">Edu ({Math.round(weights.education * 100)}% wt)</div>
+                    <div className="text-[17px] font-semibold text-ink tabular-nums leading-[1.35]">
+                      97.3% <span className="text-[13px] font-normal text-ink-muted">(14.6 pts)</span>
+                    </div>
+                    <p className="text-[12px] text-ink-muted pt-1 leading-snug">
+                      B.S. in Computer Science verified from accredited institution.
                     </p>
                   </div>
                 </div>

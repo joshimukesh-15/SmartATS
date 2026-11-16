@@ -93,7 +93,7 @@ export default function CandidateReviewDossier({
             Final score
           </span>
           <span className="text-[28px] font-bold text-ink tabular-nums leading-tight">
-            {breakdown.finalScore.toFixed(1)}%
+            {Number(candidate.final_score ?? breakdown.finalScore ?? 0).toFixed(1)}%
           </span>
         </div>
       </div>

@@ -15,6 +15,8 @@ class MatchResultResponse(BaseModel):
     preferred_matched_skills: List[str] = Field(default_factory=list)
     score_explanation: Optional[str] = None
     evaluated_at: datetime
+    weights: Dict[str, float] = Field(default_factory=dict)
+    components: Dict[str, Dict[str, float]] = Field(default_factory=dict)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -75,6 +77,9 @@ class ApplicationResponse(BaseModel):
     match_result: Optional[MatchResultResponse] = None
     status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
     notes: List[ApplicationNoteResponse] = Field(default_factory=list)
+    weights: Dict[str, float] = Field(default_factory=dict)
+    components: Dict[str, Dict[str, float]] = Field(default_factory=dict)
+    final_score: float = 0.0
 
     model_config = ConfigDict(from_attributes=True)
 

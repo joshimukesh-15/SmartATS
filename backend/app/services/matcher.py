@@ -369,7 +369,35 @@ def run_hybrid_matching(
 
     if is_explicit_2factor:
         keyword_score = compute_keyword_score(len(matched_req), len(required_skills), 0)
-        final_score = round((weight_keyword * keyword_score) + (weight_tfidf * tfidf_score), 2)
+        weights = {
+            "skills": float(weight_keyword),
+            "text": float(weight_tfidf),
+            "experience": 0.0,
+            "education": 0.0,
+        }
+        components = {
+            "skills": {
+                "percentage": float(keyword_score),
+                "weight": float(weight_keyword),
+                "points": round(float(keyword_score) * float(weight_keyword), 2),
+            },
+            "text": {
+                "percentage": float(tfidf_score),
+                "weight": float(weight_tfidf),
+                "points": round(float(tfidf_score) * float(weight_tfidf), 2),
+            },
+            "experience": {
+                "percentage": 0.0,
+                "weight": 0.0,
+                "points": 0.0,
+            },
+            "education": {
+                "percentage": 0.0,
+                "weight": 0.0,
+                "points": 0.0,
+            },
+        }
+        final_score = round(sum(c["points"] for c in components.values()), 2)
         final_score = max(0.0, min(100.0, final_score))
 
         explanation = generate_explanation_2factor(
@@ -396,6 +424,8 @@ def run_hybrid_matching(
             "experience_years": exp_years,
             "seniority_level": seniority,
             "education_level": education_data.get("degree", "Unspecified"),
+            "weights": weights,
+            "components": components,
             "score_explanation": explanation
         }
 
@@ -408,18 +438,42 @@ def run_hybrid_matching(
     w_edu = weight_education if weight_education is not None else 0.15
 
     total_w = max(0.01, w_kw + w_tfidf + w_exp + w_edu)
-    norm_kw = w_kw / total_w
-    norm_tfidf = w_tfidf / total_w
-    norm_exp = w_exp / total_w
-    norm_edu = w_edu / total_w
+    norm_kw = round(w_kw / total_w, 3)
+    norm_tfidf = round(w_tfidf / total_w, 3)
+    norm_exp = round(w_exp / total_w, 3)
+    norm_edu = round(w_edu / total_w, 3)
 
-    final_score = round(
-        (norm_kw * keyword_score)
-        + (norm_tfidf * tfidf_score)
-        + (norm_exp * experience_score)
-        + (norm_edu * education_score),
-        2
-    )
+    weights = {
+        "skills": float(norm_kw),
+        "text": float(norm_tfidf),
+        "experience": float(norm_exp),
+        "education": float(norm_edu),
+    }
+
+    components = {
+        "skills": {
+            "percentage": float(keyword_score),
+            "weight": float(norm_kw),
+            "points": round(float(keyword_score) * float(norm_kw), 2),
+        },
+        "text": {
+            "percentage": float(tfidf_score),
+            "weight": float(norm_tfidf),
+            "points": round(float(tfidf_score) * float(norm_tfidf), 2),
+        },
+        "experience": {
+            "percentage": float(experience_score),
+            "weight": float(norm_exp),
+            "points": round(float(experience_score) * float(norm_exp), 2),
+        },
+        "education": {
+            "percentage": float(education_score),
+            "weight": float(norm_edu),
+            "points": round(float(education_score) * float(norm_edu), 2),
+        },
+    }
+
+    final_score = round(sum(c["points"] for c in components.values()), 2)
     final_score = max(0.0, min(100.0, final_score))
 
     explanation = generate_explanation_4factor(
@@ -456,6 +510,8 @@ def run_hybrid_matching(
         "experience_years": exp_years,
         "seniority_level": seniority,
         "education_level": education_data.get("degree", "Unspecified"),
+        "weights": weights,
+        "components": components,
         "score_breakdown": {
             "skills": keyword_score,
             "text": tfidf_score,

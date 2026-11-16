@@ -1,9 +1,18 @@
+import { DEFAULT_WEIGHTS } from '../../lib/constants';
+
+const weights = DEFAULT_WEIGHTS || {
+  skills: 0.40,
+  text: 0.20,
+  experience: 0.25,
+  education: 0.15,
+};
+
 export default function WorkflowSimple() {
   const steps = [
     {
       num: '01',
-      title: 'Define required skills',
-      desc: 'Create an opening specifying mandatory competencies for 60% keyword coverage and optional preferred skills.',
+      title: 'Define job criteria & weights',
+      desc: `Create an opening with required skills (${Math.round(weights.skills * 100)}%), text match (${Math.round(weights.text * 100)}%), experience fit (${Math.round(weights.experience * 100)}%), and education (${Math.round(weights.education * 100)}%), or customize weights per role.`,
     },
     {
       num: '02',
@@ -13,7 +22,7 @@ export default function WorkflowSimple() {
     {
       num: '03',
       title: 'Review explainable rankings',
-      desc: 'Inspect shortlisted applicants on the leaderboard with exact points breakdowns and side-by-side matrices.',
+      desc: 'Inspect shortlisted applicants on the leaderboard with exact 4-pillar points breakdowns and side-by-side matrices.',
     },
   ];
 

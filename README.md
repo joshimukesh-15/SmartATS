@@ -91,13 +91,15 @@ Dark Mode Tokens (via .dark class on <html>):
   └── Danger:                  #B42318
 ```
 
-### Two-Segment Score Progression
+### Multi-Segment Score Progression
 
 ```
-Dual-Track Score Decomposition:
-  ├── Primary Segment:         Skills Covered Points (0.60 × Coverage %)
-  └── Champagne Segment:       Text Match Points (0.40 × Similarity %)
-  Note: Saturated traffic-light tiers (red/green/amber) are purged across the app. Both segments compose the 100% total progress.
+4-Pillar Score Decomposition:
+  ├── Primary Segment:         Skills Covered Points (0.40 × Coverage %)
+  ├── Champagne Segment:       Semantic Text Match Points (0.20 × Similarity %)
+  ├── Ink-Muted Segment:       Experience Fit Points (0.25 × Experience Fit %)
+  └── Champagne/40 Segment:    Education Points (0.15 × Education Score %)
+  Note: Saturated traffic-light tiers (red/green/amber) are purged across the app. All four segments compose the 100% total progress.
 ```
 
 ### Geist Type Scale & Hierarchy
@@ -145,7 +147,7 @@ Dual-Track Score Decomposition:
 - **`Kbd` (`frontend/src/components/ui/Kbd.jsx`)**: 13px keyboard shortcut key cap with `surface-alt` background, 1px line border, and `rounded-[6px]`.
 - **`ProductFrame` (`frontend/src/components/landing/ProductFrame.jsx`)**: Browser chrome preview frame with 3 window controls, centered secure address bar, and elevation shadow.
 - **`SelectionBar` (`frontend/src/features/leaderboard/SelectionBar.jsx`)**: 40px floating graphite pill with `shadow-lg` for multi-candidate comparison workflows.
-- **`ScoreBar` (`frontend/src/components/ui/ScoreBar.jsx`)**: Accessible dual-track score progress bar with ARIA attributes and custom segmented widths.
+- **`ScoreBar` (`frontend/src/components/ui/ScoreBar.jsx`)**: Accessible 4-pillar score progress bar with ARIA attributes and custom segmented widths (Skills, Text Match, Experience Fit, Education).
 - **`Radii Scale`**: `rounded-[24px]` for hero and CTA containers, `rounded-[14px]` for structural panels, `rounded-[10px]` for interactive controls, `rounded-[8px]` for tags and chips.
 
 ---
@@ -171,20 +173,20 @@ Candidate Resume (.pdf / .docx)
 │ Token Skills Taxonomy   │──> Canonical Technical Skills
 └─────────────────────────┘
        │
-       ├─────────────────────────────────┐
-       ▼                                 ▼
-┌─────────────────────────┐       ┌─────────────────────────┐
-│  Keyword Skill Matcher  │       │   TF-IDF Vectorizer     │
-│ Coverage: Matched / Req │       │ Unigrams + Bigrams      │
-│     (Weight: 60%)       │       │  Cosine Sim (Weight: 40%)│
-└─────────────────────────┘       └─────────────────────────┘
-       │                                 │
-       └────────────────┬────────────────┘
-                        ▼
-       ┌─────────────────────────────────┐
-       │ Weighted Hybrid Scoring Engine  │
-       │ Score = (0.60×KW) + (0.40×TFIDF)│
-       └─────────────────────────────────┘
+       ├──────────────┬──────────────┬──────────────┐
+       ▼              ▼              ▼              ▼
+┌──────────────┐┌──────────────┐┌──────────────┐┌──────────────┐
+│Required Skills││Semantic Text ││Experience Fit││  Education   │
+│Coverage %    ││TF-IDF Sim    ││Title & Yrs   ││Level & Degree│
+│(Weight: 40%) ││(Weight: 20%) ││(Weight: 25%) ││(Weight: 15%) │
+└──────────────┘└──────────────┘└──────────────┘└──────────────┘
+       │              │              │              │
+       └──────────────┴───────┬──────┴──────────────┘
+                              ▼
+       ┌────────────────────────────────────────────────────────┐
+       │             Deterministic 4-Pillar Scoring Engine      │
+       │ Score = (0.40×Skills) + (0.20×Text) + (0.25×Exp) + (0.15×Edu)│
+       └────────────────────────────────────────────────────────┘
                         │
                         ▼
        ┌─────────────────────────────────┐
@@ -341,6 +343,7 @@ All recruiter mutation routes require a valid JWT Bearer token in the `Authoriza
 - `GET /api/v1/jobs/`: Lists all open job requisitions with application counts.
 - `POST /api/v1/jobs/`: Creates a new job requisition (supports optional `custom_weights`).
 - `PUT /api/v1/jobs/{job_id}`: Updates job details or configures custom 4-pillar scoring weights.
+- `GET /api/v1/scoring/config`: Retrieves default 4-pillar scoring weights and deterministic formula description.
 
 ### Resume Ingestion & Processing
 - `POST /api/v1/jobs/{job_id}/upload-resumes/`: Uploads resumes, executes SHA-256 duplicate checks, verifies file magic bytes (`%PDF-`, `PK\x03\x04`), and queues background parsing.

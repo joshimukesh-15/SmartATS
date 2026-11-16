@@ -12,6 +12,7 @@ from app.schemas.match import (
 )
 from app.services.ranking import get_job_rankings
 from app.services.comparison import compare_candidates_service
+from app.services.scoring import attach_scoring_to_application
 from app.utils.exporters import export_rankings_to_csv
 from app.api.deps import get_current_recruiter
 
@@ -53,6 +54,8 @@ def get_application_match_endpoint(application_id: int, db: Session = Depends(ge
         raise HTTPException(status_code=404, detail="Application not found.")
     if not app.match_result:
         raise HTTPException(status_code=400, detail="Match result not yet computed for this application.")
+    job = app.job or db.query(Job).filter(Job.job_id == app.job_id).first()
+    attach_scoring_to_application(app, job=job, db=db)
     return app.match_result
 
 

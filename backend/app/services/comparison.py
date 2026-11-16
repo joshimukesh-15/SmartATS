@@ -65,6 +65,8 @@ def compare_candidates_service(
                 missing_skills=eval_res["missing_skills"],
                 equivalent_skills=eval_res["equivalent_skills"],
                 preferred_matched_skills=eval_res["preferred_matched_skills"],
+                weights=eval_res["weights"],
+                components=eval_res["components"],
                 score_breakdown=eval_res["score_breakdown"],
                 score_explanation=eval_res["score_explanation"],
                 total_extracted_skills=len(cand.extracted_skills) if cand and cand.extracted_skills else 0,

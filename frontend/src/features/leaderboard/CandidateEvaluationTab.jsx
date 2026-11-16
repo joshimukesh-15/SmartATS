@@ -18,6 +18,7 @@ export default function CandidateEvaluationTab({ candidate, breakdown }) {
           experiencePoints={breakdown.experiencePoints}
           educationPoints={breakdown.educationPoints}
           finalScore={breakdown.finalScore}
+          hasMultiPillar={breakdown.hasMultiPillar}
           height="h-2"
         />
       </div>
@@ -76,11 +77,11 @@ export default function CandidateEvaluationTab({ candidate, breakdown }) {
         </div>
       </div>
 
-      {candidate.score_explanation && (
+      {(candidate.score_explanation || breakdown.formulaSummary) && (
         <div className="p-4 rounded-[10px] border border-line bg-surface space-y-1">
           <div className="text-[15px] font-semibold text-ink leading-[1.4]">Explain score</div>
           <p className="text-[13px] leading-[1.6] text-ink-muted whitespace-pre-line">
-            {candidate.score_explanation}
+            {candidate.score_explanation || breakdown.formulaSummary}
           </p>
         </div>
       )}

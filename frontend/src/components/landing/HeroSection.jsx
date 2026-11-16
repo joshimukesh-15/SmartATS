@@ -3,6 +3,14 @@ import { ArrowRight, Check } from 'lucide-react';
 import { Button, ScoreBar, ScoreValue, Avatar } from '../ui';
 import { ProductFrame } from './ProductFrame';
 import { computeBreakdown, sortCandidates } from '../../lib/score';
+import { DEFAULT_WEIGHTS } from '../../lib/constants';
+
+const weights = DEFAULT_WEIGHTS || {
+  skills: 0.40,
+  text: 0.20,
+  experience: 0.25,
+  education: 0.15,
+};
 
 const INITIAL_SKILLS = ['React', 'TypeScript', 'Node.js', 'PostgreSQL'];
 
@@ -12,18 +20,24 @@ const SAMPLE_CANDIDATES = [
     name: 'Sarah Jenkins',
     matched_skills: ['React', 'TypeScript', 'Node.js', 'PostgreSQL'],
     text_match: 92,
+    experience_score: 95,
+    education_score: 90,
   },
   {
     id: 'c2',
     name: 'Alex Rivera',
     matched_skills: ['React', 'TypeScript', 'Node.js'],
     text_match: 86,
+    experience_score: 84,
+    education_score: 85,
   },
   {
     id: 'c3',
     name: 'Jordan Lee',
     matched_skills: ['React', 'TypeScript'],
     text_match: 88,
+    experience_score: 76,
+    education_score: 80,
   },
 ];
 
@@ -59,13 +73,18 @@ export default function HeroSection({ onEnterApp }) {
             <div className="absolute -top-12 -left-10 w-96 h-96 dot-grid-bg pointer-events-none opacity-60 dark:opacity-40" />
 
             <div className="relative space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-alt/70 border border-line text-[13px] text-ink-muted font-medium select-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-champagne" />
+                <span>Deterministic 4-Pillar Scoring ({Math.round(weights.skills * 100)}/{Math.round(weights.text * 100)}/{Math.round(weights.experience * 100)}/{Math.round(weights.education * 100)})</span>
+              </div>
+
               <h1 className="text-[clamp(38px,4.2vw,64px)] font-semibold tracking-[-0.04em] leading-[1.06] text-ink text-left">
                 Know exactly why every candidate ranks where they do.
               </h1>
 
               <p className="text-[17px] sm:text-[18px] text-ink-muted leading-[1.6] text-left max-w-xl">
-                SmartATS scores resumes with transparent, auditable math: required skills, matched
-                evidence, and gaps, so every shortlist can be defended.
+                SmartATS scores resumes with transparent, auditable math across 4 deterministic pillars:
+                {` ${Math.round(weights.skills * 100)}% required skills, ${Math.round(weights.text * 100)}% semantic text match, ${Math.round(weights.experience * 100)}% experience fit, and ${Math.round(weights.education * 100)}% education, so every shortlist can be defended.`}
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-1">
@@ -184,26 +203,45 @@ export default function HeroSection({ onEnterApp }) {
                           </div>
                         </div>
 
-                        {/* Two-Segment Score Bar */}
+                        {/* Multi-Segment Score Bar (4 Pillars) */}
                         <ScoreBar
                           skillsPoints={b.skillsCoveredPoints}
                           textMatchPoints={b.textMatchPoints}
+                          experiencePoints={b.experiencePoints}
+                          educationPoints={b.educationPoints}
                           finalScore={b.finalScore}
                           height="h-2"
                         />
 
-                        {/* Live Formula Breakdown Line Under Top Candidate */}
+                        {/* Live Formula Breakdown Line Under Top Candidate (4 Point-Math Components) */}
                         {isTop && (
-                          <div className="mt-2 pt-2 border-t border-line/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[13px] font-medium transition-all duration-350 ease-out">
-                            <div className="flex items-center gap-2 text-ink">
-                              <span className="w-1.5 h-1.5 rounded-full bg-champagne shrink-0" />
-                              <span className="text-ink-muted">Top Candidate Formula:</span>
-                              <span className="tabular-nums font-semibold">
-                                (0.6 × {b.skillsCoveredPoints.toFixed(1)} pts) + (0.4 × {b.textMatchPoints.toFixed(1)} pts)
-                              </span>
+                          <div className="mt-2 pt-2 border-t border-line/70 space-y-1.5 text-[12px] sm:text-[13px] font-medium transition-all duration-350 ease-out">
+                            <div className="flex items-center justify-between gap-2 text-ink">
+                              <div className="flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-champagne shrink-0" />
+                                <span className="text-ink-muted">Top Candidate Formula (4-Pillar):</span>
+                              </div>
+                              <div className="text-champagne font-semibold tabular-nums shrink-0">
+                                = {cand.final_score.toFixed(1)}% final score
+                              </div>
                             </div>
-                            <div className="text-champagne font-semibold tabular-nums shrink-0">
-                              = {cand.final_score.toFixed(1)}% final score
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px] tabular-nums text-ink-muted">
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                                <span>Skills ({Math.round(weights.skills * 100)}%): <strong className="text-ink font-semibold">{b.skillsCoveredPoints.toFixed(1)} pts</strong></span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-champagne shrink-0" />
+                                <span>Text ({Math.round(weights.text * 100)}%): <strong className="text-ink font-semibold">{b.textMatchPoints.toFixed(1)} pts</strong></span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-ink-muted shrink-0" />
+                                <span>Exp ({Math.round(weights.experience * 100)}%): <strong className="text-ink font-semibold">{b.experiencePoints.toFixed(1)} pts</strong></span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-champagne/40 shrink-0" />
+                                <span>Edu ({Math.round(weights.education * 100)}%): <strong className="text-ink font-semibold">{b.educationPoints.toFixed(1)} pts</strong></span>
+                              </div>
                             </div>
                           </div>
                         )}
@@ -212,8 +250,8 @@ export default function HeroSection({ onEnterApp }) {
                   })}
                 </div>
 
-                <div className="text-[13px] text-ink-muted leading-normal pt-1 border-t border-line flex items-center justify-between">
-                  <span>Deterministic: 60% Required Skills + 40% Text Vector Match</span>
+                <div className="text-[13px] text-ink-muted leading-normal pt-1 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <span>Deterministic: {Math.round(weights.skills * 100)}% Required Skills + {Math.round(weights.text * 100)}% Text Match + {Math.round(weights.experience * 100)}% Experience + {Math.round(weights.education * 100)}% Education</span>
                   <span className="text-ink-subtle">Updated live (350ms)</span>
                 </div>
               </div>

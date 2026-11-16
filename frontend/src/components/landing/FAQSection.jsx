@@ -1,5 +1,13 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { DEFAULT_WEIGHTS } from '../../lib/constants';
+
+const weights = DEFAULT_WEIGHTS || {
+  skills: 0.40,
+  text: 0.20,
+  experience: 0.25,
+  education: 0.15,
+};
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(0);
@@ -7,7 +15,7 @@ export default function FAQSection() {
   const faqs = [
     {
       q: 'How does SmartATS calculate candidate scores?',
-      a: 'Scores are generated using a deterministic dual-track formula: 60% of the score represents exact verified keyword coverage of required skills from project and work experience; 40% represents lexical vector cosine similarity (TF-IDF) across candidate text and the job description.',
+      a: `Scores are generated using a deterministic 4-pillar formula: ${Math.round(weights.skills * 100)}% Required Skills coverage from verified experience, ${Math.round(weights.text * 100)}% Semantic Text Alignment (TF-IDF vector cosine similarity), ${Math.round(weights.experience * 100)}% Experience Fit against seniority requirements, and ${Math.round(weights.education * 100)}% Education and credential verification. Recruiter weights can also be customized per job opening.`,
     },
     {
       q: 'Does SmartATS use black-box generative AI to rank resumes?',

@@ -9,7 +9,7 @@ from app.core.config import settings
 from app.database.database import engine, Base, SessionLocal
 from app.database import models  # ensure models are registered
 from app.database.models import Application, ApplicationStatusHistory
-from app.api import jobs, resumes, candidates, matches, auth
+from app.api import jobs, resumes, candidates, matches, auth, scoring
 from app.api.deps import get_current_recruiter
 
 # Configure logging
@@ -85,6 +85,7 @@ app.add_middleware(
 
 # Mount API Routers (auth remains public, while domain endpoints require recruiter authentication)
 app.include_router(auth.router, prefix=settings.API_V1_STR)
+app.include_router(scoring.router, prefix=settings.API_V1_STR)
 app.include_router(
     jobs.router,
     prefix=settings.API_V1_STR,

@@ -2,9 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import { Check } from 'lucide-react';
 import { ScoreValue, ScoreBar } from '../ui';
 import { ProductFrame } from './ProductFrame';
+import { DEFAULT_WEIGHTS } from '../../lib/constants';
+
+const weights = DEFAULT_WEIGHTS || {
+  skills: 0.40,
+  text: 0.20,
+  experience: 0.25,
+  education: 0.15,
+};
 
 export default function ScoringFormulaSection() {
-  const [activeTerm, setActiveTerm] = useState(null); // 'final' | 'skills' | 'text' | null
+  const [activeTerm, setActiveTerm] = useState(null); // 'final' | 'skills' | 'text' | 'experience' | 'education' | null
   const [inView, setInView] = useState(() => typeof IntersectionObserver === 'undefined');
   const sectionRef = useRef(null);
 
@@ -34,33 +42,41 @@ export default function ScoringFormulaSection() {
     {
       rank: 1,
       name: 'Sarah Jenkins',
-      skillsPts: 58.0,
-      textPts: 36.4,
+      skillsPts: 38.0,
+      textPts: 18.2,
+      expPts: 24.0,
+      eduPts: 14.2,
       total: 94.4,
       verified: ['Python', 'FastAPI', 'PostgreSQL'],
     },
     {
       rank: 2,
       name: 'Alex Rivera',
-      skillsPts: 52.0,
-      textPts: 34.0,
+      skillsPts: 34.0,
+      textPts: 17.0,
+      expPts: 21.5,
+      eduPts: 13.5,
       total: 86.0,
       verified: ['Python', 'FastAPI'],
     },
     {
       rank: 3,
       name: 'Jordan Lee',
-      skillsPts: 48.0,
-      textPts: 32.2,
+      skillsPts: 32.0,
+      textPts: 16.0,
+      expPts: 20.0,
+      eduPts: 12.2,
       total: 80.2,
       verified: ['Python', 'Docker'],
     },
   ];
 
-  // Benchmark calculation for interactive formula display
-  const demoSkillsPts = 58.0; // max 60.0
-  const demoTextPts = 36.4;   // max 40.0
-  const demoFinalScore = demoSkillsPts + demoTextPts; // 94.4%
+  // Benchmark calculation for interactive formula display across 4 pillars
+  const demoSkillsPts = 38.0; // max 40.0 (95% * 0.40)
+  const demoTextPts = 18.2;   // max 20.0 (91% * 0.20)
+  const demoExpPts = 24.0;    // max 25.0 (96% * 0.25)
+  const demoEduPts = 14.2;    // max 15.0 (94.7% * 0.15)
+  const demoFinalScore = demoSkillsPts + demoTextPts + demoExpPts + demoEduPts; // 94.4%
 
   return (
     <section
@@ -80,7 +96,7 @@ export default function ScoringFormulaSection() {
 
             <p className="text-[16px] text-ink-muted leading-relaxed">
               SmartATS replaces generative black-box guessing with deterministic formulas. Every
-              candidate fit score is calculated from two verifiable signals:
+              candidate fit score is calculated across four verifiable pillars:
             </p>
 
             {/* Signature Interactive Formula */}
@@ -90,7 +106,7 @@ export default function ScoringFormulaSection() {
               </div>
 
               {/* Hoverable / Focusable Formula Terms */}
-              <div className="flex flex-wrap items-center gap-1.5 text-[15px] sm:text-[16px] font-semibold text-ink select-none">
+              <div className="flex flex-wrap items-center gap-1.5 text-[14px] sm:text-[15px] font-semibold text-ink select-none">
                 <button
                   type="button"
                   onMouseEnter={() => setActiveTerm('final')}
@@ -118,7 +134,7 @@ export default function ScoringFormulaSection() {
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
-                  0.6 × Skills covered
+                  {weights.skills.toFixed(2)} × Skills
                 </button>
                 <span className="text-ink-subtle">+</span>
                 <button
@@ -133,38 +149,88 @@ export default function ScoringFormulaSection() {
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
-                  0.4 × Text match
+                  {weights.text.toFixed(2)} × Text
+                </button>
+                <span className="text-ink-subtle">+</span>
+                <button
+                  type="button"
+                  onMouseEnter={() => setActiveTerm('experience')}
+                  onMouseLeave={() => setActiveTerm(null)}
+                  onFocus={() => setActiveTerm('experience')}
+                  onBlur={() => setActiveTerm(null)}
+                  className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
+                    activeTerm === 'experience'
+                      ? 'bg-ink-muted text-on-primary shadow-xs'
+                      : 'hover:bg-surface-alt text-ink'
+                  }`}
+                >
+                  {weights.experience.toFixed(2)} × Exp
+                </button>
+                <span className="text-ink-subtle">+</span>
+                <button
+                  type="button"
+                  onMouseEnter={() => setActiveTerm('education')}
+                  onMouseLeave={() => setActiveTerm(null)}
+                  onFocus={() => setActiveTerm('education')}
+                  onBlur={() => setActiveTerm(null)}
+                  className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
+                    activeTerm === 'education'
+                      ? 'bg-champagne/60 text-ink shadow-xs'
+                      : 'hover:bg-surface-alt text-ink'
+                  }`}
+                >
+                  {weights.education.toFixed(2)} × Edu
                 </button>
               </div>
 
-              {/* Interactive Two-Segment Bar */}
+              {/* Interactive 4-Segment Bar */}
               <div className="space-y-1.5 pt-1">
                 <div className="h-3 w-full rounded-full bg-surface-alt overflow-hidden flex p-0.5 border border-line">
-                  {/* Skills Covered Segment (60% Weight) */}
+                  {/* Skills Covered Segment (40% Weight) */}
                   <div
                     style={{ width: inView ? `${demoSkillsPts}%` : '0%' }}
                     className={`h-full rounded-l-full bg-primary transition-all duration-1000 ease-out ${
-                      activeTerm === 'text' ? 'opacity-30' : 'opacity-100'
+                      activeTerm && activeTerm !== 'final' && activeTerm !== 'skills' ? 'opacity-30' : 'opacity-100'
                     } ${activeTerm === 'skills' ? 'ring-2 ring-primary ring-offset-1 z-10' : ''}`}
                   />
-                  {/* Text Match Segment (40% Weight) */}
+                  {/* Text Match Segment (20% Weight) */}
                   <div
                     style={{ width: inView ? `${demoTextPts}%` : '0%' }}
-                    className={`h-full rounded-r-full bg-champagne transition-all duration-1000 ease-out ${
-                      activeTerm === 'skills' ? 'opacity-30' : 'opacity-100'
+                    className={`h-full bg-champagne transition-all duration-1000 ease-out ${
+                      activeTerm && activeTerm !== 'final' && activeTerm !== 'text' ? 'opacity-30' : 'opacity-100'
                     } ${activeTerm === 'text' ? 'ring-2 ring-champagne ring-offset-1 z-10' : ''}`}
+                  />
+                  {/* Experience Segment (25% Weight) */}
+                  <div
+                    style={{ width: inView ? `${demoExpPts}%` : '0%' }}
+                    className={`h-full bg-ink-muted transition-all duration-1000 ease-out ${
+                      activeTerm && activeTerm !== 'final' && activeTerm !== 'experience' ? 'opacity-30' : 'opacity-100'
+                    } ${activeTerm === 'experience' ? 'ring-2 ring-ink-muted ring-offset-1 z-10' : ''}`}
+                  />
+                  {/* Education Segment (15% Weight) */}
+                  <div
+                    style={{ width: inView ? `${demoEduPts}%` : '0%' }}
+                    className={`h-full rounded-r-full bg-champagne/40 transition-all duration-1000 ease-out ${
+                      activeTerm && activeTerm !== 'final' && activeTerm !== 'education' ? 'opacity-30' : 'opacity-100'
+                    } ${activeTerm === 'education' ? 'ring-2 ring-champagne ring-offset-1 z-10' : ''}`}
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[13px] tabular-nums text-ink-muted">
+                <div className="flex flex-wrap items-center justify-between text-[12px] sm:text-[13px] tabular-nums text-ink-muted gap-x-2">
                   <span className={activeTerm === 'skills' ? 'font-semibold text-ink' : ''}>
-                    Skills: {demoSkillsPts.toFixed(1)} / 60 pts
+                    Skills: {demoSkillsPts.toFixed(1)} / {Math.round(weights.skills * 100)} pts
+                  </span>
+                  <span className={activeTerm === 'text' ? 'font-semibold text-ink' : ''}>
+                    Text: {demoTextPts.toFixed(1)} / {Math.round(weights.text * 100)} pts
+                  </span>
+                  <span className={activeTerm === 'experience' ? 'font-semibold text-ink' : ''}>
+                    Exp: {demoExpPts.toFixed(1)} / {Math.round(weights.experience * 100)} pts
+                  </span>
+                  <span className={activeTerm === 'education' ? 'font-semibold text-ink' : ''}>
+                    Edu: {demoEduPts.toFixed(1)} / {Math.round(weights.education * 100)} pts
                   </span>
                   <span className={activeTerm === 'final' ? 'font-bold text-ink' : 'font-semibold text-ink'}>
                     Total: {demoFinalScore.toFixed(1)}%
-                  </span>
-                  <span className={activeTerm === 'text' ? 'font-semibold text-ink' : ''}>
-                    Text: {demoTextPts.toFixed(1)} / 40 pts
                   </span>
                 </div>
               </div>
@@ -175,7 +241,7 @@ export default function ScoringFormulaSection() {
               <div
                 onMouseEnter={() => setActiveTerm('skills')}
                 onMouseLeave={() => setActiveTerm(null)}
-                className={`p-4 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
+                className={`p-3.5 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
                   activeTerm === 'skills'
                     ? 'border-primary bg-surface shadow-sm ring-1 ring-primary'
                     : 'border-line bg-surface hover:border-ink-subtle'
@@ -184,9 +250,9 @@ export default function ScoringFormulaSection() {
                 <div className="flex items-center justify-between text-[14px] font-semibold text-ink">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-                    <span>Skills covered</span>
+                    <span>Required skills</span>
                   </div>
-                  <span className="tabular-nums text-ink-muted font-medium">60% weight</span>
+                  <span className="tabular-nums text-ink-muted font-medium">{Math.round(weights.skills * 100)}% weight</span>
                 </div>
                 <p className="text-[13px] text-ink-muted leading-relaxed">
                   Deterministic verification of required competencies extracted directly from candidate
@@ -197,7 +263,7 @@ export default function ScoringFormulaSection() {
               <div
                 onMouseEnter={() => setActiveTerm('text')}
                 onMouseLeave={() => setActiveTerm(null)}
-                className={`p-4 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
+                className={`p-3.5 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
                   activeTerm === 'text'
                     ? 'border-champagne bg-surface shadow-sm ring-1 ring-champagne'
                     : 'border-line bg-surface hover:border-ink-subtle'
@@ -206,13 +272,55 @@ export default function ScoringFormulaSection() {
                 <div className="flex items-center justify-between text-[14px] font-semibold text-ink">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-champagne" />
-                    <span>Text match</span>
+                    <span>Semantic text alignment</span>
                   </div>
-                  <span className="tabular-nums text-ink-muted font-medium">40% weight</span>
+                  <span className="tabular-nums text-ink-muted font-medium">{Math.round(weights.text * 100)}% weight</span>
                 </div>
                 <p className="text-[13px] text-ink-muted leading-relaxed">
-                  TF-IDF vector cosine similarity evaluating semantic vocabulary alignment between resume
+                  TF-IDF vector cosine similarity evaluating lexical and semantic vocabulary alignment between resume
                   context and role responsibilities.
+                </p>
+              </div>
+
+              <div
+                onMouseEnter={() => setActiveTerm('experience')}
+                onMouseLeave={() => setActiveTerm(null)}
+                className={`p-3.5 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
+                  activeTerm === 'experience'
+                    ? 'border-ink-muted bg-surface shadow-sm ring-1 ring-ink-muted'
+                    : 'border-line bg-surface hover:border-ink-subtle'
+                }`}
+              >
+                <div className="flex items-center justify-between text-[14px] font-semibold text-ink">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-ink-muted" />
+                    <span>Experience fit</span>
+                  </div>
+                  <span className="tabular-nums text-ink-muted font-medium">{Math.round(weights.experience * 100)}% weight</span>
+                </div>
+                <p className="text-[13px] text-ink-muted leading-relaxed">
+                  Seniority scoring comparing verified total years in relevant software engineering roles against job tier requirements.
+                </p>
+              </div>
+
+              <div
+                onMouseEnter={() => setActiveTerm('education')}
+                onMouseLeave={() => setActiveTerm(null)}
+                className={`p-3.5 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
+                  activeTerm === 'education'
+                    ? 'border-champagne bg-surface shadow-sm ring-1 ring-champagne/60'
+                    : 'border-line bg-surface hover:border-ink-subtle'
+                }`}
+              >
+                <div className="flex items-center justify-between text-[14px] font-semibold text-ink">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-champagne/60" />
+                    <span>Education & credentials</span>
+                  </div>
+                  <span className="tabular-nums text-ink-muted font-medium">{Math.round(weights.education * 100)}% weight</span>
+                </div>
+                <p className="text-[13px] text-ink-muted leading-relaxed">
+                  Evaluates degree levels (B.S., M.S., Ph.D.) and academic or professional certifications matching the target discipline.
                 </p>
               </div>
             </div>
@@ -261,6 +369,8 @@ export default function ScoringFormulaSection() {
                         <ScoreBar
                           skillsPoints={row.skillsPts}
                           textMatchPoints={row.textPts}
+                          experiencePoints={row.expPts}
+                          educationPoints={row.eduPts}
                           finalScore={row.total}
                           height="h-1.5"
                         />
@@ -270,7 +380,7 @@ export default function ScoringFormulaSection() {
                 </div>
 
                 <div className="p-3 rounded-[8px] bg-surface-alt/50 border border-line text-[13px] text-ink-muted flex items-center justify-between">
-                  <span>Deterministic Shortlist Calculation</span>
+                  <span>Deterministic 4-Pillar Calculation</span>
                   <span className="font-semibold text-ink tabular-nums">3 Candidates Scored</span>
                 </div>
               </div>

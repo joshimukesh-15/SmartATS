@@ -29,6 +29,8 @@ class RankingItem(BaseModel):
     missing_skills: List[str] = Field(default_factory=list)
     equivalent_skills: Dict[str, str] = Field(default_factory=dict)
     preferred_matched_skills: List[str] = Field(default_factory=list)
+    weights: Dict[str, float] = Field(default_factory=dict)
+    components: Dict[str, Dict[str, float]] = Field(default_factory=dict)
     score_breakdown: Optional[Dict[str, float]] = None
     score_explanation: Optional[str] = None
     notes: List[ApplicationNoteResponse] = Field(default_factory=list)
@@ -66,6 +68,8 @@ class CandidateCompareItem(BaseModel):
     missing_skills: List[str]
     equivalent_skills: Dict[str, str] = Field(default_factory=dict)
     preferred_matched_skills: List[str]
+    weights: Dict[str, float] = Field(default_factory=dict)
+    components: Dict[str, Dict[str, float]] = Field(default_factory=dict)
     score_breakdown: Optional[Dict[str, float]] = None
     score_explanation: Optional[str] = None
     total_extracted_skills: int
@@ -80,3 +84,8 @@ class CandidateCompareResponse(BaseModel):
     candidates: List[CandidateCompareItem]
     common_matched_skills: List[str]
     skill_matrix: Dict[str, Dict[str, bool]]  # skill -> { candidate_name: bool }
+
+
+class ScoringConfigResponse(BaseModel):
+    default_weights: Dict[str, float]
+    formula_description: str

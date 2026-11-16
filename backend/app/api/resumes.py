@@ -20,6 +20,7 @@ from app.core.config import settings
 from app.core.security import sanitize_filename, validate_file_extension
 from app.services.duplicate import calculate_bytes_hash, check_duplicate_application
 from app.services.processor import process_resume_application
+from app.services.scoring import attach_scoring_to_application, resolve_scoring_weights
 from app.api.deps import get_current_recruiter
 
 router = APIRouter(tags=["Resumes & Applications"])
@@ -242,6 +243,9 @@ def get_job_applications(job_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Job opening not found.")
 
     applications = db.query(Application).filter(Application.job_id == job_id).order_by(Application.applied_at.desc()).all()
+    applied_weights = resolve_scoring_weights(job_custom_weights=job.custom_weights)
+    for app in applications:
+        attach_scoring_to_application(app, job=job, applied_weights=applied_weights)
     return applications
 
 
@@ -251,6 +255,7 @@ def get_application(application_id: int, db: Session = Depends(get_db)):
     app = db.query(Application).filter(Application.application_id == application_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Application not found.")
+    attach_scoring_to_application(app, db=db)
     return app
 
 
@@ -303,6 +308,7 @@ def update_application_stage(
 
     db.commit()
     db.refresh(app)
+    attach_scoring_to_application(app, db=db)
     return app
 
 
@@ -441,5 +447,6 @@ def retry_application_processing(
     db.refresh(app)
 
     background_tasks.add_task(process_resume_application, app.application_id)
+    attach_scoring_to_application(app, db=db)
     return app
 

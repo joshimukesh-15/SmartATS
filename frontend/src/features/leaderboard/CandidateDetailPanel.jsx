@@ -60,6 +60,16 @@ export default function CandidateDetailPanel({
   const notesList = candidate.notes || [];
   const statusHistoryList = candidate.status_history || [];
 
+  const hasExperienceOrEducation = Boolean(
+    breakdown?.hasMultiPillar ||
+    (breakdown?.experiencePoints > 0 || breakdown?.educationPoints > 0) ||
+    (breakdown?.weightExperience > 0 || breakdown?.weightEducation > 0) ||
+    candidate?.experience_score !== undefined ||
+    candidate?.education_score !== undefined ||
+    candidate?.components?.experience ||
+    candidate?.components?.education
+  );
+
   // Circumference for 96px circle (r=45, stroke=6)
   const radius = 45;
   const circumference = 2 * Math.PI * radius; // ~282.74
@@ -162,11 +172,11 @@ export default function CandidateDetailPanel({
           </div>
         </div>
 
-        {/* Beside: Two-Segment Score Bar and Two Point-Math Lines */}
+        {/* Beside: Score Bar and Point-Math Lines */}
         <div className="flex-1 w-full space-y-2.5 text-left">
           <div className="space-y-1">
             <div className="text-[13px] font-medium text-ink flex items-center justify-between">
-              <span>Dual-Track Point Breakdown</span>
+              <span>{hasExperienceOrEducation ? 'Multi-Pillar Point Breakdown' : 'Dual-Track Point Breakdown'}</span>
               <span className="tabular-nums font-semibold text-[13px]">
                 {breakdown.finalScore.toFixed(1)} pts
               </span>
@@ -177,13 +187,14 @@ export default function CandidateDetailPanel({
               experiencePoints={breakdown.experiencePoints}
               educationPoints={breakdown.educationPoints}
               finalScore={breakdown.finalScore}
+              hasMultiPillar={hasExperienceOrEducation}
               height="h-2"
             />
           </div>
 
-          {/* Two Point-Math Lines */}
-          <div className="space-y-1 text-[13px] tabular-nums">
-            <div className="flex items-center justify-between text-ink">
+          {/* Point-Math Lines: 4 lines when experience/education exist (or hasMultiPillar), 2 otherwise */}
+          <div data-testid="point-math-lines" className="space-y-1 text-[13px] tabular-nums">
+            <div data-testid="math-line-skills" className="flex items-center justify-between text-ink">
               <span className="flex items-center gap-1.5 text-ink-muted">
                 <span className="w-2 h-2 rounded-full bg-primary" />
                 <span>Skills ({(breakdown.weightSkills * 100).toFixed(0)}%)</span>
@@ -192,7 +203,7 @@ export default function CandidateDetailPanel({
                 {breakdown.weightSkills.toFixed(2)} × {breakdown.skillsCoveredPercent.toFixed(1)}% = {breakdown.skillsCoveredPoints.toFixed(1)} pts
               </span>
             </div>
-            <div className="flex items-center justify-between text-ink">
+            <div data-testid="math-line-text" className="flex items-center justify-between text-ink">
               <span className="flex items-center gap-1.5 text-ink-muted">
                 <span className="w-2 h-2 rounded-full bg-champagne" />
                 <span>Text ({(breakdown.weightText * 100).toFixed(0)}%)</span>
@@ -201,6 +212,29 @@ export default function CandidateDetailPanel({
                 {breakdown.weightText.toFixed(2)} × {breakdown.textMatchPercent.toFixed(1)}% = {breakdown.textMatchPoints.toFixed(1)} pts
               </span>
             </div>
+
+            {hasExperienceOrEducation && (
+              <>
+                <div data-testid="math-line-experience" className="flex items-center justify-between text-ink">
+                  <span className="flex items-center gap-1.5 text-ink-muted">
+                    <span className="w-2 h-2 rounded-full bg-ink-muted" />
+                    <span>Experience ({(breakdown.weightExperience * 100).toFixed(0)}%)</span>
+                  </span>
+                  <span className="font-medium">
+                    {breakdown.weightExperience.toFixed(2)} × {breakdown.experiencePercent.toFixed(1)}% = {breakdown.experiencePoints.toFixed(1)} pts
+                  </span>
+                </div>
+                <div data-testid="math-line-education" className="flex items-center justify-between text-ink">
+                  <span className="flex items-center gap-1.5 text-ink-muted">
+                    <span className="w-2 h-2 rounded-full bg-champagne/40" />
+                    <span>Education ({(breakdown.weightEducation * 100).toFixed(0)}%)</span>
+                  </span>
+                  <span className="font-medium">
+                    {breakdown.weightEducation.toFixed(2)} × {breakdown.educationPercent.toFixed(1)}% = {breakdown.educationPoints.toFixed(1)} pts
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

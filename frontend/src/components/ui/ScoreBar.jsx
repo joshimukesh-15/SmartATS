@@ -12,15 +12,20 @@ export function ScoreBar({
   experiencePoints = 0,
   educationPoints = 0,
   finalScore = 0,
+  hasMultiPillar,
   height = 'h-1.5',
   className = '',
   showLabel = false,
 }) {
+  const isMulti = hasMultiPillar !== undefined
+    ? Boolean(hasMultiPillar)
+    : (experiencePoints > 0 || educationPoints > 0);
+
   const skillsWidth = Math.max(0, skillsPoints);
   const textWidth = Math.max(0, textMatchPoints);
   const expWidth = Math.max(0, experiencePoints);
   const eduWidth = Math.max(0, educationPoints);
-  const total = finalScore || skillsPoints + textMatchPoints + experiencePoints + educationPoints;
+  const total = finalScore || (skillsPoints + textMatchPoints + experiencePoints + educationPoints);
 
   return (
     <div className={`w-full space-y-1 ${className}`}>
@@ -32,36 +37,35 @@ export function ScoreBar({
         aria-valuemax="100"
       >
         {/* Skills Covered Segment (Primary / Ink) */}
-        {skillsWidth > 0 && (
-          <div
-            style={{ width: `${skillsWidth}%` }}
-            className="bg-primary h-full transition-all duration-500 ease-out"
-            title={`Skills: ${skillsWidth.toFixed(1)} pts`}
-          />
-        )}
+        <div
+          data-testid="score-bar-skills"
+          style={{ width: `${skillsWidth}%` }}
+          className="bg-primary h-full transition-all duration-500 ease-out"
+          title={`Skills: ${skillsWidth.toFixed(1)} pts`}
+        />
         {/* Text Match Segment (Champagne) */}
-        {textWidth > 0 && (
-          <div
-            style={{ width: `${textWidth}%` }}
-            className="bg-champagne h-full transition-all duration-500 ease-out"
-            title={`Text: ${textWidth.toFixed(1)} pts`}
-          />
-        )}
-        {/* Experience Segment (Ink Muted) */}
-        {expWidth > 0 && (
-          <div
-            style={{ width: `${expWidth}%` }}
-            className="bg-ink-muted h-full transition-all duration-500 ease-out"
-            title={`Experience: ${expWidth.toFixed(1)} pts`}
-          />
-        )}
-        {/* Education Segment (Champagne subtle) */}
-        {eduWidth > 0 && (
-          <div
-            style={{ width: `${eduWidth}%` }}
-            className="bg-champagne/40 h-full transition-all duration-500 ease-out"
-            title={`Education: ${eduWidth.toFixed(1)} pts`}
-          />
+        <div
+          data-testid="score-bar-text"
+          style={{ width: `${textWidth}%` }}
+          className="bg-champagne h-full transition-all duration-500 ease-out"
+          title={`Text: ${textWidth.toFixed(1)} pts`}
+        />
+        {/* Experience & Education Segments (rendered when multi-pillar or experience/education points > 0) */}
+        {isMulti && (
+          <>
+            <div
+              data-testid="score-bar-experience"
+              style={{ width: `${expWidth}%` }}
+              className="bg-ink-muted h-full transition-all duration-500 ease-out"
+              title={`Experience: ${expWidth.toFixed(1)} pts`}
+            />
+            <div
+              data-testid="score-bar-education"
+              style={{ width: `${eduWidth}%` }}
+              className="bg-champagne/40 h-full transition-all duration-500 ease-out"
+              title={`Education: ${eduWidth.toFixed(1)} pts`}
+            />
+          </>
         )}
       </div>
       {showLabel && (
@@ -74,17 +78,17 @@ export function ScoreBar({
             <span className="w-2 h-2 rounded-full bg-champagne" />
             Text: {textMatchPoints.toFixed(1)}
           </span>
-          {experiencePoints > 0 && (
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-ink-muted" />
-              Exp: {experiencePoints.toFixed(1)}
-            </span>
-          )}
-          {educationPoints > 0 && (
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-champagne/40" />
-              Edu: {educationPoints.toFixed(1)}
-            </span>
+          {isMulti && (
+            <>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-ink-muted" />
+                Exp: {experiencePoints.toFixed(1)}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-champagne/40" />
+                Edu: {educationPoints.toFixed(1)}
+              </span>
+            </>
           )}
           <span className="font-semibold text-ink ml-auto">{total.toFixed(1)}%</span>
         </div>
