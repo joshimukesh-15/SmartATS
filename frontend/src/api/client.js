@@ -51,7 +51,7 @@ export async function apiClient(endpoint, options = {}) {
   const baseUrl = getApiBaseUrl().replace(/\/$/, '');
   const url = `${baseUrl}/${endpoint.replace(/^\//, '')}`;
 
-  const { method = 'GET', headers = {}, body, ...customConfig } = options;
+  const { method = 'GET', headers = {}, body, responseType, ...customConfig } = options;
 
   const token = getAuthToken();
   const authHeaders = token && !headers.Authorization ? { Authorization: `Bearer ${token}` } : {};
@@ -94,12 +94,24 @@ export async function apiClient(endpoint, options = {}) {
     } catch {
       // Non-JSON error payload
     }
+
+    if (response.status === 401 && !endpoint.includes('auth/login')) {
+      clearAuthToken();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('smartats:unauthorized'));
+      }
+    }
+
     throw new ApiError(errorMessage, response.status, errorData);
   }
 
   // If 204 No Content
   if (response.status === 204) {
     return null;
+  }
+
+  if (responseType === 'blob') {
+    return response.blob();
   }
 
   const contentType = response.headers.get('content-type');

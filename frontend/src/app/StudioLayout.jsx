@@ -1,4 +1,4 @@
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { Search, Plus, UploadCloud, GitCompare } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -23,6 +23,17 @@ export default function StudioLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+
+  // Listen for unauthorized 401 events and redirect to login
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      navigate('/login', { state: { from: location }, replace: true });
+    };
+    window.addEventListener('smartats:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('smartats:unauthorized', handleUnauthorized);
+    };
+  }, [navigate, location]);
 
   // Derive breadcrumb title
   const currentPath = location.pathname.replace(/\/$/, '');

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { GitCompare } from 'lucide-react';
+import { GitCompare, FileText, Eye, Download } from 'lucide-react';
 import { Button, Avatar, ScoreBar } from '../../components/ui';
 import { cleanCandidateName } from '../../lib/format';
+import { downloadResumeFile, previewResumeFile } from '../../api/applications';
 import CandidatePipelineHeader from './CandidatePipelineHeader';
 import CandidateEvaluationTab from './CandidateEvaluationTab';
 import CandidateSkillsTab from './CandidateSkillsTab';
@@ -89,6 +90,39 @@ export default function CandidateDetailPanel({
           </div>
         </div>
       </div>
+
+      {/* Resume Document Quick Actions (Authenticated Blob Fetch) */}
+      {candidate.application_id && (
+        <div className="flex items-center justify-between px-3.5 py-2 rounded-[10px] bg-surface-alt/40 border border-line text-[13px]">
+          <span className="flex items-center gap-2 text-ink-muted">
+            <FileText className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+            <span className="font-medium text-ink">Resume Document</span>
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Eye className="w-3.5 h-3.5" strokeWidth={1.75} />}
+              onClick={() => previewResumeFile(candidate.application_id)}
+            >
+              Preview
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Download className="w-3.5 h-3.5" strokeWidth={1.75} />}
+              onClick={() =>
+                downloadResumeFile(
+                  candidate.application_id,
+                  `${cleanCandidateName(candidate.candidate_name)}_Resume.pdf`
+                )
+              }
+            >
+              Download
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* 2. 96px Animated SVG Score Ring Beside Two-Segment Score Bar & Point-Math Lines */}
       <div className="p-4 rounded-[12px] bg-surface-alt/40 border border-line flex flex-col sm:flex-row items-center gap-5">

@@ -1,7 +1,7 @@
 import os
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -10,6 +10,7 @@ from app.database.database import engine, Base, SessionLocal
 from app.database import models  # ensure models are registered
 from app.database.models import Application, ApplicationStatusHistory
 from app.api import jobs, resumes, candidates, matches, auth
+from app.api.deps import get_current_recruiter
 
 # Configure logging
 logging.basicConfig(
@@ -82,12 +83,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount API Routers
+# Mount API Routers (auth remains public, while domain endpoints require recruiter authentication)
 app.include_router(auth.router, prefix=settings.API_V1_STR)
-app.include_router(jobs.router, prefix=settings.API_V1_STR)
-app.include_router(resumes.router, prefix=settings.API_V1_STR)
-app.include_router(candidates.router, prefix=settings.API_V1_STR)
-app.include_router(matches.router, prefix=settings.API_V1_STR)
+app.include_router(
+    jobs.router,
+    prefix=settings.API_V1_STR,
+    dependencies=[Depends(get_current_recruiter)]
+)
+app.include_router(
+    resumes.router,
+    prefix=settings.API_V1_STR,
+    dependencies=[Depends(get_current_recruiter)]
+)
+app.include_router(
+    candidates.router,
+    prefix=settings.API_V1_STR,
+    dependencies=[Depends(get_current_recruiter)]
+)
+app.include_router(
+    matches.router,
+    prefix=settings.API_V1_STR,
+    dependencies=[Depends(get_current_recruiter)]
+)
 
 
 @app.get("/health", tags=["System"])
@@ -114,9 +131,21 @@ if frontend_dist:
         if full_path.startswith("api/") or full_path in ("docs", "redoc", "openapi.json", "health"):
             raise HTTPException(status_code=404, detail="Endpoint not found")
 
-        file_path = os.path.join(frontend_dist, full_path)
-        if full_path and os.path.isfile(file_path):
-            return FileResponse(file_path)
+        resolved = os.path.realpath(os.path.join(frontend_dist, full_path))
+        real_frontend_dist = os.path.realpath(frontend_dist)
+        is_safe = False
+        try:
+            if (
+                full_path
+                and os.path.isfile(resolved)
+                and os.path.commonpath([real_frontend_dist, resolved]) == real_frontend_dist
+            ):
+                is_safe = True
+        except ValueError:
+            is_safe = False
+
+        if is_safe:
+            return FileResponse(resolved)
 
         index_file = os.path.join(frontend_dist, "index.html")
         if os.path.isfile(index_file):

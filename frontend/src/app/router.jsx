@@ -5,6 +5,7 @@ import { RouteSkeleton } from './RouteSkeleton';
 import { ErrorBoundary } from './ErrorBoundary';
 
 const LandingPage = lazy(() => import('../features/landing/LandingPage'));
+const LoginPage = lazy(() => import('../features/auth/LoginPage'));
 const StudioLayout = lazy(() => import('./StudioLayout'));
 const OverviewPage = lazy(() => import('../features/overview/OverviewPage'));
 const JobsPage = lazy(() => import('../features/jobs/JobsPage'));
@@ -13,6 +14,7 @@ const LeaderboardPage = lazy(() => import('../features/leaderboard/LeaderboardPa
 const ReviewPage = lazy(() => import('../features/review/ReviewPage'));
 const ComparePage = lazy(() => import('../features/compare/ComparePage'));
 const AnalyticsPage = lazy(() => import('../features/analytics/AnalyticsPage'));
+import { RequireAuth } from './RequireAuth';
 
 const wrap = (node) => (
   <ErrorBoundary>
@@ -26,8 +28,12 @@ export const router = createBrowserRouter([
     element: wrap(<LandingPage />),
   },
   {
+    path: '/login',
+    element: wrap(<LoginPage />),
+  },
+  {
     path: '/studio',
-    element: wrap(<StudioLayout />),
+    element: <RequireAuth>{wrap(<StudioLayout />)}</RequireAuth>,
     children: [
       {
         index: true,

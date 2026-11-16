@@ -40,4 +40,47 @@ describe('App Router Smoke Test', () => {
       { timeout: 4000 }
     );
   });
+
+  it('redirects /studio to /login when unauthenticated without a token', async () => {
+    localStorage.removeItem('smartats_token');
+    sessionStorage.removeItem('smartats_token');
+
+    const memoryRouter = createMemoryRouter(router.routes, {
+      initialEntries: ['/studio'],
+    });
+
+    render(
+      <Providers>
+        <RouterProvider router={memoryRouter} />
+      </Providers>
+    );
+
+    await waitFor(
+      () => {
+        expect(screen.getByRole('heading', { name: /Recruiter sign in/i })).toBeInTheDocument();
+      },
+      { timeout: 4000 }
+    );
+  });
+
+  it('renders login page directly at /login route', async () => {
+    const memoryRouter = createMemoryRouter(router.routes, {
+      initialEntries: ['/login'],
+    });
+
+    render(
+      <Providers>
+        <RouterProvider router={memoryRouter} />
+      </Providers>
+    );
+
+    await waitFor(
+      () => {
+        expect(screen.getByRole('heading', { name: /Recruiter sign in/i })).toBeInTheDocument();
+        expect(screen.getByLabelText(/Recruiter email/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
+      },
+      { timeout: 4000 }
+    );
+  });
 });

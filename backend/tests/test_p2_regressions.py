@@ -85,6 +85,8 @@ def test_production_secret_key_rejection():
     valid_settings = Settings(
         ENVIRONMENT="production",
         SECRET_KEY="a-very-strong-production-secret-key-minimum-16-bytes",
+        DEFAULT_RECRUITER_EMAIL="prod.recruiter@example.com",
+        DEFAULT_RECRUITER_PASSWORD="SecureProductionPass123!",
         ALLOWED_ORIGINS=["https://ats.example.com"]
     )
     assert valid_settings.ENVIRONMENT == "production"

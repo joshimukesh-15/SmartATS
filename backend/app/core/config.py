@@ -81,10 +81,38 @@ class Settings(BaseSettings):
             "password",
             ""
         }
+        insecure_passwords = {
+            "recruiter123",
+            "password",
+            "admin",
+            "admin123",
+            "12345678",
+            "123456",
+            "secret",
+            "changeme",
+            "root",
+            "smartats",
+            ""
+        }
         if is_prod:
-            if not self.SECRET_KEY or self.SECRET_KEY.strip() in insecure_keys or len(self.SECRET_KEY.strip()) < 16:
+            if not self.SECRET_KEY or self.SECRET_KEY.strip() in insecure_keys or len(self.SECRET_KEY.strip()) < 32:
                 raise ValueError(
-                    "Production environment requires a strong, explicit SECRET_KEY (at least 16 characters). Default or insecure secret keys are prohibited."
+                    "Production environment requires a strong, explicit SECRET_KEY (at least 32 characters). Default or insecure secret keys are prohibited."
+                )
+            if (
+                not self.DEFAULT_RECRUITER_EMAIL
+                or self.DEFAULT_RECRUITER_EMAIL.strip().lower() == "recruiter@smartats.com"
+            ):
+                raise ValueError(
+                    "Default recruiter email ('recruiter@smartats.com') is prohibited in production. Configure a dedicated, non-default recruiter email."
+                )
+            if (
+                not self.DEFAULT_RECRUITER_PASSWORD
+                or self.DEFAULT_RECRUITER_PASSWORD.strip().lower() in insecure_passwords
+                or len(self.DEFAULT_RECRUITER_PASSWORD.strip()) < 8
+            ):
+                raise ValueError(
+                    "Production environment requires a strong, non-default DEFAULT_RECRUITER_PASSWORD (at least 8 characters, non-default). Default password ('recruiter123') and insecure passwords are prohibited."
                 )
             if any(origin == "*" for origin in self.ALLOWED_ORIGINS):
                 raise ValueError(

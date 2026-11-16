@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Briefcase,
@@ -11,7 +11,9 @@ import {
   Globe,
   Menu,
   Search,
+  LogOut,
 } from 'lucide-react';
+import { clearAuthToken } from '../api/client';
 import { ThemeToggle } from './ui/ThemeToggle';
 import { Drawer } from './ui/Drawer';
 import { Kbd } from './ui/Kbd';
@@ -39,6 +41,12 @@ const NAV_GROUPS = [
 export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActiveTab }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearAuthToken();
+    navigate('/login', { replace: true });
+  };
 
   const isItemActive = (item) => {
     if (item.exact) {
@@ -140,6 +148,17 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
               <Globe className="w-4 h-4" strokeWidth={1.75} />
               <span>Public Website</span>
             </NavLink>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                handleLogout();
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors font-medium cursor-pointer text-left"
+            >
+              <LogOut className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+              <span>Sign out</span>
+            </button>
             <div className="pt-1">
               <ThemeToggle showLabel={true} className="w-full justify-start" />
             </div>
@@ -224,6 +243,16 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
             <Globe className="w-4 h-4" strokeWidth={1.75} />
             <span>Public Website</span>
           </NavLink>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-[8px] text-[13px] text-ink-muted hover:text-ink hover:bg-surface-alt/60 transition-colors font-medium cursor-pointer text-left"
+            title="Log out from SmartATS Studio"
+          >
+            <LogOut className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
+            <span>Sign out</span>
+          </button>
 
           <div className="pt-1 px-1">
             <ThemeToggle showLabel={true} className="w-full justify-start" />
