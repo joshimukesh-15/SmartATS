@@ -1,6 +1,5 @@
 import { Check, Minus, Crown } from 'lucide-react';
 import { ScoreValue, ScoreBar } from '../../components/ui';
-import { cleanCandidateName } from '../../lib/format';
 import { computeBreakdown } from '../../lib/score';
 
 export default function CompareMatrixTable({
@@ -42,7 +41,7 @@ export default function CompareMatrixTable({
                       )}
                     </div>
                     <div className="font-semibold text-ink text-[15px] truncate leading-[1.4]">
-                      {cleanCandidateName(cand.candidate_name)}
+                      {cand.candidate_name || 'Candidate'}
                     </div>
                     {(cand.experience_years !== undefined || cand.education_level) && (
                       <div className="text-[13px] leading-[1.5] text-ink-muted truncate">

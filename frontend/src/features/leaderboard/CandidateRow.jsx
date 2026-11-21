@@ -1,6 +1,5 @@
 import { Check, ChevronDown } from 'lucide-react';
-import { ScoreBar, ScoreValue, Avatar } from '../../components/ui';
-import { cleanCandidateName } from '../../lib/format';
+import { ScoreBar, ScoreValue, Avatar, Tooltip } from '../../components/ui';
 import { STAGES, STAGE_CONFIG } from '../candidates';
 
 export default function CandidateRow({
@@ -63,10 +62,10 @@ export default function CandidateRow({
       {/* Candidate Avatar, Name, Email, Experience & Capped Skill Chips */}
       <td className={cellPadding}>
         <div className="flex items-center gap-3">
-          <Avatar name={cleanCandidateName(candidate.candidate_name)} size="sm" />
+          <Avatar name={candidate.candidate_name || 'Candidate'} size="sm" />
           <div className="min-w-0">
             <div className="font-semibold text-ink text-[15px] leading-[1.4] truncate">
-              {cleanCandidateName(candidate.candidate_name)}
+              {candidate.candidate_name || 'Candidate'}
             </div>
             <div className="text-[13px] leading-[1.5] text-ink-muted truncate">
               {candidate.candidate_email || '—'}
@@ -110,12 +109,13 @@ export default function CandidateRow({
                   </span>
                 ))}
                 {overflowSkills.length > 0 && (
-                  <span
-                    className="px-1.5 py-0.5 rounded-[4px] bg-surface-alt text-ink-muted text-[13px] border border-line cursor-help"
-                    title={overflowSkills.join(', ')}
-                  >
-                    +{overflowSkills.length}
-                  </span>
+                  <Tooltip content={overflowSkills.join(', ')}>
+                    <span
+                      className="px-1.5 py-0.5 rounded-[4px] bg-surface-alt text-ink-muted text-[13px] border border-line cursor-help"
+                    >
+                      +{overflowSkills.length}
+                    </span>
+                  </Tooltip>
                 )}
                 {candidate.equivalent_skills &&
                   Object.keys(candidate.equivalent_skills).length > 0 && (

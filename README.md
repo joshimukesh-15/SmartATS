@@ -307,6 +307,9 @@ SmartATS/
 └── README.md
 ```
 
+> [!IMPORTANT]
+> **Code Organization Rule**: Shared code lives in `features/<name>/` or `components/ui`, never copied across features. Reusable primitives, design system tokens, and shared configs (such as `StatStrip`, `ScoreBar`, `Avatar`, `Button`) belong in `components/ui/`, while feature-specific logic resides within its own domain (`features/<name>/`) and may be imported across features without duplication.
+
 ---
 
 ## 7. Environment Configuration

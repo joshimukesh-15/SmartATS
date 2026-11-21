@@ -49,14 +49,10 @@ def recover_stale_processing_tasks():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize database schemas cleanly without ad hoc ALTER TABLE queries
-    logger.info("Initializing database schemas...")
-    Base.metadata.create_all(bind=engine)
-
     # Durability recovery for interrupted background processing
     recover_stale_processing_tasks()
 
-    logger.info("Database initialized successfully.")
+    logger.info("Application startup complete.")
     yield
     logger.info("Application shutting down.")
 

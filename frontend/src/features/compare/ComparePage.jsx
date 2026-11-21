@@ -3,7 +3,6 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Printer, Users } from 'lucide-react';
 import { useJobs, useRankings, useCompareQuery } from '../../hooks';
 import { Select, Button, EmptyState, Skeleton } from '../../components/ui';
-import { cleanCandidateName } from '../../lib/format';
 import CompareMatrixTable from './CompareMatrixTable';
 
 export default function ComparePage() {
@@ -155,7 +154,7 @@ export default function ComparePage() {
                       : 'bg-surface-alt text-ink border-line hover:border-ink-subtle'
                   }`}
                 >
-                  <span>{cleanCandidateName(cand.candidate_name)}</span>
+                  <span>{cand.candidate_name || 'Candidate'}</span>
                   <span className="opacity-70 text-[13px] tabular-nums">
                     {(cand.final_score ?? 0).toFixed(0)}%
                   </span>

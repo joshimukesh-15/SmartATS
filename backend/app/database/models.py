@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Column,
     Integer,
@@ -7,7 +7,8 @@ from sqlalchemy import (
     Float,
     DateTime,
     ForeignKey,
-    JSON
+    JSON,
+    UniqueConstraint
 )
 from sqlalchemy.orm import relationship
 from app.database.database import Base
@@ -22,8 +23,13 @@ class Job(Base):
     required_skills = Column(JSON, default=list, nullable=False)
     preferred_skills = Column(JSON, default=list, nullable=False)
     custom_weights = Column(JSON, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
 
     # Relationships
     applications = relationship(
@@ -43,7 +49,7 @@ class Candidate(Base):
     phone = Column(String(100), nullable=True)
     raw_text = Column(Text, nullable=True)
     extracted_skills = Column(JSON, default=list, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     # Relationships
     applications = relationship(
@@ -56,6 +62,9 @@ class Candidate(Base):
 
 class Application(Base):
     __tablename__ = "applications"
+    __table_args__ = (
+        UniqueConstraint("job_id", "file_hash", name="uq_applications_job_id_file_hash"),
+    )
 
     application_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     job_id = Column(Integer, ForeignKey("jobs.job_id", ondelete="CASCADE"), nullable=False, index=True)
@@ -63,8 +72,8 @@ class Application(Base):
     resume_path = Column(String(500), nullable=False)
     file_hash = Column(String(64), nullable=False, index=True)
     processing_status = Column(String(50), default="PENDING", nullable=False)  # PENDING, PROCESSING, COMPLETED, FAILED, DUPLICATE
-    review_stage = Column(String(50), default="New", nullable=False)  # New, Reviewing, Interview, Rejected, Hired
-    applied_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    review_stage = Column(String(50), default="New", nullable=False, index=True)  # New, Reviewing, Interview, Rejected, Hired
+    applied_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     # Relationships
     job = relationship("Job", back_populates="applications")
@@ -103,7 +112,7 @@ class ApplicationStatusHistory(Base):
     to_stage = Column(String(50), nullable=False)
     note = Column(Text, nullable=True)
     changed_by = Column(String(100), default="Recruiter", nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     application = relationship("Application", back_populates="status_history")
 
@@ -120,13 +129,16 @@ class ApplicationNote(Base):
     )
     content = Column(Text, nullable=False)
     author = Column(String(100), default="Recruiter", nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     application = relationship("Application", back_populates="notes")
 
 
 class MatchResult(Base):
     __tablename__ = "match_results"
+    __table_args__ = (
+        UniqueConstraint("application_id", name="uq_match_results_application_id"),
+    )
 
     match_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     application_id = Column(
@@ -142,7 +154,7 @@ class MatchResult(Base):
     missing_skills = Column(JSON, default=list, nullable=False)
     preferred_matched_skills = Column(JSON, default=list, nullable=False)
     score_explanation = Column(Text, nullable=True)
-    evaluated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    evaluated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     # Relationships
     application = relationship("Application", back_populates="match_result")

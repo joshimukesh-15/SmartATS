@@ -5,6 +5,7 @@ export * from './Select';
 export * from './Tag';
 export * from './Panel';
 export * from './StatStrip';
+export * from './statStripConfig';
 export * from './Table';
 export * from './Tabs';
 export * from './Tooltip';

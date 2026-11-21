@@ -1,10 +1,12 @@
 import logging
+from pathlib import Path
 from sqlalchemy.orm import Session
 from app.database.database import SessionLocal
 from app.database.models import Application, Candidate, Job, MatchResult, ApplicationStatusHistory
 from app.services.parser import extract_resume_text
 from app.services.extractor import extract_email, extract_phone, extract_name, extract_skills
 from app.services.matcher import run_hybrid_matching
+from app.services.duplicate import find_candidate_by_email
 
 logger = logging.getLogger(__name__)
 
@@ -46,22 +48,99 @@ def process_resume_application(application_id: int):
             db.commit()
             return
 
-        # 2. Extract contacts if missing
-        if cand:
-            if not cand.email:
-                cand.email = extract_email(resume_text)
-            if not cand.phone:
-                cand.phone = extract_phone(resume_text)
-            if not cand.name or cand.name.startswith("Candidate_"):
-                extracted_n = extract_name(resume_text)
+        # 2. Extract contacts, name, and skills from resume text
+        extracted_email = extract_email(resume_text)
+        extracted_phone = extract_phone(resume_text)
+        extracted_n = extract_name(resume_text)
+        file_stem = Path(app.resume_path).stem
+        fallback_name = f"Unnamed candidate {file_stem}"
+        new_skills = extract_skills(resume_text)
+
+        # 3. Candidate resolution and deduplication
+        existing_candidate = find_candidate_by_email(db, extracted_email) if extracted_email else None
+        current_cand = app.candidate
+
+        if existing_candidate:
+            if current_cand and current_cand.candidate_id != existing_candidate.candidate_id:
+                # Reuse existing candidate and merge newly extracted skills (deduped)
+                merged_skills = list(existing_candidate.extracted_skills or [])
+                seen_skills = {s.lower() for s in merged_skills}
+                for s in new_skills:
+                    if s.lower() not in seen_skills:
+                        merged_skills.append(s)
+                        seen_skills.add(s.lower())
+                existing_candidate.extracted_skills = merged_skills
+
+                # Update existing candidate details if empty or placeholder
+                if extracted_n and (
+                    not existing_candidate.name
+                    or existing_candidate.name.startswith("Unnamed candidate")
+                    or existing_candidate.name.startswith("Candidate_")
+                ):
+                    existing_candidate.name = extracted_n
+                if extracted_phone and not existing_candidate.phone:
+                    existing_candidate.phone = extracted_phone
+                if resume_text and not existing_candidate.raw_text:
+                    existing_candidate.raw_text = resume_text
+
+                # Attach application to the existing candidate
+                app.candidate_id = existing_candidate.candidate_id
+                app.candidate = existing_candidate
+                db.flush()
+
+                # Clean up orphaned temporary placeholder candidate
+                cand_apps_count = (
+                    db.query(Application)
+                    .filter(Application.candidate_id == current_cand.candidate_id)
+                    .count()
+                )
+                if cand_apps_count == 0:
+                    db.delete(current_cand)
+                    db.flush()
+
+                cand = existing_candidate
+            else:
+                cand = existing_candidate
+                merged_skills = list(cand.extracted_skills or [])
+                seen_skills = {s.lower() for s in merged_skills}
+                for s in new_skills:
+                    if s.lower() not in seen_skills:
+                        merged_skills.append(s)
+                        seen_skills.add(s.lower())
+                cand.extracted_skills = merged_skills
                 if extracted_n:
                     cand.name = extracted_n
+                elif not cand.name or cand.name.startswith("Candidate_"):
+                    cand.name = fallback_name
+                if extracted_phone and not cand.phone:
+                    cand.phone = extracted_phone
+                cand.raw_text = resume_text
+        else:
+            if current_cand:
+                cand = current_cand
+                cand.email = extracted_email
+                if extracted_phone:
+                    cand.phone = extracted_phone
+                if extracted_n:
+                    cand.name = extracted_n
+                elif not cand.name or cand.name.startswith("Candidate_"):
+                    cand.name = fallback_name
+                cand.extracted_skills = new_skills
+                cand.raw_text = resume_text
+            else:
+                cand = Candidate(
+                    name=extracted_n if extracted_n else fallback_name,
+                    email=extracted_email,
+                    phone=extracted_phone,
+                    raw_text=resume_text,
+                    extracted_skills=new_skills
+                )
+                db.add(cand)
+                db.flush()
+                app.candidate_id = cand.candidate_id
+                app.candidate = cand
 
-            # 3. Extract technical skills
-            skills = extract_skills(resume_text)
-            cand.extracted_skills = skills
-            cand.raw_text = resume_text
-            db.commit()
+        db.commit()
 
         # 4. Perform hybrid matching
         candidate_name = cand.name if cand and cand.name else "Candidate"

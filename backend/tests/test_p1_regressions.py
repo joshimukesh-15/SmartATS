@@ -1,6 +1,6 @@
 import io
 import math
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
 import pytest
 from fastapi import HTTPException
@@ -348,7 +348,7 @@ def test_csv_formula_injection_defense():
         final_score=90.0,
         keyword_score=90.0,
         tfidf_score=90.0,
-        applied_at=datetime.utcnow()
+        applied_at=datetime.now(timezone.utc)
     )
     csv_output = export_rankings_to_csv("Security Role", [malicious_item])
     assert "'=cmd|' /C calc'!A0" in csv_output

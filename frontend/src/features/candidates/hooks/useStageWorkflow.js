@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useUpdateApplicationStage, useAddApplicationNote } from '../../../hooks';
 import { toast } from '../../../components/ui';
-import { cleanCandidateName } from '../../../lib/format';
 
 /**
  * Hook to manage candidate hiring pipeline stage transitions,
@@ -75,9 +74,7 @@ export function useStageWorkflow(jobIdOrOptions, maybeSelectedCandidate) {
           stage: newStage,
           changed_by: 'Recruiter',
         });
-        const name = target.candidate_name
-          ? cleanCandidateName(target.candidate_name)
-          : 'Candidate';
+        const name = target.candidate_name || 'Candidate';
         toast.success(`${name} moved to ${newStage}`);
       } catch (err) {
         toast.error(err?.message || 'Failed to update review stage');

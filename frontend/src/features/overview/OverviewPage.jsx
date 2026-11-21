@@ -4,6 +4,7 @@ import { ArrowRight, Plus, UploadCloud } from 'lucide-react';
 import { useOverviewAnalytics, useJobs, useRankings } from '../../hooks';
 import {
   StatStrip,
+  useStatStripConfig,
   Panel,
   ScoreBar,
   ScoreValue,
@@ -14,7 +15,6 @@ import {
 } from '../../components/ui';
 import ScoreHistogram from './ScoreHistogram';
 import PipelineFunnel from './PipelineFunnel';
-import { cleanCandidateName } from '../../lib/format';
 import { computeBreakdown } from '../../lib/score';
 
 export default function OverviewPage() {
@@ -82,6 +82,12 @@ export default function OverviewPage() {
 
   const maxBucketCount = Math.max(...histogramBuckets.map((b) => b.count), 1);
 
+  const { processed, averageScore, duplicatesBlocked } = useStatStripConfig(analytics, {
+    processed: { label: 'Total Applications', caption: 'Ingested resumes' },
+    averageScore: { caption: 'Composite candidate fit' },
+    duplicatesBlocked: { caption: 'SHA-256 hash matches' },
+  });
+
   if (isLoading) {
     return (
       <div className="space-y-8 animate-fadeIn">
@@ -113,28 +119,15 @@ export default function OverviewPage() {
     );
   }
 
-  const avgScore = analytics?.average_score ?? analytics?.avg_final_score ?? 0;
   const statItems = [
     {
       label: 'Job Openings',
       value: analytics?.total_jobs ?? jobs.length,
       caption: 'Active positions',
     },
-    {
-      label: 'Total Applications',
-      value: analytics?.total_applications ?? 0,
-      caption: 'Ingested resumes',
-    },
-    {
-      label: 'Average Score',
-      value: `${Number(avgScore).toFixed(1)}%`,
-      caption: 'Composite candidate fit',
-    },
-    {
-      label: 'Duplicates Blocked',
-      value: analytics?.duplicate_resumes ?? analytics?.duplicate_count ?? 0,
-      caption: 'SHA-256 hash matches',
-    },
+    processed,
+    averageScore,
+    duplicatesBlocked,
   ];
 
   const topCandidates = rankingsData?.rankings?.slice(0, 4) || [];
@@ -253,7 +246,7 @@ export default function OverviewPage() {
                             #{candidate.rank || idx + 1}
                           </span>
                           <span className="text-[15px] font-semibold text-ink truncate leading-[1.4]">
-                            {cleanCandidateName(candidate.candidate_name)}
+                            {candidate.candidate_name || 'Candidate'}
                           </span>
                         </div>
                         <div className="text-[13px] leading-[1.5] text-ink-muted flex items-center gap-2 truncate">

@@ -1,7 +1,7 @@
 import io
 import csv
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from app.main import app
 from app.database.database import SessionLocal, Base, engine
 from app.database.models import Job, Candidate, Application, MatchResult
@@ -56,7 +56,7 @@ def seeded_job_and_apps(db_session):
         file_hash="elena_hash_1234567890abcdef",
         processing_status="COMPLETED",
         review_stage="New",
-        applied_at=datetime.utcnow()
+        applied_at=datetime.now(timezone.utc)
     )
     db_session.add(app1)
     db_session.commit()
@@ -71,7 +71,7 @@ def seeded_job_and_apps(db_session):
         missing_skills=[],
         preferred_matched_skills=["Docker"],
         score_explanation="Multi-Factor evaluated",
-        evaluated_at=datetime.utcnow()
+        evaluated_at=datetime.now(timezone.utc)
     )
     db_session.add(mr1)
     db_session.commit()
@@ -95,7 +95,7 @@ def seeded_job_and_apps(db_session):
         file_hash="marcus_hash_1234567890abcdef",
         processing_status="COMPLETED",
         review_stage="Reviewing",
-        applied_at=datetime.utcnow()
+        applied_at=datetime.now(timezone.utc)
     )
     db_session.add(app2)
     db_session.commit()
@@ -110,7 +110,7 @@ def seeded_job_and_apps(db_session):
         missing_skills=["FastAPI", "PostgreSQL"],
         preferred_matched_skills=[],
         score_explanation="Partial match",
-        evaluated_at=datetime.utcnow()
+        evaluated_at=datetime.now(timezone.utc)
     )
     db_session.add(mr2)
     db_session.commit()
@@ -134,7 +134,7 @@ def seeded_job_and_apps(db_session):
         file_hash="pending_hash_1234567890abcdef",
         processing_status="PENDING",
         review_stage="New",
-        applied_at=datetime.utcnow()
+        applied_at=datetime.now(timezone.utc)
     )
     db_session.add(app3)
     db_session.commit()

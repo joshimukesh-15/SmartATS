@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { useJobs, useRankings } from '../../hooks';
 import { computeBreakdown } from '../../lib/score';
-import { cleanCandidateName } from '../../lib/format';
 import {
   Panel,
   Button,
@@ -422,7 +421,7 @@ export default function PipelinePage() {
                             />
                             <div className="min-w-0 flex-1">
                               <h4 className="text-[14px] font-semibold text-ink group-hover:text-primary transition-colors truncate">
-                                {cleanCandidateName(cand.candidate_name)}
+                                {cand.candidate_name || 'Candidate'}
                               </h4>
                               <p className="text-[12px] text-ink-muted truncate">
                                 {cand.experience_years !== undefined &&
@@ -466,7 +465,7 @@ export default function PipelinePage() {
                                 stageWorkflow.handleQuickStageChange(cand, e.target.value)
                               }
                               className="text-[12px] py-0.5 px-2 rounded-[6px] border border-line bg-surface hover:border-ink-subtle text-ink cursor-pointer focus:outline-none"
-                              aria-label={`Move ${cleanCandidateName(cand.candidate_name)} stage`}
+                              aria-label={`Move ${cand.candidate_name || 'Candidate'} stage`}
                             >
                               {STAGES.map((s) => (
                                 <option key={s} value={s}>
@@ -492,7 +491,7 @@ export default function PipelinePage() {
         onClose={handleCloseDrawer}
         title={
           selectedCandidate
-            ? `${cleanCandidateName(selectedCandidate.candidate_name)} — Dossier`
+            ? `${selectedCandidate.candidate_name || 'Candidate'} — Dossier`
             : 'Candidate Dossier'
         }
         maxWidth="max-w-3xl"

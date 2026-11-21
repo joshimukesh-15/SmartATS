@@ -11,7 +11,6 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { Button, Avatar, ScoreBar } from '../../components/ui';
-import { cleanCandidateName } from '../../lib/format';
 import { downloadResumeFile, previewResumeFile } from '../../api/applications';
 import { computeBreakdown } from '../../lib/score';
 import PipelineStageControl from './PipelineStageControl';
@@ -128,14 +127,14 @@ export default function CandidateDetail({
       {/* 1. Header with Avatar, Name, Rank Badge, Experience, Seniority & Contact Pills */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-line">
         <div className="flex items-start gap-3.5 min-w-0">
-          <Avatar name={cleanCandidateName(candidate.candidate_name)} size="lg" />
+          <Avatar name={candidate.candidate_name || 'Candidate'} size="lg" />
           <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold tabular-nums">
                 Rank #{candidate.rank || safeSelectedIndex + 1}
               </span>
               <h2 className="text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25] truncate">
-                {cleanCandidateName(candidate.candidate_name)}
+                {candidate.candidate_name || 'Candidate'}
               </h2>
             </div>
 
@@ -220,7 +219,7 @@ export default function CandidateDetail({
               onClick={() =>
                 downloadResumeFile(
                   candidate.application_id,
-                  `${cleanCandidateName(candidate.candidate_name)}_Resume.pdf`
+                  `${candidate.candidate_name || 'Candidate'}_Resume.pdf`
                 )
               }
             >

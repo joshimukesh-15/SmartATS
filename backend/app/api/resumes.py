@@ -2,6 +2,7 @@ import os
 import io
 import zipfile
 import inspect
+from pathlib import Path
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
 from fastapi.responses import FileResponse
@@ -177,10 +178,10 @@ async def upload_resumes(
             with open(saved_path, "wb") as f:
                 f.write(content)
 
-            # 5. Create Candidate record
-            base_cand_name = os.path.splitext(filename)[0].replace("_", " ").replace("-", " ")
+            # 5. Create Candidate record with fallback name until parsed
+            file_stem = Path(filename).stem
             candidate = Candidate(
-                name=base_cand_name,
+                name=f"Unnamed candidate {file_stem}",
                 extracted_skills=[]
             )
             db.add(candidate)

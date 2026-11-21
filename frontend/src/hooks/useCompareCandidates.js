@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { compareCandidates } from '../api/jobs';
 
 export function useCompareQuery(jobId, applicationIds) {
@@ -8,11 +8,5 @@ export function useCompareQuery(jobId, applicationIds) {
     queryFn: () => compareCandidates(jobId, applicationIds),
     enabled: isEnabled,
     staleTime: 60 * 1000,
-  });
-}
-
-export function useCompareMutation(jobId) {
-  return useMutation({
-    mutationFn: (applicationIds) => compareCandidates(jobId, applicationIds),
   });
 }

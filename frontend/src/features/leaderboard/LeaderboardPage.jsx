@@ -2,7 +2,6 @@ import { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useJobs, useRankings } from '../../hooks';
 import { Button, EmptyState, Skeleton, Drawer } from '../../components/ui';
-import { cleanCandidateName } from '../../lib/format';
 import { computeBreakdown, sortCandidates } from '../../lib/score';
 
 import {
@@ -251,7 +250,7 @@ export default function LeaderboardPage() {
         onClose={() => setIsDrawerOpen(false)}
         title={
           selectedCandidate
-            ? `${cleanCandidateName(selectedCandidate.candidate_name)}`
+            ? `${selectedCandidate.candidate_name || 'Candidate'}`
             : 'Candidate Dossier'
         }
         maxWidth="max-w-2xl"

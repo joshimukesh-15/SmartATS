@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useJobs, useJobAnalytics } from '../../hooks';
-import { Select, Panel, StatStrip, EmptyState, Skeleton, Button } from '../../components/ui';
+import { Select, Panel, StatStrip, useStatStripConfig, EmptyState, Skeleton, Button } from '../../components/ui';
 
 export default function AnalyticsPage() {
   const { jobId: routeJobId } = useParams();
@@ -26,27 +26,31 @@ export default function AnalyticsPage() {
   const scoreBuckets = analytics?.score_buckets || {};
   const stageDist = analytics?.stage_distribution || {};
 
-  const statItems = [
-    {
+  const { processed, averageScore, duplicatesBlocked } = useStatStripConfig(analytics, {
+    processed: {
       label: 'Applicants Screened',
       value: totalProcessed,
       caption: `${totalApps} total ${totalApps === 1 ? 'applicant' : 'applicants'}`,
     },
-    {
-      label: 'Average Score',
-      value: totalProcessed > 0 ? `${Number(avgFinalScore).toFixed(1)}%` : '0.0%',
+    averageScore: {
+      score: totalProcessed > 0 ? avgFinalScore : 0,
       caption: 'Dual-track fit average',
     },
+    duplicatesBlocked: {
+      count: duplicateCount,
+      caption: 'SHA-256 hash collisions',
+    },
+  });
+
+  const statItems = [
+    processed,
+    averageScore,
     {
       label: 'Skills Covered Rate',
       value: totalProcessed > 0 ? `${Number(avgKeywordScore).toFixed(1)}%` : '0.0%',
       caption: 'Keyword verification',
     },
-    {
-      label: 'Duplicates Blocked',
-      value: duplicateCount,
-      caption: 'SHA-256 hash collisions',
-    },
+    duplicatesBlocked,
   ];
 
   // Matched and missing skills data from real database metrics
