@@ -156,11 +156,18 @@ def test_scoring_config_endpoint_and_route():
     Verifies GET /api/v1/scoring/config returns status 200 with default_weights and formula_description,
     and is properly mounted in the FastAPI app routes.
     """
-    # 1. Route existence
+    # 1. Route existence (handles both flat and nested routers across FastAPI versions)
     matching_routes = [
         r for r in app.routes
         if getattr(r, "path", None) == "/api/v1/scoring/config" and "GET" in getattr(r, "methods", [])
     ]
+    if not matching_routes:
+        for r in app.routes:
+            if hasattr(r, "original_router") and hasattr(r, "include_context"):
+                prefix = getattr(r.include_context, "prefix", "")
+                for sub_r in r.original_router.routes:
+                    if prefix + getattr(sub_r, "path", "") == "/api/v1/scoring/config" and "GET" in getattr(sub_r, "methods", []):
+                        matching_routes.append(sub_r)
     assert len(matching_routes) >= 1, "Route /api/v1/scoring/config [GET] not found in app.routes"
 
     # 2. Endpoint execution
