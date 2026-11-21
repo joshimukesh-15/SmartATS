@@ -23,9 +23,16 @@ def run_coro(coro):
 # ===========================================================================
 
 @pytest.fixture
-def real_dist_path():
-    assert frontend_dist is not None, "frontend_dist must exist for SPA tests"
-    return os.path.realpath(frontend_dist)
+def real_dist_path(tmp_path, monkeypatch):
+    if frontend_dist and os.path.isdir(frontend_dist) and os.path.isfile(os.path.join(frontend_dist, "index.html")):
+        return os.path.realpath(frontend_dist)
+    # When frontend/dist is not built (e.g. in backend CI), provide temporary dist fixtures
+    mock_dist = tmp_path / "dist"
+    mock_dist.mkdir(parents=True, exist_ok=True)
+    (mock_dist / "favicon.svg").write_text("<svg></svg>", encoding="utf-8")
+    (mock_dist / "index.html").write_text("<!DOCTYPE html><html><body>SmartATS</body></html>", encoding="utf-8")
+    monkeypatch.setattr("app.main.frontend_dist", str(mock_dist))
+    return os.path.realpath(str(mock_dist))
 
 
 @pytest.fixture

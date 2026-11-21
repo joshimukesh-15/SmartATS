@@ -119,21 +119,24 @@ frontend_dist_candidates = [
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")),
     "/app/frontend/dist"
 ]
-frontend_dist = next((p for p in frontend_dist_candidates if os.path.isdir(p)), None)
+frontend_dist = next((p for p in frontend_dist_candidates if os.path.isdir(p)), frontend_dist_candidates[0])
 
-if frontend_dist:
+if os.path.isdir(frontend_dist):
     assets_dir = os.path.join(frontend_dist, "assets")
     if os.path.isdir(assets_dir):
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
-    @app.get("/{full_path:path}", tags=["Frontend"])
-    async def serve_frontend(full_path: str):
-        # Do not intercept API endpoints or Swagger documentation
-        if full_path.startswith("api/") or full_path in ("docs", "redoc", "openapi.json", "health"):
-            raise HTTPException(status_code=404, detail="Endpoint not found")
 
-        resolved = os.path.realpath(os.path.join(frontend_dist, full_path))
-        real_frontend_dist = os.path.realpath(frontend_dist)
+@app.get("/{full_path:path}", tags=["Frontend"])
+async def serve_frontend(full_path: str):
+    # Do not intercept API endpoints or Swagger documentation
+    if full_path.startswith("api/") or full_path in ("docs", "redoc", "openapi.json", "health"):
+        raise HTTPException(status_code=404, detail="Endpoint not found")
+
+    dist = globals().get("frontend_dist", frontend_dist)
+    if dist and os.path.isdir(dist):
+        resolved = os.path.realpath(os.path.join(dist, full_path))
+        real_frontend_dist = os.path.realpath(dist)
         is_safe = False
         try:
             if (
@@ -142,22 +145,21 @@ if frontend_dist:
                 and os.path.commonpath([real_frontend_dist, resolved]) == real_frontend_dist
             ):
                 is_safe = True
-        except ValueError:
+        except (ValueError, Exception):
             is_safe = False
 
         if is_safe:
             return FileResponse(resolved)
 
-        index_file = os.path.join(frontend_dist, "index.html")
+        index_file = os.path.join(dist, "index.html")
         if os.path.isfile(index_file):
             return FileResponse(index_file)
-        raise HTTPException(status_code=404, detail="Page not found")
-else:
-    @app.get("/", tags=["System"])
-    def root():
+
+    if full_path == "":
         return {
             "message": "Welcome to SmartATS API - Explainable Hybrid Resume Screening System",
             "version": "1.0.0",
             "docs_url": "/docs",
             "health": "OK"
         }
+    raise HTTPException(status_code=404, detail="Page not found")
