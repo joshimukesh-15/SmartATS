@@ -5,7 +5,7 @@ import {
   Briefcase,
   UploadCloud,
   Award,
-  UserCheck,
+  Kanban,
   GitCompare,
   BarChart3,
   Globe,
@@ -31,7 +31,7 @@ const NAV_GROUPS = [
     title: 'Insights',
     items: [
       { path: '/studio/leaderboard', label: 'Leaderboard', icon: Award },
-      { path: '/studio/review', label: 'Review', icon: UserCheck },
+      { path: '/studio/review', label: 'Pipeline', icon: Kanban },
       { path: '/studio/compare', label: 'Compare', icon: GitCompare },
       { path: '/studio/analytics', label: 'Analytics', icon: BarChart3 },
     ],

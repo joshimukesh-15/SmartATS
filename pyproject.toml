@@ -1,0 +1,28 @@
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "alembic",
+    "backend/alembic",
+    "frontend",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+ignore = [
+    "E501", # line too long
+    "W291", # trailing whitespace
+    "W293", # blank line contains whitespace
+    "B008", # function call in argument defaults (standard FastAPI Depends)
+    "B904", # raise ... from err
+    "F401", # unused import
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402", "B008", "F841"]
+"backend/tests/*" = ["E402", "B008", "F841"]
+"scripts/*" = ["E402", "B007", "F841"]
+"backend/scripts/*" = ["E402", "B007", "F841"]

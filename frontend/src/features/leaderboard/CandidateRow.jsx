@@ -1,7 +1,7 @@
 import { Check, ChevronDown } from 'lucide-react';
 import { ScoreBar, ScoreValue, Avatar } from '../../components/ui';
 import { cleanCandidateName } from '../../lib/format';
-import { STAGES, STAGE_CONFIG } from './constants';
+import { STAGES, STAGE_CONFIG } from '../candidates';
 
 export default function CandidateRow({
   candidate,
@@ -155,24 +155,28 @@ export default function CandidateRow({
 
           {openStageMenuId === candidate.application_id && (
             <div className="absolute left-0 mt-1 w-36 rounded-[8px] bg-surface border border-line shadow-xl z-30 py-1 animate-fadeIn">
-              {STAGES.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => {
-                    onQuickStageChange(candidate, s);
-                    setOpenStageMenuId(null);
-                  }}
-                  className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-alt transition-colors flex items-center justify-between cursor-pointer ${
-                    stageKey === s
-                      ? 'font-semibold text-primary bg-surface-alt/60'
-                      : 'text-ink'
-                  }`}
-                >
-                  <span>{s}</span>
-                  {stageKey === s && <Check className="w-4 h-4 text-primary" strokeWidth={1.75} />}
-                </button>
-              ))}
+              {STAGES.map((s) => {
+                const isCurrent =
+                  stageKey === s || (stageKey === 'Interview' && s === 'Interviewing');
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => {
+                      onQuickStageChange(candidate, s);
+                      setOpenStageMenuId(null);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-alt transition-colors flex items-center justify-between cursor-pointer ${
+                      isCurrent
+                        ? 'font-semibold text-primary bg-surface-alt/60'
+                        : 'text-ink'
+                    }`}
+                  >
+                    <span>{s}</span>
+                    {isCurrent && <Check className="w-4 h-4 text-primary" strokeWidth={1.75} />}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

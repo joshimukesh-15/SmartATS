@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Search, UserCheck } from 'lucide-react';
 import { Input } from '../../components/ui';
-import { STAGES } from './constants';
+import { STAGES } from '../candidates';
 
 export default function LeaderboardFilters({
   search,
@@ -30,11 +30,18 @@ export default function LeaderboardFilters({
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
         <span className="text-[13px] text-ink-muted font-medium mr-1 shrink-0">Stage:</span>
         {['All', ...STAGES].map((stg) => {
-          const isSelected = stageFilter === stg;
+          const isSelected =
+            stageFilter === stg || (stageFilter === 'Interview' && stg === 'Interviewing');
           const count =
             stg === 'All'
               ? rawCandidates.length
-              : rawCandidates.filter((c) => (c.review_stage || 'New') === stg).length;
+              : rawCandidates.filter((c) => {
+                  const stage = c.review_stage || 'New';
+                  if (stage === stg) return true;
+                  if (stg === 'Interviewing' && stage === 'Interview') return true;
+                  if (stg === 'Interview' && stage === 'Interviewing') return true;
+                  return false;
+                }).length;
           return (
             <button
               key={stg}

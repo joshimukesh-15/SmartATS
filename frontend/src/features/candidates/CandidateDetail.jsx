@@ -1,20 +1,37 @@
-import { useState, useEffect } from 'react';
-import { GitCompare, FileText, Eye, Download } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import {
+  GitCompare,
+  FileText,
+  Eye,
+  Download,
+  Briefcase,
+  GraduationCap,
+  Mail,
+  Phone,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { Button, Avatar, ScoreBar } from '../../components/ui';
 import { cleanCandidateName } from '../../lib/format';
 import { downloadResumeFile, previewResumeFile } from '../../api/applications';
-import CandidatePipelineHeader from './CandidatePipelineHeader';
-import CandidateEvaluationTab from './CandidateEvaluationTab';
-import CandidateSkillsTab from './CandidateSkillsTab';
-import CandidateActivityTab from './CandidateActivityTab';
+import { computeBreakdown } from '../../lib/score';
+import PipelineStageControl from './PipelineStageControl';
+import EvaluationTab from './tabs/EvaluationTab';
+import SkillsTab from './tabs/SkillsTab';
+import ActivityTab from './tabs/ActivityTab';
 
-export default function CandidateDetailPanel({
+export default function CandidateDetail({
   candidate,
-  breakdown,
+  breakdown: propBreakdown,
   activeJob,
   safeSelectedIndex = 0,
   selectedForCompare = [],
   onToggleCompare,
+  stageWorkflow,
+  onOpenWeightsTuner,
+  dossierTab: propDossierTab,
+  setDossierTab: propSetDossierTab,
+  className = '',
+  // Direct prop fallbacks for maximum compatibility
   onStageButtonClick,
   onConfirmStageUpdate,
   showTransitionPrompt,
@@ -28,15 +45,30 @@ export default function CandidateDetailPanel({
   newNoteContent,
   setNewNoteContent,
   isAddingNote = false,
-  dossierTab = 'scoring',
-  setDossierTab,
   showAuditTrail,
   setShowAuditTrail,
 }) {
+  const [internalTab, setInternalTab] = useState('evaluation');
   const [displayScore, setDisplayScore] = useState(0);
 
+  // Fallback to computeBreakdown if propBreakdown is not provided
+  const breakdown = useMemo(() => {
+    if (propBreakdown) return propBreakdown;
+    if (candidate) return computeBreakdown(candidate, activeJob || {});
+    return null;
+  }, [propBreakdown, candidate, activeJob]);
+
+  // Tab selection
+  const dossierTab = propDossierTab || internalTab;
+  const setDossierTab = propSetDossierTab || setInternalTab;
+
+  const isEvaluationTab = dossierTab === 'evaluation' || dossierTab === 'scoring';
+  const isSkillsTab = dossierTab === 'skills';
+  const isActivityTab = dossierTab === 'activity' || dossierTab === 'notes';
+
+  // Smooth cubic ease-out score animation
   useEffect(() => {
-    const target = breakdown?.finalScore || 0;
+    const target = breakdown?.finalScore ?? candidate?.final_score ?? 0;
     if (target === 0) return;
     const duration = 500;
     const startTime = performance.now();
@@ -53,7 +85,7 @@ export default function CandidateDetailPanel({
     };
     animId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animId);
-  }, [breakdown?.finalScore]);
+  }, [breakdown?.finalScore, candidate?.final_score]);
 
   if (!candidate || !breakdown) return null;
 
@@ -75,30 +107,94 @@ export default function CandidateDetailPanel({
   const circumference = 2 * Math.PI * radius; // ~282.74
   const strokeDashoffset = circumference * (1 - Math.min(Math.max(displayScore, 0), 100) / 100);
 
+  // Dynamic recommendation pill
+  const finalScoreVal = Number(candidate.final_score ?? breakdown.finalScore ?? 0);
+  const recommendation = candidate.recommendation
+    ? { label: candidate.recommendation, badge: 'bg-champagne-soft text-ink border-champagne/40' }
+    : finalScoreVal >= 80
+      ? { label: 'Strong Match', badge: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' }
+      : finalScoreVal >= 60
+        ? { label: 'Potential Match', badge: 'bg-champagne-soft text-ink border-champagne/40' }
+        : finalScoreVal >= 40
+          ? { label: 'Moderate Fit', badge: 'bg-surface-alt text-ink-muted border-line' }
+          : { label: 'Low Match', badge: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30' };
+
   return (
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="sticky top-20 rounded-[14px] border border-line bg-surface p-5 sm:p-6 shadow-sm space-y-5 animate-fadeIn"
+      className={`rounded-[14px] border border-line bg-surface p-5 sm:p-6 shadow-sm space-y-5 animate-fadeIn ${className}`}
     >
-      {/* 1. Header with Avatar, Name, Rank Badge */}
-      <div className="flex items-start justify-between gap-4 pb-4 border-b border-line">
-        <div className="flex items-center gap-3">
+      {/* 1. Header with Avatar, Name, Rank Badge, Experience, Seniority & Contact Pills */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-line">
+        <div className="flex items-start gap-3.5 min-w-0">
           <Avatar name={cleanCandidateName(candidate.candidate_name)} size="lg" />
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold tabular-nums">
                 Rank #{candidate.rank || safeSelectedIndex + 1}
               </span>
-              <h2 className="text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25]">
+              <h2 className="text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25] truncate">
                 {cleanCandidateName(candidate.candidate_name)}
               </h2>
             </div>
-            <div className="text-[13px] text-ink-muted mt-0.5">
-              {candidate.candidate_email || '—'}
+
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-ink-muted">
+              {candidate.experience_years !== undefined && (
+                <span className="inline-flex items-center gap-1 font-medium text-ink">
+                  <Briefcase className="w-4 h-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
+                  <span className="tabular-nums">{candidate.experience_years} yrs exp</span>
+                  {candidate.seniority_level && (
+                    <span className="text-ink-muted">({candidate.seniority_level})</span>
+                  )}
+                </span>
+              )}
+
+              {(candidate.education_degree || (candidate.education_level && candidate.education_level !== 'Unspecified')) && (
+                <>
+                  <span className="text-ink-subtle">·</span>
+                  <span className="inline-flex items-center gap-1 text-ink">
+                    <GraduationCap className="w-4 h-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
+                    <span>{candidate.education_degree || candidate.education_level}</span>
+                  </span>
+                </>
+              )}
+
+              {candidate.candidate_email && (
+                <>
+                  <span className="text-ink-subtle">·</span>
+                  <span className="inline-flex items-center gap-1 text-ink-muted truncate">
+                    <Mail className="w-4 h-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
+                    <span>{candidate.candidate_email}</span>
+                  </span>
+                </>
+              )}
+
+              {candidate.candidate_phone && (
+                <>
+                  <span className="text-ink-subtle">·</span>
+                  <span className="inline-flex items-center gap-1 text-ink-muted">
+                    <Phone className="w-4 h-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
+                    <span className="tabular-nums">{candidate.candidate_phone}</span>
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Header Right Actions: Weights Tuner link */}
+        {onOpenWeightsTuner && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onOpenWeightsTuner}
+            leftIcon={<SlidersHorizontal className="w-3.5 h-3.5 text-champagne" strokeWidth={1.75} />}
+            className="text-[12px] shrink-0"
+          >
+            Tune Weights
+          </Button>
+        )}
       </div>
 
       {/* Resume Document Quick Actions (Authenticated Blob Fetch) */}
@@ -134,10 +230,10 @@ export default function CandidateDetailPanel({
         </div>
       )}
 
-      {/* 2. 96px Animated SVG Score Ring Beside Two-Segment Score Bar & Point-Math Lines */}
+      {/* 2. 96px Animated SVG Score Ring Beside Score Bar & Point-Math Lines */}
       <div className="p-4 rounded-[12px] bg-surface-alt/40 border border-line flex flex-col sm:flex-row items-center gap-5">
         {/* 96px Animated Score Ring */}
-        <div className="relative w-24 h-24 shrink-0 flex items-center justify-center">
+        <div className="relative w-24 h-24 shrink-0 flex flex-col items-center justify-center">
           <svg width="96" height="96" viewBox="0 0 96 96" className="-rotate-90">
             {/* Background Track Circle */}
             <circle
@@ -176,7 +272,12 @@ export default function CandidateDetailPanel({
         <div className="flex-1 w-full space-y-2.5 text-left">
           <div className="space-y-1">
             <div className="text-[13px] font-medium text-ink flex items-center justify-between">
-              <span>{hasExperienceOrEducation ? 'Multi-Pillar Point Breakdown' : 'Dual-Track Point Breakdown'}</span>
+              <div className="flex items-center gap-2">
+                <span>{hasExperienceOrEducation ? 'Multi-Pillar Point Breakdown' : 'Dual-Track Point Breakdown'}</span>
+                <span className={`px-2 py-0.5 rounded-[4px] border text-[11px] font-semibold uppercase tracking-wider ${recommendation.badge}`}>
+                  {recommendation.label}
+                </span>
+              </div>
               <span className="tabular-nums font-semibold text-[13px]">
                 {breakdown.finalScore.toFixed(1)} pts
               </span>
@@ -239,11 +340,10 @@ export default function CandidateDetailPanel({
         </div>
       </div>
 
-      {/* 3. Pipeline Header (Stage controls and transitions) */}
-      <CandidatePipelineHeader
+      {/* 3. Embedded Pipeline Stage Control */}
+      <PipelineStageControl
         candidate={candidate}
-        breakdown={breakdown}
-        safeSelectedIndex={safeSelectedIndex}
+        stageWorkflow={stageWorkflow}
         onStageButtonClick={onStageButtonClick}
         onConfirmStageUpdate={onConfirmStageUpdate}
         showTransitionPrompt={showTransitionPrompt}
@@ -255,13 +355,13 @@ export default function CandidateDetailPanel({
         isUpdatingStage={isUpdatingStage}
       />
 
-      {/* 4. Horizontal Navigation Tabs */}
+      {/* 4. Horizontal Navigation Tabs Shell */}
       <div className="flex items-center gap-1 border-b border-line">
         <button
           type="button"
-          onClick={() => setDossierTab('scoring')}
+          onClick={() => setDossierTab('evaluation')}
           className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
-            dossierTab === 'scoring'
+            isEvaluationTab
               ? 'border-primary text-ink font-semibold'
               : 'border-transparent text-ink-muted hover:text-ink'
           }`}
@@ -272,7 +372,7 @@ export default function CandidateDetailPanel({
           type="button"
           onClick={() => setDossierTab('skills')}
           className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
-            dossierTab === 'skills'
+            isSkillsTab
               ? 'border-primary text-ink font-semibold'
               : 'border-transparent text-ink-muted hover:text-ink'
           }`}
@@ -281,29 +381,33 @@ export default function CandidateDetailPanel({
         </button>
         <button
           type="button"
-          onClick={() => setDossierTab('notes')}
-          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
-            dossierTab === 'notes'
+          onClick={() => setDossierTab('activity')}
+          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+            isActivityTab
               ? 'border-primary text-ink font-semibold'
               : 'border-transparent text-ink-muted hover:text-ink'
           }`}
         >
-          Notes & Activity ({notesList.length + statusHistoryList.length})
+          <span>Notes & Activity</span>
+          <span className="px-1.5 py-0.2 rounded-full bg-surface-alt border border-line text-[11px] font-semibold tabular-nums text-ink-muted">
+            {notesList.length + statusHistoryList.length}
+          </span>
         </button>
       </div>
 
       {/* 5. Tab Panels */}
-      <div className={dossierTab === 'scoring' ? 'block' : 'hidden'}>
-        <CandidateEvaluationTab candidate={candidate} breakdown={breakdown} />
+      <div className={isEvaluationTab ? 'block' : 'hidden'}>
+        <EvaluationTab candidate={candidate} breakdown={breakdown} />
       </div>
 
-      <div className={dossierTab === 'skills' ? 'block' : 'hidden'}>
-        <CandidateSkillsTab candidate={candidate} activeJob={activeJob} />
+      <div className={isSkillsTab ? 'block' : 'hidden'}>
+        <SkillsTab candidate={candidate} activeJob={activeJob} />
       </div>
 
-      <div className={dossierTab === 'notes' ? 'block' : 'hidden'}>
-        <CandidateActivityTab
+      <div className={isActivityTab ? 'block' : 'hidden'}>
+        <ActivityTab
           candidate={candidate}
+          stageWorkflow={stageWorkflow}
           notesList={notesList}
           statusHistoryList={statusHistoryList}
           onAddNote={onAddNote}
@@ -317,22 +421,24 @@ export default function CandidateDetailPanel({
 
       {/* 6. Compare Footer */}
       <div className="pt-3 border-t border-line flex items-center justify-between gap-3">
-        <Button
-          variant={
-            selectedForCompare.includes(candidate.application_id)
-              ? 'secondary'
-              : 'primary'
-          }
-          size="sm"
-          leftIcon={<GitCompare className="w-4 h-4" strokeWidth={1.75} />}
-          onClick={() => onToggleCompare(candidate.application_id)}
-        >
-          {selectedForCompare.includes(candidate.application_id)
-            ? 'Remove from compare'
-            : 'Add to compare'}
-        </Button>
+        {onToggleCompare && (
+          <Button
+            variant={
+              selectedForCompare.includes(candidate.application_id)
+                ? 'secondary'
+                : 'primary'
+            }
+            size="sm"
+            leftIcon={<GitCompare className="w-4 h-4" strokeWidth={1.75} />}
+            onClick={() => onToggleCompare(candidate.application_id)}
+          >
+            {selectedForCompare.includes(candidate.application_id)
+              ? 'Remove from compare'
+              : 'Add to compare'}
+          </Button>
+        )}
 
-        <div className="hidden sm:flex items-center gap-1.5 text-[13px] text-ink-muted">
+        <div className="hidden sm:flex items-center gap-1.5 text-[13px] text-ink-muted ml-auto">
           <span>Use</span>
           <kbd className="px-1.5 py-0.5 rounded-[4px] bg-surface-alt border border-line text-[13px]">
             ↑

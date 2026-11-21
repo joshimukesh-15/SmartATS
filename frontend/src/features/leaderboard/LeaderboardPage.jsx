@@ -5,15 +5,18 @@ import { Button, EmptyState, Skeleton, Drawer } from '../../components/ui';
 import { cleanCandidateName } from '../../lib/format';
 import { computeBreakdown, sortCandidates } from '../../lib/score';
 
-import { STAGES } from './constants';
-import { useLeaderboardSelection } from './hooks/useLeaderboardSelection';
-import { useLeaderboardKeyboard } from './hooks/useLeaderboardKeyboard';
+import {
+  CandidateDetail,
+  useCandidateSelection,
+  useCandidateKeyboard,
+  useStageWorkflow,
+  STAGES,
+} from '../candidates';
+
 import { useScoringWeights } from './hooks/useScoringWeights';
-import { useApplicationWorkflow } from './hooks/useApplicationWorkflow';
 import LeaderboardHeader from './LeaderboardHeader';
 import LeaderboardFilters from './LeaderboardFilters';
 import LeaderboardTable from './LeaderboardTable';
-import CandidateDetailPanel from './CandidateDetailPanel';
 import SelectionBar from './SelectionBar';
 import WeightsTunerDialog from './WeightsTunerDialog';
 
@@ -48,7 +51,7 @@ export default function LeaderboardPage() {
   const [search, setSearch] = useState('');
   const initialStage = searchParams.get('stage');
   const [stageFilter, setStageFilter] = useState(
-    initialStage && STAGES.includes(initialStage) ? initialStage : 'All'
+    initialStage && (STAGES.includes(initialStage) || initialStage === 'Interview') ? initialStage : 'All'
   );
   const [sortBy, setSortBy] = useState('score');
   const [sortOrder, setSortOrder] = useState('desc');
@@ -71,7 +74,7 @@ export default function LeaderboardPage() {
 
   // Dossier UI state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [dossierTab, setDossierTab] = useState('scoring');
+  const [dossierTab, setDossierTab] = useState('evaluation');
   const [openStageMenuId, setOpenStageMenuId] = useState(null);
   const [showAuditTrail, setShowAuditTrail] = useState(false);
 
@@ -86,7 +89,13 @@ export default function LeaderboardPage() {
   const candidates = useMemo(() => {
     let list = rawCandidates;
     if (stageFilter !== 'All') {
-      list = list.filter((c) => (c.review_stage || 'New') === stageFilter);
+      list = list.filter((c) => {
+        const stage = c.review_stage || 'New';
+        if (stage === stageFilter) return true;
+        if (stageFilter === 'Interviewing' && stage === 'Interview') return true;
+        if (stageFilter === 'Interview' && stage === 'Interviewing') return true;
+        return false;
+      });
     }
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -100,40 +109,30 @@ export default function LeaderboardPage() {
     return sortCandidates(list, sortBy, sortOrder);
   }, [rawCandidates, stageFilter, search, sortBy, sortOrder]);
 
-  // Selection & keyboard hooks
+  // Selection & keyboard hooks from candidates feature
   const {
-    setSelectedIndex,
     safeSelectedIndex,
+    selectedCandidate,
+    setSelectedIndex,
     selectedForCompare,
     handleToggleCompare,
     handleInitiateCompare,
     clearCompare,
-  } = useLeaderboardSelection({ candidatesCount: candidates.length, activeJobId });
+  } = useCandidateSelection(candidates, { activeJobId });
 
-  useLeaderboardKeyboard({ candidatesCount: candidates.length, setSelectedIndex });
+  useCandidateKeyboard({
+    candidatesCount: candidates.length,
+    setSelectedIndex,
+    onEscape: () => setIsDrawerOpen(false),
+  });
 
-  const selectedCandidate = candidates[safeSelectedIndex] || null;
   const selectedBreakdown = selectedCandidate
     ? computeBreakdown(selectedCandidate, activeJob)
     : null;
 
-  // Workflow hook for stage mutations and notes
-  const {
-    newNoteContent,
-    setNewNoteContent,
-    showTransitionPrompt,
-    setShowTransitionPrompt,
-    targetStage,
-    setTargetStage,
-    transitionNote,
-    setTransitionNote,
-    handleStageButtonClick,
-    handleConfirmStageUpdate,
-    handleQuickStageChange,
-    handleAddNote,
-    isUpdatingStage,
-    isAddingNote,
-  } = useApplicationWorkflow(activeJobId, selectedCandidate);
+  // Workflow hook for stage mutations and notes from candidates feature
+  const stageWorkflow = useStageWorkflow(activeJobId, selectedCandidate);
+  const { handleQuickStageChange, setShowTransitionPrompt } = stageWorkflow;
 
   const handleJobChange = (newJobId) => {
     navigate(`/studio/leaderboard/${newJobId}`);
@@ -143,26 +142,15 @@ export default function LeaderboardPage() {
   };
 
   const renderDetailPanel = () => (
-    <CandidateDetailPanel
+    <CandidateDetail
       candidate={selectedCandidate}
       breakdown={selectedBreakdown}
       activeJob={activeJob}
       safeSelectedIndex={safeSelectedIndex}
       selectedForCompare={selectedForCompare}
       onToggleCompare={handleToggleCompare}
-      onStageButtonClick={handleStageButtonClick}
-      onConfirmStageUpdate={handleConfirmStageUpdate}
-      showTransitionPrompt={showTransitionPrompt}
-      setShowTransitionPrompt={setShowTransitionPrompt}
-      targetStage={targetStage}
-      setTargetStage={setTargetStage}
-      transitionNote={transitionNote}
-      setTransitionNote={setTransitionNote}
-      isUpdatingStage={isUpdatingStage}
-      onAddNote={handleAddNote}
-      newNoteContent={newNoteContent}
-      setNewNoteContent={setNewNoteContent}
-      isAddingNote={isAddingNote}
+      stageWorkflow={stageWorkflow}
+      onOpenWeightsTuner={() => setIsWeightsOpen(true)}
       dossierTab={dossierTab}
       setDossierTab={setDossierTab}
       showAuditTrail={showAuditTrail}

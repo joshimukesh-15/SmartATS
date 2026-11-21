@@ -128,7 +128,7 @@ describe('Leaderboard Page', () => {
     );
 
     // Click 'New' stage filter
-    const newStageBtn = screen.getByRole('button', { name: /New/i });
+    const newStageBtn = screen.getAllByRole('button', { name: /New/i })[0];
     fireEvent.click(newStageBtn);
 
     // Only Alex should be present (Alex has 'New', Sarah has 'Interview')
@@ -175,7 +175,7 @@ describe('Leaderboard Page', () => {
       </MemoryRouter>
     );
 
-    const weightsBtn = screen.getByRole('button', { name: /Weights/i });
+    const weightsBtn = screen.getByRole('button', { name: /^Weights$/i });
     fireEvent.click(weightsBtn);
 
     expect(screen.getByText('Recruiter Scoring Weights & Tuner')).toBeInTheDocument();

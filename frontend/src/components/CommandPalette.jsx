@@ -6,6 +6,7 @@ import {
   Briefcase,
   UploadCloud,
   Award,
+  Kanban,
   GitCompare,
   BarChart3,
   Globe,
@@ -118,6 +119,13 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
                   >
                     <Award className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Leaderboard</span>
+                  </Command.Item>
+                  <Command.Item
+                    onSelect={() => runCommand(() => navigate('/studio/review'))}
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
+                  >
+                    <Kanban className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
+                    <span>Pipeline</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/compare'))}

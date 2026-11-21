@@ -14,7 +14,7 @@ const ROUTE_TITLES = {
   '/studio/jobs': 'Jobs',
   '/studio/upload': 'Upload',
   '/studio/leaderboard': 'Leaderboard',
-  '/studio/review': 'Review',
+  '/studio/review': 'Pipeline',
   '/studio/compare': 'Compare',
   '/studio/analytics': 'Analytics',
 };
@@ -42,7 +42,7 @@ export default function StudioLayout() {
     if (currentPath.startsWith('/studio/jobs')) pageTitle = 'Jobs';
     else if (currentPath.startsWith('/studio/upload')) pageTitle = 'Upload';
     else if (currentPath.startsWith('/studio/leaderboard')) pageTitle = 'Leaderboard';
-    else if (currentPath.startsWith('/studio/review')) pageTitle = 'Review';
+    else if (currentPath.startsWith('/studio/review')) pageTitle = 'Pipeline';
     else if (currentPath.startsWith('/studio/compare')) pageTitle = 'Compare';
     else if (currentPath.startsWith('/studio/analytics')) pageTitle = 'Analytics';
     else pageTitle = 'Studio';
