@@ -3,7 +3,7 @@ import io
 import zipfile
 import inspect
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -21,7 +21,8 @@ from app.core.config import settings
 from app.core.security import sanitize_filename, validate_file_extension
 from app.services.duplicate import calculate_bytes_hash, check_duplicate_application
 from app.services.processor import process_resume_application
-from app.services.scoring import attach_scoring_to_application, resolve_scoring_weights
+from app.services.scoring import attach_scoring_to_application, resolve_scoring_weights, rescore_job_applications
+from app.ml.vectorizer import vectorizer_cache
 from app.api.deps import get_current_recruiter
 
 router = APIRouter(tags=["Resumes & Applications"])
@@ -212,6 +213,16 @@ async def upload_resumes(
             db.add(init_history)
             db.commit()
 
+            # Increment vectorizer cache version, invalidate cache, set job & app status to Re-scoring
+            vectorizer_cache.increment_version(job.job_id)
+            vectorizer_cache.set_job_status(job.job_id, "Re-scoring")
+            db.query(Application).filter(
+                Application.job_id == job.job_id,
+                Application.application_id != application.application_id,
+                Application.processing_status == "COMPLETED"
+            ).update({"processing_status": "Re-scoring"})
+            db.commit()
+
             # 7. Queue background processing
             background_tasks.add_task(process_resume_application, application.application_id)
 
@@ -362,12 +373,15 @@ def get_application_workflow_history(
 def delete_application(
     application_id: int,
     db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
     current_recruiter: dict = Depends(get_current_recruiter)
 ):
     """Deletes an application and cleans up the stored file."""
     app = db.query(Application).filter(Application.application_id == application_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Application not found.")
+
+    job_id = app.job_id
 
     # Remove stored file if exists
     if app.resume_path and os.path.exists(app.resume_path):
@@ -378,6 +392,21 @@ def delete_application(
 
     db.delete(app)
     db.commit()
+
+    # Trigger corpus re-scoring for remaining applications of that job
+    vectorizer_cache.increment_version(job_id)
+    vectorizer_cache.set_job_status(job_id, "Re-scoring")
+    db.query(Application).filter(
+        Application.job_id == job_id,
+        Application.processing_status != "FAILED"
+    ).update({"processing_status": "Re-scoring"})
+    db.commit()
+
+    if background_tasks:
+        background_tasks.add_task(rescore_job_applications, job_id)
+    else:
+        rescore_job_applications(job_id)
+
     return None
 
 

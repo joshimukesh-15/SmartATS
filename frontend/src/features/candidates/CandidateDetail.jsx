@@ -10,7 +10,7 @@ import {
   Phone,
   SlidersHorizontal,
 } from 'lucide-react';
-import { Button, Avatar, ScoreBar } from '../../components/ui';
+import { Button, Avatar, ScoreBar, StatusBadge } from '../../components/ui';
 import { downloadResumeFile, previewResumeFile } from '../../api/applications';
 import { computeBreakdown } from '../../lib/score';
 import PipelineStageControl from './PipelineStageControl';
@@ -136,6 +136,11 @@ export default function CandidateDetail({
               <h2 className="text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25] truncate">
                 {candidate.candidate_name || 'Candidate'}
               </h2>
+              {(candidate.processing_status === 'Re-scoring' ||
+                candidate.processing_status?.toUpperCase() === 'PROCESSING' ||
+                candidate.processing_status?.toUpperCase() === 'RE-SCORING') && (
+                <StatusBadge status={candidate.processing_status} size="md" />
+              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-ink-muted">

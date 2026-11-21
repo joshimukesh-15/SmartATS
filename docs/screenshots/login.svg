@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #f7f6f3; }
+      .surface { fill: #ffffff; stroke: #e3e0da; stroke-width: 1px; }
+      .surface-alt { fill: #f0eeea; }
+      .ink { fill: #14141a; font-family: -apple-system, BlinkMacSystemFont, "Geist", "Segoe UI", Roboto, sans-serif; }
+      .ink-muted { fill: #62626b; font-family: -apple-system, BlinkMacSystemFont, "Geist", "Segoe UI", Roboto, sans-serif; }
+      .champagne { fill: #926f18; }
+      .champagne-soft { fill: #f4ecd8; }
+      .line { stroke: #e3e0da; stroke-width: 1px; }
+      .input-box { fill: #ffffff; stroke: #e3e0da; stroke-width: 1px; }
+      .btn-primary { fill: #14141a; }
+      .btn-primary-text { fill: #ffffff; font-weight: 500; font-size: 14px; }
+    </style>
+    <filter id="shadow-lg" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#14141a" flood-opacity="0.08"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#14141a" flood-opacity="0.04"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="640" class="bg"/>
+
+  <!-- Center Card -->
+  <g transform="translate(280, 70)" filter="url(#shadow-lg)">
+    <rect width="440" height="500" rx="14" class="surface"/>
+
+    <!-- Brand Emblem -->
+    <circle cx="220" cy="52" r="22" fill="#14141a"/>
+    <circle cx="220" cy="52" r="11" fill="#926f18"/>
+    <circle cx="220" cy="52" r="5" fill="#ffffff"/>
+
+    <text x="220" y="104" class="ink" font-size="22" font-weight="600" text-anchor="middle" letter-spacing="-0.02em">
+      Recruiter Portal
+    </text>
+    <text x="220" y="128" class="ink-muted" font-size="14" text-anchor="middle">
+      Sign in to manage openings, candidates, and weights
+    </text>
+
+    <!-- Email Field -->
+    <text x="40" y="172" class="ink" font-size="13" font-weight="500">Email Address</text>
+    <rect x="40" y="184" width="360" height="42" rx="8" class="input-box"/>
+    <text x="56" y="210" class="ink" font-size="14">recruiter@smartats.com</text>
+
+    <!-- Password Field -->
+    <text x="40" y="254" class="ink" font-size="13" font-weight="500">Password</text>
+    <rect x="40" y="266" width="360" height="42" rx="8" class="input-box"/>
+    <text x="56" y="293" class="ink" font-size="16" letter-spacing="0.2em">••••••••••••</text>
+
+    <!-- Submit Button -->
+    <rect x="40" y="332" width="360" height="44" rx="8" class="btn-primary"/>
+    <text x="220" y="359" class="btn-primary-text" text-anchor="middle">Sign In</text>
+
+    <!-- Security Advisory Box -->
+    <rect x="40" y="400" width="360" height="74" rx="8" fill="#f4ecd8" stroke="#d4b15a" stroke-width="1"/>
+    <circle cx="58" cy="422" r="7" fill="#926f18"/>
+    <text x="58" y="426" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">!</text>
+    <text x="74" y="424" class="ink" font-size="12" font-weight="600">Default Demo Credentials</text>
+    <text x="74" y="442" class="ink-muted" font-size="11">recruiter@smartats.com / recruiter123</text>
+    <text x="74" y="458" class="champagne" font-size="11" font-weight="500">Rotate credentials and SECRET_KEY before deploying.</text>
+  </g>
+</svg>

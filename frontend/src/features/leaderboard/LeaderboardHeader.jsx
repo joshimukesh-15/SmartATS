@@ -1,5 +1,5 @@
 import { FileSpreadsheet, SlidersHorizontal } from 'lucide-react';
-import { Select, Button } from '../../components/ui';
+import { Select, Button, StatusBadge } from '../../components/ui';
 import { getExportCsvUrl } from '../../api';
 
 export default function LeaderboardHeader({
@@ -9,13 +9,24 @@ export default function LeaderboardHeader({
   onJobChange,
   appliedWeights,
   onOpenWeights,
+  isJobReScoring = false,
 }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
       <div>
-        <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
-          Leaderboard
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
+            Leaderboard
+          </h1>
+          {(isJobReScoring ||
+            activeJob?.processing_status === 'Re-scoring' ||
+            activeJob?.processing_status === 'PROCESSING') && (
+            <StatusBadge
+              status={activeJob?.processing_status || 'Re-scoring'}
+              size="md"
+            />
+          )}
+        </div>
         <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
           Explainable candidate rankings with multi-pillar scoring, configurable weights, and pipeline review.
         </p>

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from app.schemas.application import (
     MatchResultResponse,
     ApplicationNoteResponse,
@@ -16,6 +16,7 @@ class RankingItem(BaseModel):
     candidate_email: Optional[str] = None
     candidate_phone: Optional[str] = None
     processing_status: str
+    status: Optional[str] = None
     review_stage: str = "New"
     final_score: float
     keyword_score: float
@@ -36,6 +37,12 @@ class RankingItem(BaseModel):
     notes: List[ApplicationNoteResponse] = Field(default_factory=list)
     status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
     applied_at: datetime
+
+    @model_validator(mode="after")
+    def populate_status(self):
+        if self.status is None:
+            self.status = self.processing_status
+        return self
 
 
 class JobRankingsResponse(BaseModel):

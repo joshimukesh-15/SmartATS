@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #f7f6f3; }
+      .surface { fill: #ffffff; stroke: #e3e0da; stroke-width: 1px; }
+      .surface-alt { fill: #f0eeea; }
+      .ink { fill: #14141a; font-family: -apple-system, BlinkMacSystemFont, "Geist", "Segoe UI", Roboto, sans-serif; }
+      .ink-muted { fill: #62626b; font-family: -apple-system, BlinkMacSystemFont, "Geist", "Segoe UI", Roboto, sans-serif; }
+      .champagne { fill: #926f18; }
+      .champagne-soft { fill: #f4ecd8; }
+      .line { stroke: #e3e0da; stroke-width: 1px; }
+      .btn-primary { fill: #14141a; }
+      .btn-primary-text { fill: #ffffff; font-weight: 500; font-size: 13px; }
+      .btn-sec { fill: #ffffff; stroke: #e3e0da; stroke-width: 1px; }
+      .btn-sec-text { fill: #14141a; font-weight: 500; font-size: 13px; }
+    </style>
+    <filter id="shadow-sm" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#14141a" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" class="bg"/>
+
+  <!-- Top App Navigation -->
+  <rect width="1280" height="54" class="surface"/>
+  <circle cx="48" cy="27" r="7" fill="#14141a"/>
+  <circle cx="56" cy="27" r="3.5" fill="#926f18"/>
+  <text x="70" y="32" class="ink" font-size="15" font-weight="600">SmartATS Studio</text>
+  <text x="230" y="32" class="ink-muted" font-size="13">Overview</text>
+  <text x="310" y="32" class="ink" font-size="13" font-weight="600">Leaderboard</text>
+  <text x="415" y="32" class="ink-muted" font-size="13">Pipeline</text>
+  <text x="490" y="32" class="ink-muted" font-size="13">Compare</text>
+  <text x="575" y="32" class="ink-muted" font-size="13">Upload</text>
+  
+  <rect x="1110" y="14" width="130" height="26" rx="13" fill="#f0eeea"/>
+  <circle cx="1125" cy="27" r="8" fill="#14141a"/>
+  <text x="1140" y="31" class="ink" font-size="12">recruiter@...</text>
+
+  <!-- Subheader -->
+  <g transform="translate(48, 76)">
+    <text x="0" y="24" class="ink" font-size="26" font-weight="600" letter-spacing="-0.03em">Leaderboard</text>
+    
+    <!-- Job Select -->
+    <rect x="680" y="0" width="220" height="34" rx="8" class="surface"/>
+    <text x="696" y="22" class="ink" font-size="13">Senior Backend Engineer</text>
+    
+    <!-- Weights Button -->
+    <rect x="912" y="0" width="90" height="34" rx="8" class="btn-sec"/>
+    <text x="957" y="22" class="btn-sec-text" text-anchor="middle">Weights</text>
+
+    <!-- Export Button -->
+    <rect x="1014" y="0" width="110" height="34" rx="8" class="btn-sec"/>
+    <text x="1069" y="22" class="btn-sec-text" text-anchor="middle">Export CSV</text>
+  </g>
+
+  <!-- Re-scoring Status Banner -->
+  <g transform="translate(48, 126)">
+    <rect width="1184" height="40" rx="8" fill="#f4ecd8" stroke="#d4b15a" stroke-width="1"/>
+    <circle cx="24" cy="20" r="4" fill="#926f18"/>
+    <text x="38" y="24" class="ink" font-size="13" font-weight="600">Re-scoring in progress</text>
+    <text x="180" y="24" class="ink-muted" font-size="13">— Corpus vectorizers and candidate multi-pillar scores are being recalculated.</text>
+    <rect x="1080" y="8" width="85" height="24" rx="6" fill="#ffffff" stroke="#d4b15a" stroke-width="1"/>
+    <circle cx="1092" cy="20" r="3" fill="#926f18"/>
+    <text x="1132" y="24" class="ink" font-size="11" font-weight="500" text-anchor="middle">Re-scoring</text>
+  </g>
+
+  <!-- Main Grid: Left Table (700px), Right Detail (460px) -->
+  <g transform="translate(48, 180)">
+    <!-- Table Container -->
+    <rect width="700" height="500" rx="12" class="surface" filter="url(#shadow-sm)"/>
+    
+    <!-- Table Header -->
+    <rect width="700" height="40" rx="12" class="surface-alt"/>
+    <rect y="28" width="700" height="12" class="surface-alt"/>
+    <line x1="0" y1="40" x2="700" y2="40" class="line"/>
+    <text x="24" y="25" class="ink-muted" font-size="12" font-weight="500">RANK</text>
+    <text x="80" y="25" class="ink-muted" font-size="12" font-weight="500">CANDIDATE</text>
+    <text x="320" y="25" class="ink-muted" font-size="12" font-weight="500">STAGE</text>
+    <text x="450" y="25" class="ink-muted" font-size="12" font-weight="500">SKILLS</text>
+    <text x="590" y="25" class="ink-muted" font-size="12" font-weight="500">FINAL SCORE</text>
+
+    <!-- Row 1: Selected Candidate -->
+    <rect y="40" width="700" height="72" fill="#f0eeea"/>
+    <rect x="20" y="64" width="24" height="24" rx="6" class="btn-primary"/>
+    <text x="32" y="80" fill="#ffffff" font-size="12" font-weight="600" text-anchor="middle">1</text>
+    
+    <circle cx="100" cy="76" r="16" fill="#ffffff" stroke="#e3e0da"/>
+    <text x="100" y="81" class="ink" font-size="12" font-weight="600" text-anchor="middle">SJ</text>
+    <text x="126" y="72" class="ink" font-size="14" font-weight="600">Sarah Jenkins</text>
+    <text x="126" y="90" class="ink-muted" font-size="12">6.5 yrs exp · Senior · Master's</text>
+
+    <rect x="320" y="64" width="90" height="24" rx="6" fill="#f4ecd8" stroke="#d4b15a" stroke-width="1"/>
+    <text x="365" y="80" class="ink" font-size="12" font-weight="500" text-anchor="middle">Interview</text>
+
+    <text x="470" y="80" class="ink" font-size="13" font-family="monospace">100.0%</text>
+
+    <text x="660" y="74" class="ink" font-size="16" font-weight="600" text-anchor="end">95.0%</text>
+    <rect x="560" y="82" width="100" height="5" rx="2.5" fill="#e3e0da"/>
+    <rect x="560" y="82" width="95" height="5" rx="2.5" class="champagne"/>
+
+    <!-- Row 2 -->
+    <line x1="0" y1="112" x2="700" y2="112" class="line"/>
+    <rect x="20" y="136" width="24" height="24" rx="6" class="surface-alt"/>
+    <text x="32" y="152" class="ink" font-size="12" font-weight="600" text-anchor="middle">2</text>
+    
+    <circle cx="100" cy="148" r="16" fill="#f0eeea"/>
+    <text x="100" y="153" class="ink" font-size="12" font-weight="600" text-anchor="middle">AR</text>
+    <text x="126" y="144" class="ink" font-size="14" font-weight="600">Alex Rivera</text>
+    <text x="126" y="162" class="ink-muted" font-size="12">4.0 yrs exp · Mid-Senior · Bachelor's</text>
+
+    <rect x="320" y="136" width="60" height="24" rx="6" class="surface-alt" stroke="#e3e0da" stroke-width="1"/>
+    <text x="350" y="152" class="ink-muted" font-size="12" text-anchor="middle">New</text>
+
+    <text x="470" y="152" class="ink" font-size="13" font-family="monospace">80.0%</text>
+
+    <text x="660" y="146" class="ink" font-size="16" font-weight="600" text-anchor="end">85.0%</text>
+    <rect x="560" y="154" width="100" height="5" rx="2.5" fill="#e3e0da"/>
+    <rect x="560" y="154" width="85" height="5" rx="2.5" class="champagne"/>
+
+    <!-- Row 3 -->
+    <line x1="0" y1="184" x2="700" y2="184" class="line"/>
+    <rect x="20" y="208" width="24" height="24" rx="6" class="surface-alt"/>
+    <text x="32" y="224" class="ink" font-size="12" font-weight="600" text-anchor="middle">3</text>
+    
+    <circle cx="100" cy="220" r="16" fill="#f0eeea"/>
+    <text x="100" y="225" class="ink" font-size="12" font-weight="600" text-anchor="middle">DC</text>
+    <text x="126" y="216" class="ink" font-size="14" font-weight="600">David Chen</text>
+    <text x="126" y="234" class="ink-muted" font-size="12">5.0 yrs exp · Senior · Master's</text>
+
+    <rect x="320" y="208" width="75" height="24" rx="6" fill="#f0eeea" stroke="#e3e0da" stroke-width="1"/>
+    <text x="357" y="224" class="ink" font-size="12" text-anchor="middle">Reviewing</text>
+
+    <text x="470" y="224" class="ink" font-size="13" font-family="monospace">75.0%</text>
+
+    <text x="660" y="218" class="ink" font-size="16" font-weight="600" text-anchor="end">78.5%</text>
+    <rect x="560" y="226" width="100" height="5" rx="2.5" fill="#e3e0da"/>
+    <rect x="560" y="226" width="78" height="5" rx="2.5" class="champagne"/>
+  </g>
+
+  <!-- Right Side: CandidateDetail Panel -->
+  <g transform="translate(772, 180)" filter="url(#shadow-sm)">
+    <rect width="460" height="500" rx="14" class="surface"/>
+
+    <!-- Detail Header -->
+    <circle cx="48" cy="48" r="22" fill="#14141a"/>
+    <text x="48" y="54" fill="#ffffff" font-size="16" font-weight="600" text-anchor="middle">SJ</text>
+
+    <rect x="84" y="28" width="60" height="20" rx="5" class="btn-primary"/>
+    <text x="114" y="42" fill="#ffffff" font-size="11" font-weight="600" text-anchor="middle">Rank #1</text>
+    
+    <text x="84" y="66" class="ink" font-size="20" font-weight="600">Sarah Jenkins</text>
+    <text x="84" y="86" class="ink-muted" font-size="13">sarah.jenkins@example.com · (415) 555-0192</text>
+
+    <line x1="24" y1="104" x2="436" y2="104" class="line"/>
+
+    <!-- Score Circle & Pill -->
+    <circle cx="80" cy="170" r="40" fill="none" stroke="#e3e0da" stroke-width="6"/>
+    <circle cx="80" cy="170" r="40" fill="none" stroke="#926f18" stroke-width="6" stroke-dasharray="251" stroke-dashoffset="13" stroke-linecap="round" transform="rotate(-90 80 170)"/>
+    <text x="80" y="174" class="ink" font-size="20" font-weight="bold" text-anchor="middle">95.0%</text>
+    <text x="80" y="190" class="ink-muted" font-size="11" text-anchor="middle">MATCH</text>
+
+    <rect x="144" y="140" width="115" height="24" rx="6" fill="#ecfdf5" stroke="#10b981" stroke-width="1"/>
+    <text x="201" y="156" fill="#047857" font-size="12" font-weight="600" text-anchor="middle">Strong Match</text>
+    <text x="144" y="180" class="ink-muted" font-size="12">Ranked 1 of 8 candidates</text>
+
+    <!-- 4-Pillar Breakdown Bars -->
+    <g transform="translate(24, 230)">
+      <!-- Skills -->
+      <text x="0" y="14" class="ink" font-size="12" font-weight="500">Skills Match (40%)</text>
+      <text x="412" y="14" class="ink" font-size="12" font-weight="600" text-anchor="end">40.0 / 40 pts (100%)</text>
+      <rect x="0" y="22" width="412" height="6" rx="3" fill="#e3e0da"/>
+      <rect x="0" y="22" width="412" height="6" rx="3" fill="#14141a"/>
+
+      <!-- Text Match -->
+      <text x="0" y="48" class="ink" font-size="12" font-weight="500">Semantic Text (20%)</text>
+      <text x="412" y="48" class="ink" font-size="12" font-weight="600" text-anchor="end">17.5 / 20 pts (87.5%)</text>
+      <rect x="0" y="56" width="412" height="6" rx="3" fill="#e3e0da"/>
+      <rect x="0" y="56" width="360" height="6" rx="3" class="champagne"/>
+
+      <!-- Experience -->
+      <text x="0" y="82" class="ink" font-size="12" font-weight="500">Experience Fit (25%)</text>
+      <text x="412" y="82" class="ink" font-size="12" font-weight="600" text-anchor="end">22.5 / 25 pts (90.0%)</text>
+      <rect x="0" y="90" width="412" height="6" rx="3" fill="#e3e0da"/>
+      <rect x="0" y="90" width="370" height="6" rx="3" fill="#62626b"/>
+
+      <!-- Education -->
+      <text x="0" y="116" class="ink" font-size="12" font-weight="500">Education Fit (15%)</text>
+      <text x="412" y="116" class="ink" font-size="12" font-weight="600" text-anchor="end">15.0 / 15 pts (100%)</text>
+      <rect x="0" y="124" width="412" height="6" rx="3" fill="#e3e0da"/>
+      <rect x="0" y="124" width="412" height="6" rx="3" fill="#b8963e"/>
+    </g>
+
+    <!-- Stage Pipeline Controls -->
+    <g transform="translate(24, 385)">
+      <line x1="0" y1="0" x2="412" y2="0" class="line"/>
+      <text x="0" y="20" class="ink-muted" font-size="11" font-weight="500">PIPELINE STAGE</text>
+      
+      <rect x="0" y="30" width="62" height="28" rx="6" class="surface-alt"/>
+      <text x="31" y="48" class="ink-muted" font-size="11" text-anchor="middle">New</text>
+
+      <rect x="70" y="30" width="70" height="28" rx="6" class="surface-alt"/>
+      <text x="105" y="48" class="ink-muted" font-size="11" text-anchor="middle">Review</text>
+
+      <rect x="148" y="30" width="80" height="28" rx="6" fill="#f4ecd8" stroke="#d4b15a" stroke-width="1"/>
+      <text x="188" y="48" class="ink" font-size="11" font-weight="600" text-anchor="middle">Interview</text>
+
+      <rect x="236" y="30" width="60" height="28" rx="6" class="surface-alt"/>
+      <text x="266" y="48" class="ink-muted" font-size="11" text-anchor="middle">Offer</text>
+
+      <rect x="304" y="30" width="55" height="28" rx="6" class="surface-alt"/>
+      <text x="331" y="48" class="ink-muted" font-size="11" text-anchor="middle">Hired</text>
+
+      <rect x="367" y="30" width="45" height="28" rx="6" class="surface-alt"/>
+      <text x="389" y="48" class="ink-muted" font-size="11" text-anchor="middle">Reject</text>
+    </g>
+  </g>
+</svg>

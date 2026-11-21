@@ -39,6 +39,11 @@ class Job(Base):
         order_by="desc(Application.applied_at)"
     )
 
+    @property
+    def status(self) -> str:
+        from app.ml.vectorizer import vectorizer_cache
+        return vectorizer_cache.get_job_status(self.job_id)
+
 
 class Candidate(Base):
     __tablename__ = "candidates"

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 from app.schemas.candidate import CandidateResponse, CandidateListItemResponse
 
 
@@ -71,6 +71,7 @@ class ApplicationResponse(BaseModel):
     download_url: Optional[str] = None
     file_hash: str
     processing_status: str
+    status: Optional[str] = None
     review_stage: str = "New"
     applied_at: datetime
     candidate: Optional[CandidateListItemResponse] = None
@@ -80,6 +81,12 @@ class ApplicationResponse(BaseModel):
     weights: Dict[str, float] = Field(default_factory=dict)
     components: Dict[str, Dict[str, float]] = Field(default_factory=dict)
     final_score: float = 0.0
+
+    @model_validator(mode="after")
+    def populate_status(self):
+        if self.status is None:
+            self.status = self.processing_status
+        return self
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -12,6 +12,7 @@ if PROJECT_ROOT not in sys.path:
 
 from app.services.extractor import extract_email, extract_phone, extract_name, extract_skills
 from app.services.matcher import run_hybrid_matching
+from app.ml.vectorizer import fit_job_vectorizer
 from app.ml.evaluation import (
     calculate_precision_at_k,
     calculate_recall_at_k,
@@ -129,6 +130,16 @@ def run_evaluation():
             # Relevant candidates are those with relevance score >= 2
             relevant_cands = [cid for cid, rel in relevance_dict.items() if rel >= 2]
 
+            # Build per-job TF-IDF corpus from job description + candidate resumes
+            job_full_text = (
+                f"{job['description']}\n"
+                + " ".join(job["required_skills"])
+                + " "
+                + " ".join(job["preferred_skills"])
+            )
+            resume_texts = [c["resume_text"] for c in candidates]
+            job_vectorizer = fit_job_vectorizer(job_text=job_full_text, resume_texts=resume_texts)
+
             candidate_scores = []
             for cand in candidates:
                 cand_skills = extract_skills(cand["resume_text"])
@@ -140,7 +151,8 @@ def run_evaluation():
                     required_skills=job["required_skills"],
                     preferred_skills=job["preferred_skills"],
                     weight_keyword=config["w_kw"],
-                    weight_tfidf=config["w_tfidf"]
+                    weight_tfidf=config["w_tfidf"],
+                    vectorizer=job_vectorizer
                 )
                 matching_latencies.append(time.perf_counter() - t0)
                 candidate_scores.append((cand["candidate_id"], res["final_score"]))

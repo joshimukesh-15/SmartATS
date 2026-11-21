@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useJobs, useRankings } from '../../hooks';
-import { Button, EmptyState, Skeleton, Drawer } from '../../components/ui';
+import { Button, EmptyState, Skeleton, Drawer, StatusBadge } from '../../components/ui';
 import { computeBreakdown, sortCandidates } from '../../lib/score';
 
 import {
@@ -133,6 +133,24 @@ export default function LeaderboardPage() {
   const stageWorkflow = useStageWorkflow(activeJobId, selectedCandidate);
   const { handleQuickStageChange, setShowTransitionPrompt } = stageWorkflow;
 
+  // Re-scoring detection across active job, rankings response, and candidates
+  const isJobReScoring = useMemo(() => {
+    return Boolean(
+      activeJob?.processing_status === 'Re-scoring' ||
+      activeJob?.processing_status === 'PROCESSING' ||
+      activeJob?.status === 'Re-scoring' ||
+      activeJob?.status === 'PROCESSING' ||
+      rankingsData?.processing_status === 'Re-scoring' ||
+      rankingsData?.processing_status === 'PROCESSING' ||
+      rawCandidates.some(
+        (c) =>
+          c.processing_status === 'Re-scoring' ||
+          c.processing_status?.toUpperCase() === 'RE-SCORING' ||
+          c.processing_status?.toUpperCase() === 'PROCESSING'
+      )
+    );
+  }, [activeJob, rankingsData, rawCandidates]);
+
   const handleJobChange = (newJobId) => {
     navigate(`/studio/leaderboard/${newJobId}`);
     clearCompare();
@@ -167,7 +185,25 @@ export default function LeaderboardPage() {
         onJobChange={handleJobChange}
         appliedWeights={appliedWeights}
         onOpenWeights={() => setIsWeightsOpen(true)}
+        isJobReScoring={isJobReScoring}
       />
+
+      {/* Re-scoring in progress visual indicator */}
+      {isJobReScoring && (
+        <div
+          data-testid="rescoring-banner"
+          className="flex items-center gap-3 px-4 py-3 rounded-[10px] bg-champagne-soft border border-champagne/40 text-ink text-[14px] animate-fadeIn"
+        >
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-champagne animate-pulse shrink-0" />
+          <div className="flex-1 min-w-0">
+            <span className="font-semibold text-ink">Re-scoring in progress</span>
+            <span className="text-ink-muted ml-2">
+              Corpus vectorizers and candidate scores are being recalculated in the background.
+            </span>
+          </div>
+          <StatusBadge status="Re-scoring" />
+        </div>
+      )}
 
       {/* Unified Action & Filter Toolbar */}
       <LeaderboardFilters

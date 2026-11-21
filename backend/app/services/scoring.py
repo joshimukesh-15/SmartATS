@@ -1,6 +1,9 @@
+import os
 import math
+import logging
 from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
+from app.database.database import SessionLocal
 from app.database.models import Application, Job, MatchResult, Candidate
 from app.services.taxonomy import normalize_skill_name, get_equivalent_skill_match
 from app.services.extractor import (
@@ -258,7 +261,7 @@ def evaluate_application_scoring(
         status_str = (app.processing_status or "UNKNOWN").upper()
         if status_str == "FAILED":
             explanation = "Application processing failed. Candidate has not been evaluated."
-        elif status_str in ("PENDING", "PROCESSING"):
+        elif status_str in ("PENDING", "PROCESSING", "RE-SCORING", "RE_SCORING"):
             explanation = f"Application is currently {status_str.lower()}. Scoring pending evaluation."
         elif match is None:
             explanation = "Match result record is missing. Application has not been evaluated."
@@ -326,3 +329,135 @@ def attach_scoring_to_application(
             app.match_result.final_score = getattr(app.match_result, "final_score", 0.0) or 0.0
 
     return app
+
+
+logger = logging.getLogger(__name__)
+
+
+def rescore_job_applications(job_id: int, db: Optional[Session] = None) -> List[int]:
+    """
+    Recomputes text similarity and 4-pillar multi-factor scores for ALL applications of a job.
+    1. Sets job status to 'Re-scoring' and application status to 'Re-scoring'.
+    2. Builds per-job TF-IDF corpus from job description + all resumes for this job (+ neutral corpus if < 5 resumes).
+    3. Fits deterministic TfidfVectorizer (sublinear_tf=True, smooth_idf=True, min_df=1, sorted vocabulary).
+    4. Caches fitted vectorizer in-memory with current job version.
+    5. Re-scores all applications of the job and persists updated MatchResult records.
+    6. Resets application status to 'COMPLETED' and job status to 'Active'.
+    """
+    should_close_db = False
+    if db is None:
+        db = SessionLocal()
+        should_close_db = True
+
+    try:
+        from app.ml.vectorizer import vectorizer_cache, fit_job_vectorizer
+        from app.services.matcher import run_hybrid_matching
+        from app.services.parser import extract_resume_text
+
+        job = db.query(Job).filter(Job.job_id == job_id).first()
+        if not job:
+            logger.warning("rescore_job_applications: Job %s not found.", job_id)
+            return []
+
+        # 1. Set job status to Re-scoring
+        vectorizer_cache.set_job_status(job_id, "Re-scoring")
+
+        applications = db.query(Application).filter(Application.job_id == job_id).all()
+        if not applications:
+            vectorizer_cache.set_job_status(job_id, "Active")
+            return []
+
+        # Mark non-failed applications as Re-scoring in DB
+        for app in applications:
+            if app.processing_status != "FAILED":
+                app.processing_status = "Re-scoring"
+        db.commit()
+
+        # 2. Gather resume texts
+        resume_texts: List[str] = []
+        for app in applications:
+            cand = app.candidate
+            r_text = cand.raw_text if cand and cand.raw_text else ""
+            if not r_text and app.resume_path and os.path.exists(app.resume_path):
+                try:
+                    r_text, _ = extract_resume_text(app.resume_path)
+                    if cand:
+                        cand.raw_text = r_text
+                except Exception:
+                    pass
+            if r_text:
+                resume_texts.append(r_text)
+
+        # 3. Fit per-job vectorizer
+        job_full_text = (
+            f"{job.description}\n"
+            + " ".join(job.required_skills or [])
+            + " "
+            + " ".join(job.preferred_skills or [])
+        )
+        vectorizer = fit_job_vectorizer(job_text=job_full_text, resume_texts=resume_texts)
+
+        # 4. Cache fitted vectorizer with current version
+        version = vectorizer_cache.get_version(job_id)
+        vectorizer_cache.set_vectorizer(job_id, vectorizer, version=version)
+
+        # 5. Recompute scores for all applications
+        updated_ids: List[int] = []
+        custom_w = job.custom_weights or {}
+
+        for app in applications:
+            cand = app.candidate
+            r_text = cand.raw_text if cand and cand.raw_text else ""
+            if not r_text:
+                app.processing_status = "FAILED"
+                continue
+
+            c_name = cand.name if cand and cand.name else "Candidate"
+            c_skills = cand.extracted_skills if cand and cand.extracted_skills else []
+
+            match_data = run_hybrid_matching(
+                resume_text=r_text,
+                candidate_skills=c_skills,
+                job_description=job.description,
+                required_skills=job.required_skills or [],
+                preferred_skills=job.preferred_skills or [],
+                candidate_name=c_name,
+                weight_keyword=custom_w.get("weight_skills"),
+                weight_tfidf=custom_w.get("weight_text"),
+                weight_experience=custom_w.get("weight_experience"),
+                weight_education=custom_w.get("weight_education"),
+                vectorizer=vectorizer
+            )
+
+            match = app.match_result
+            if not match:
+                match = MatchResult(application_id=app.application_id)
+                db.add(match)
+            match.keyword_score = match_data["keyword_score"]
+            match.tfidf_score = match_data["tfidf_score"]
+            match.final_score = match_data["final_score"]
+            match.matched_skills = match_data["matched_skills"]
+            match.missing_skills = match_data["missing_skills"]
+            match.preferred_matched_skills = match_data["preferred_matched_skills"]
+            match.score_explanation = match_data["score_explanation"]
+
+            app.processing_status = "COMPLETED"
+            updated_ids.append(app.application_id)
+
+        # 6. Set job status back to Active
+        vectorizer_cache.set_job_status(job_id, "Active")
+        db.commit()
+        return updated_ids
+
+    except Exception as e:
+        logger.exception("Error during rescore_job_applications for job %s: %s", job_id, e)
+        db.rollback()
+        try:
+            from app.ml.vectorizer import vectorizer_cache
+            vectorizer_cache.set_job_status(job_id, "Active")
+        except Exception:
+            pass
+        return []
+    finally:
+        if should_close_db:
+            db.close()

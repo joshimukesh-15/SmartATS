@@ -1,5 +1,5 @@
 import { Check, ChevronDown } from 'lucide-react';
-import { ScoreBar, ScoreValue, Avatar, Tooltip } from '../../components/ui';
+import { ScoreBar, ScoreValue, Avatar, Tooltip, StatusBadge } from '../../components/ui';
 import { STAGES, STAGE_CONFIG } from '../candidates';
 
 export default function CandidateRow({
@@ -64,8 +64,15 @@ export default function CandidateRow({
         <div className="flex items-center gap-3">
           <Avatar name={candidate.candidate_name || 'Candidate'} size="sm" />
           <div className="min-w-0">
-            <div className="font-semibold text-ink text-[15px] leading-[1.4] truncate">
-              {candidate.candidate_name || 'Candidate'}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-ink text-[15px] leading-[1.4] truncate">
+                {candidate.candidate_name || 'Candidate'}
+              </span>
+              {(candidate.processing_status === 'Re-scoring' ||
+                candidate.processing_status?.toUpperCase() === 'PROCESSING' ||
+                candidate.processing_status?.toUpperCase() === 'RE-SCORING') && (
+                <StatusBadge status={candidate.processing_status} />
+              )}
             </div>
             <div className="text-[13px] leading-[1.5] text-ink-muted truncate">
               {candidate.candidate_email || '—'}

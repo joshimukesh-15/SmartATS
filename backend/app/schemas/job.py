@@ -128,5 +128,6 @@ class JobResponse(JobBase):
     updated_at: datetime
     application_count: Optional[int] = 0
     applications_count: Optional[int] = 0
+    status: Optional[str] = "Active"
 
     model_config = ConfigDict(from_attributes=True)

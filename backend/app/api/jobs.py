@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.database.models import Job, Application
@@ -13,6 +13,8 @@ from app.schemas.job import (
 )
 from app.services.taxonomy import normalize_skill_name
 from app.services.job_quality import check_job_description_quality
+from app.services.scoring import rescore_job_applications
+from app.ml.vectorizer import vectorizer_cache
 from app.api.deps import get_current_recruiter
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
@@ -58,6 +60,7 @@ def create_job(
     job_dict = JobResponse.model_validate(job)
     job_dict.application_count = 0
     job_dict.applications_count = 0
+    job_dict.status = vectorizer_cache.get_job_status(job.job_id)
     return job_dict
 
 
@@ -71,6 +74,7 @@ def list_jobs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
         j_resp = JobResponse.model_validate(j)
         j_resp.application_count = count
         j_resp.applications_count = count
+        j_resp.status = vectorizer_cache.get_job_status(j.job_id)
         results.append(j_resp)
     return results
 
@@ -131,6 +135,7 @@ def update_job_weights(
     resp = JobResponse.model_validate(job)
     resp.application_count = count
     resp.applications_count = count
+    resp.status = vectorizer_cache.get_job_status(job.job_id)
     return resp
 
 
@@ -145,6 +150,7 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     resp = JobResponse.model_validate(job)
     resp.application_count = count
     resp.applications_count = count
+    resp.status = vectorizer_cache.get_job_status(job.job_id)
     return resp
 
 
@@ -153,12 +159,18 @@ def update_job(
     job_id: int,
     job_update: JobUpdate,
     db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
     current_recruiter: dict = Depends(get_current_recruiter)
 ):
     """Updates an existing job opening."""
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job opening not found.")
+
+    description_changed = (
+        job_update.description is not None
+        and job_update.description.strip() != job.description
+    )
 
     if job_update.title is not None:
         job.title = job_update.title.strip()
@@ -178,10 +190,26 @@ def update_job(
     db.commit()
     db.refresh(job)
 
+    if description_changed or job_update.description is not None:
+        # Invalidate cached vectorizer, increment version, set status to Re-scoring
+        vectorizer_cache.increment_version(job.job_id)
+        vectorizer_cache.set_job_status(job.job_id, "Re-scoring")
+        db.query(Application).filter(
+            Application.job_id == job.job_id,
+            Application.processing_status != "FAILED"
+        ).update({"processing_status": "Re-scoring"})
+        db.commit()
+
+        if background_tasks:
+            background_tasks.add_task(rescore_job_applications, job.job_id)
+        else:
+            rescore_job_applications(job.job_id)
+
     count = db.query(Application).filter(Application.job_id == job.job_id).count()
     resp = JobResponse.model_validate(job)
     resp.application_count = count
     resp.applications_count = count
+    resp.status = vectorizer_cache.get_job_status(job.job_id)
     return resp
 
 

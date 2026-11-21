@@ -331,7 +331,8 @@ def run_hybrid_matching(
     weight_keyword: float = None,
     weight_tfidf: float = None,
     weight_experience: float = None,
-    weight_education: float = None
+    weight_education: float = None,
+    vectorizer: Optional[Any] = None
 ) -> Dict[str, Any]:
     """
     Executes hybrid matching:
@@ -348,7 +349,7 @@ def run_hybrid_matching(
 
     # TF-IDF cosine similarity
     job_full_text = f"{job_description}\n" + " ".join(required_skills) + " " + " ".join(preferred_skills)
-    tfidf_score = compute_tfidf_similarity(resume_text, job_full_text)
+    tfidf_score = compute_tfidf_similarity(resume_text, job_full_text, vectorizer=vectorizer)
 
     # Experience & Education
     exp_years = extract_experience_years(resume_text)

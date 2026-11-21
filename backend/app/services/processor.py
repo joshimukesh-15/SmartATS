@@ -142,45 +142,52 @@ def process_resume_application(application_id: int):
 
         db.commit()
 
-        # 4. Perform hybrid matching
-        candidate_name = cand.name if cand and cand.name else "Candidate"
-        candidate_skills = cand.extracted_skills if cand else []
+        # 4. Perform per-job re-scoring across all applications
+        from app.services.scoring import rescore_job_applications
+        rescore_job_applications(job.job_id, db=db)
 
-        match_data = run_hybrid_matching(
-            resume_text=resume_text,
-            candidate_skills=candidate_skills,
-            job_description=job.description,
-            required_skills=job.required_skills,
-            preferred_skills=job.preferred_skills,
-            candidate_name=candidate_name
-        )
+        # Ensure current application is completed
+        db.refresh(app)
+        if app.processing_status != "COMPLETED":
+            candidate_name = cand.name if cand and cand.name else "Candidate"
+            candidate_skills = cand.extracted_skills if cand else []
 
-        # 5. Persist MatchResult
-        match = db.query(MatchResult).filter(MatchResult.application_id == app.application_id).first()
-        if not match:
-            match = MatchResult(
-                application_id=app.application_id,
-                keyword_score=match_data["keyword_score"],
-                tfidf_score=match_data["tfidf_score"],
-                final_score=match_data["final_score"],
-                matched_skills=match_data["matched_skills"],
-                missing_skills=match_data["missing_skills"],
-                preferred_matched_skills=match_data["preferred_matched_skills"],
-                score_explanation=match_data["score_explanation"]
+            match_data = run_hybrid_matching(
+                resume_text=resume_text,
+                candidate_skills=candidate_skills,
+                job_description=job.description,
+                required_skills=job.required_skills,
+                preferred_skills=job.preferred_skills,
+                candidate_name=candidate_name
             )
-            db.add(match)
-        else:
-            match.keyword_score = match_data["keyword_score"]
-            match.tfidf_score = match_data["tfidf_score"]
-            match.final_score = match_data["final_score"]
-            match.matched_skills = match_data["matched_skills"]
-            match.missing_skills = match_data["missing_skills"]
-            match.preferred_matched_skills = match_data["preferred_matched_skills"]
-            match.score_explanation = match_data["score_explanation"]
 
-        app.processing_status = "COMPLETED"
-        db.commit()
-        logger.info(f"Successfully processed application {application_id} with score {match_data['final_score']}%.")
+            # Persist MatchResult
+            match = db.query(MatchResult).filter(MatchResult.application_id == app.application_id).first()
+            if not match:
+                match = MatchResult(
+                    application_id=app.application_id,
+                    keyword_score=match_data["keyword_score"],
+                    tfidf_score=match_data["tfidf_score"],
+                    final_score=match_data["final_score"],
+                    matched_skills=match_data["matched_skills"],
+                    missing_skills=match_data["missing_skills"],
+                    preferred_matched_skills=match_data["preferred_matched_skills"],
+                    score_explanation=match_data["score_explanation"]
+                )
+                db.add(match)
+            else:
+                match.keyword_score = match_data["keyword_score"]
+                match.tfidf_score = match_data["tfidf_score"]
+                match.final_score = match_data["final_score"]
+                match.matched_skills = match_data["matched_skills"]
+                match.missing_skills = match_data["missing_skills"]
+                match.preferred_matched_skills = match_data["preferred_matched_skills"]
+                match.score_explanation = match_data["score_explanation"]
+
+            app.processing_status = "COMPLETED"
+            db.commit()
+
+        logger.info(f"Successfully processed application {application_id}.")
 
     except Exception as e:
         err_msg = f"Unhandled error during resume processing: {str(e)}"

@@ -19,3 +19,4 @@ export * from './ScoreValue';
 export * from './ThemeToggle';
 export * from './Avatar';
 export * from './Kbd';
+export * from './StatusBadge';
