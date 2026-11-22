@@ -1,8 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { RouteSkeleton } from './RouteSkeleton';
 import { ErrorBoundary } from './ErrorBoundary';
+import { RequireAuth } from './RequireAuth';
 
 const LandingPage = lazy(() => import('../features/landing/LandingPage'));
 const LoginPage = lazy(() => import('../features/auth/LoginPage'));
@@ -11,11 +12,38 @@ const OverviewPage = lazy(() => import('../features/overview/OverviewPage'));
 const JobsPage = lazy(() => import('../features/jobs/JobsPage'));
 const UploadPage = lazy(() => import('../features/upload/UploadPage'));
 const CandidateWorkspace = lazy(() => import('../features/candidates/CandidateWorkspace'));
-const LeaderboardPage = lazy(() => import('../features/leaderboard/LeaderboardPage'));
-const PipelinePage = lazy(() => import('../features/pipeline/PipelinePage'));
-const ComparePage = lazy(() => import('../features/compare/ComparePage'));
 const AnalyticsPage = lazy(() => import('../features/analytics/AnalyticsPage'));
-import { RequireAuth } from './RequireAuth';
+
+function LeaderboardRedirect() {
+  const { jobId } = useParams();
+  const [searchParams] = useSearchParams();
+  const next = new URLSearchParams(searchParams);
+  next.set('view', 'table');
+  if (jobId) {
+    next.set('job', jobId);
+    next.set('jobId', jobId);
+  }
+  return <Navigate to={`/studio/candidates?${next.toString()}`} replace />;
+}
+
+function ReviewRedirect() {
+  const [searchParams] = useSearchParams();
+  const next = new URLSearchParams(searchParams);
+  next.set('view', 'board');
+  return <Navigate to={`/studio/candidates?${next.toString()}`} replace />;
+}
+
+function CompareRedirect() {
+  const { jobId } = useParams();
+  const [searchParams] = useSearchParams();
+  const next = new URLSearchParams(searchParams);
+  if (jobId) {
+    next.set('job', jobId);
+    next.set('jobId', jobId);
+  }
+  next.set('compare', 'true');
+  return <Navigate to={`/studio/candidates?${next.toString()}`} replace />;
+}
 
 const wrap = (node) => (
   <ErrorBoundary>
@@ -58,23 +86,23 @@ export const router = createBrowserRouter([
       },
       {
         path: 'leaderboard',
-        element: wrap(<LeaderboardPage />),
+        element: <LeaderboardRedirect />,
       },
       {
         path: 'leaderboard/:jobId',
-        element: wrap(<LeaderboardPage />),
+        element: <LeaderboardRedirect />,
       },
       {
         path: 'review',
-        element: wrap(<PipelinePage />),
+        element: <ReviewRedirect />,
       },
       {
         path: 'compare',
-        element: wrap(<ComparePage />),
+        element: <CompareRedirect />,
       },
       {
         path: 'compare/:jobId',
-        element: wrap(<ComparePage />),
+        element: <CompareRedirect />,
       },
       {
         path: 'analytics',
@@ -83,10 +111,6 @@ export const router = createBrowserRouter([
       {
         path: 'analytics/:jobId',
         element: wrap(<AnalyticsPage />),
-      },
-      {
-        path: '*',
-        element: <Navigate to="/studio" replace />,
       },
     ],
   },

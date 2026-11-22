@@ -64,8 +64,17 @@ export default function HeroSection({ onEnterApp }) {
   }, [activeSkills]);
 
   return (
-    <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 bg-canvas border-b border-line overflow-visible">
-      <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12">
+    <section className="relative isolate overflow-visible border-b border-line bg-canvas pb-20 pt-32 sm:pb-28 sm:pt-40">
+      <img
+        src="/images/hero-backdrop.webp"
+        alt=""
+        width="2400"
+        height="1400"
+        fetchPriority="high"
+        className="absolute inset-0 -z-10 h-full w-full object-cover object-center dark:brightness-[0.65]"
+      />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-canvas via-canvas/90 to-canvas/45 dark:via-canvas/80 dark:to-canvas/60" />
+      <div className="relative z-10 mx-auto max-w-[1200px] px-6 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column (5 cols): Headline, Sentence, CTAs, No Account Note */}
           <div className="lg:col-span-5 space-y-6 relative">

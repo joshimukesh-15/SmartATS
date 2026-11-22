@@ -33,6 +33,24 @@ export default function ProofStrip() {
             </div>
           ))}
         </Panel>
+
+        <div className="mt-5 grid overflow-hidden rounded-[20px] border border-line bg-surface shadow-xs sm:grid-cols-[220px_minmax(0,1fr)]">
+          <img
+            src="/images/privacy-lock.webp"
+            alt="Matte graphite padlock resting on a cream stone block"
+            width="1400"
+            height="1400"
+            loading="lazy"
+            className="h-44 w-full object-cover dark:brightness-[0.82] sm:h-full sm:min-h-48"
+          />
+          <div className="flex flex-col justify-center p-6 text-left sm:p-8">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-champagne">Privacy by design</p>
+            <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.025em] text-ink">Your hiring data stays close.</h2>
+            <p className="mt-2 max-w-2xl text-[14px] leading-[1.7] text-ink-muted">
+              SmartATS runs locally, keeping resume review in your own workspace instead of sending candidate files to an external AI service.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

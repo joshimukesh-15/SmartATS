@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter, useLocation } from 'react-router-dom';
+import { renderWithQueryClient as render } from '../../test-utils/renderWithQueryClient';
 import LeaderboardPage from './LeaderboardPage';
 
 function CurrentLocation() {

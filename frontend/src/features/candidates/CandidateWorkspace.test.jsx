@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { renderWithQueryClient as render } from '../../test-utils/renderWithQueryClient';
 import CandidateWorkspace from './CandidateWorkspace';
 
 const applicants = [
@@ -73,5 +74,41 @@ describe('Candidate workspace', () => {
 
     expect(screen.queryByRole('button', { name: /Sarah Jenkins/ })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Alex Rivera' })).toBeInTheDocument();
+  });
+
+  it('switches between List, Table, and Board views using the segmented control', () => {
+    render(
+      <MemoryRouter initialEntries={['/studio/candidates']}>
+        <CandidateWorkspace />
+      </MemoryRouter>
+    );
+
+    // Initial view is List
+    expect(screen.getByText('Candidate list')).toBeInTheDocument();
+
+    // Switch to Table view
+    const tableBtn = screen.getByRole('tab', { name: /Table/i });
+    fireEvent.click(tableBtn);
+    expect(screen.getByRole('heading', { name: /Leaderboard/i })).toBeInTheDocument();
+
+    // Switch to Board view
+    const boardBtn = screen.getByRole('tab', { name: /Board/i });
+    fireEvent.click(boardBtn);
+    expect(screen.getByText('Pipeline Board')).toBeInTheDocument();
+  });
+
+  it('shows floating compare bar when two candidates are selected', () => {
+    render(
+      <MemoryRouter initialEntries={['/studio/candidates?view=list']}>
+        <CandidateWorkspace />
+      </MemoryRouter>
+    );
+
+    const compareCheckboxes = screen.getAllByRole('checkbox', { name: /Add .* to comparison/i });
+    fireEvent.click(compareCheckboxes[0]);
+    fireEvent.click(compareCheckboxes[1]);
+
+    expect(screen.getByText(/Compare \(2 candidates\)/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Compare now/i })).toBeInTheDocument();
   });
 });

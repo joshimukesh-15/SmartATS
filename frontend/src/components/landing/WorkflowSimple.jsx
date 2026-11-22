@@ -29,13 +29,16 @@ export default function WorkflowSimple() {
   return (
     <section id="workflow" className="py-[72px] lg:py-[128px] bg-canvas border-t border-line">
       <div className="max-w-[1200px] mx-auto px-6">
-        <div className="space-y-3 text-left mb-12 lg:mb-16">
-          <div className="text-[13px] font-medium text-ink-muted uppercase tracking-wider">
-            Simple 3-step workflow
+        <div className="mb-12 max-w-3xl space-y-3 text-left lg:mb-16">
+          <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-champagne">
+            A thoughtful review process
           </div>
-          <h2 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
+          <h2 className="text-[30px] font-semibold leading-[1.15] tracking-[-0.03em] text-ink sm:text-[34px]">
             How SmartATS fits into your hiring pipeline.
           </h2>
+          <p className="max-w-2xl text-[15px] leading-[1.7] text-ink-muted">
+            Move from a clear role brief to an organized shortlist, with evidence your team can return to at every step.
+          </p>
         </div>
 
         {/* 3 Numbered Steps with Connecting Rule */}

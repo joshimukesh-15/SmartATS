@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { renderWithQueryClient as render } from '../../test-utils/renderWithQueryClient';
 import LeaderboardPage from './LeaderboardPage';
-import CandidateRow from './CandidateRow';
+import TableView from '../candidates/views/TableView';
 
 vi.mock('../../hooks', () => ({
   useJobs: () => ({
@@ -71,9 +72,9 @@ describe('Leaderboard Re-scoring Status rendering', () => {
     expect(rescoreBadges.length).toBeGreaterThan(0);
   });
 
-  it('renders StatusBadge inside CandidateRow when candidate processing_status is PROCESSING', () => {
+  it('renders StatusBadge inside TableView row when candidate processing_status is PROCESSING', () => {
     const candidate = {
-      application_id: 99,
+      application_id: 'app-99',
       candidate_name: 'Taylor Test',
       processing_status: 'PROCESSING',
       review_stage: 'New',
@@ -82,33 +83,16 @@ describe('Leaderboard Re-scoring Status rendering', () => {
       matched_skills: ['Python'],
     };
 
-    const breakdown = {
-      skillsCoveredPercent: 80,
-      skillsCoveredPoints: 32,
-      textMatchPercent: 70,
-      textMatchPoints: 14,
-      experiencePoints: 15,
-      educationPoints: 10,
-      finalScore: 71,
-    };
-
     render(
-      <table>
-        <tbody>
-          <CandidateRow
-            candidate={candidate}
-            idx={0}
-            isSelected={false}
-            isCompared={false}
-            breakdown={breakdown}
-            onSelectCandidate={() => {}}
-            onToggleCompare={() => {}}
-            openStageMenuId={null}
-            setOpenStageMenuId={() => {}}
-            onQuickStageChange={() => {}}
-          />
-        </tbody>
-      </table>
+      <MemoryRouter>
+        <TableView
+          candidates={[candidate]}
+          rawCandidates={[candidate]}
+          activeJob={{ job_id: 1, title: 'Lead Python Engineer' }}
+          activeJobId="1"
+          selection={{ selectedForCompare: [] }}
+        />
+      </MemoryRouter>
     );
 
     expect(screen.getByText('Processing')).toBeInTheDocument();

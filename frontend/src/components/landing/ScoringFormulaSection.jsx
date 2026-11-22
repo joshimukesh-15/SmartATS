@@ -385,6 +385,19 @@ export default function ScoringFormulaSection() {
                 </div>
               </div>
             </ProductFrame>
+            <figure className="mt-4 overflow-hidden rounded-[20px] border border-line bg-surface shadow-xs">
+              <img
+                src="/images/recruiter-desk.webp"
+                alt="Hiring manager reviewing printed resumes at a tidy desk beside a window"
+                width="1800"
+                height="1200"
+                loading="lazy"
+                className="aspect-[3/2] w-full object-cover dark:brightness-[0.82]"
+              />
+              <figcaption className="border-t border-line px-4 py-3 text-[13px] text-ink-muted">
+                Candidate evidence, reviewed with care.
+              </figcaption>
+            </figure>
           </div>
         </div>
       </div>

@@ -5,9 +5,16 @@ export default function CTASection({ onEnterApp }) {
     <section className="py-[72px] lg:py-[128px] bg-canvas border-t border-line">
       <div className="max-w-[1200px] mx-auto px-6">
         {/* 24px Radius Solid Graphite Block (Dark surface in dark mode) */}
-        <div className="rounded-[24px] bg-zinc-900 dark:bg-surface text-zinc-100 border border-zinc-800 dark:border-line p-8 sm:p-12 lg:p-16 text-left relative overflow-hidden shadow-xl">
-          {/* Dot-grid background at 8% opacity */}
-          <div className="absolute inset-0 dot-grid-bg opacity-[0.08] pointer-events-none" />
+        <div className="relative isolate overflow-hidden rounded-[24px] border border-zinc-800 bg-zinc-900 p-8 text-left text-zinc-100 shadow-xl sm:p-12 lg:p-16 dark:border-line dark:bg-surface">
+          <img
+            src="/images/cta-backdrop.webp"
+            alt=""
+            width="2400"
+            height="900"
+            loading="lazy"
+            className="absolute inset-0 -z-10 h-full w-full object-cover opacity-40 dark:brightness-[0.8]"
+          />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-zinc-950/35 dark:bg-surface/45" />
 
           <div className="relative z-10 max-w-2xl space-y-6">
             {/* Hairline champagne rule above headline */}

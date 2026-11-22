@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useUpdateJobWeights } from '../../../hooks';
+import { useUpdateJobWeights } from '../../../hooks/useJobQuality';
 import { toast } from '../../../components/ui';
 import { DEFAULT_WEIGHTS } from '../constants';
 
