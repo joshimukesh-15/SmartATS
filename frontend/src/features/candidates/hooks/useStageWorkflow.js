@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useUpdateApplicationStage, useAddApplicationNote } from '../../../hooks';
 import { toast } from '../../../components/ui';
+import { normalizeStage } from '../constants';
 
 /**
  * Hook to manage candidate hiring pipeline stage transitions,
@@ -28,7 +29,6 @@ export function useStageWorkflow(jobIdOrOptions, maybeSelectedCandidate) {
   const [targetStage, setTargetStage] = useState('');
   const [transitionNote, setTransitionNote] = useState('');
 
-  const normalizeStage = (s) => (s === 'Interview' ? 'Interviewing' : s || 'New');
   const currentCandidateStage = normalizeStage(selectedCandidate?.review_stage);
 
   const handleStageButtonClick = useCallback(

@@ -38,45 +38,54 @@ export default function ScoringFormulaSection() {
     return () => observer.disconnect();
   }, []);
 
+  const demoCandidate = {
+    name: 'Sarah Jenkins',
+    skillsPct: 95.0,
+    textPct: 91.0,
+    expPct: 96.0,
+    eduPct: 94.7,
+    verified: ['Python', 'FastAPI', 'PostgreSQL'],
+  };
+
+  // Benchmark calculation for interactive formula display across 4 pillars computed from demo candidate
+  const demoSkillsPts = Number((demoCandidate.skillsPct * weights.skills).toFixed(1));
+  const demoTextPts = Number((demoCandidate.textPct * weights.text).toFixed(1));
+  const demoExpPts = Number((demoCandidate.expPct * weights.experience).toFixed(1));
+  const demoEduPts = Number((demoCandidate.eduPct * weights.education).toFixed(1));
+  const demoFinalScore = Number((demoSkillsPts + demoTextPts + demoExpPts + demoEduPts).toFixed(1));
+
   const sampleRows = [
     {
       rank: 1,
-      name: 'Sarah Jenkins',
-      skillsPts: 38.0,
-      textPts: 18.2,
-      expPts: 24.0,
-      eduPts: 14.2,
-      total: 94.4,
-      verified: ['Python', 'FastAPI', 'PostgreSQL'],
+      name: demoCandidate.name,
+      skillsPts: demoSkillsPts,
+      textPts: demoTextPts,
+      expPts: demoExpPts,
+      eduPts: demoEduPts,
+      total: demoFinalScore,
+      verified: demoCandidate.verified,
     },
     {
       rank: 2,
       name: 'Alex Rivera',
-      skillsPts: 34.0,
-      textPts: 17.0,
-      expPts: 21.5,
-      eduPts: 13.5,
+      skillsPts: Number((85.0 * weights.skills).toFixed(1)),
+      textPts: Number((85.0 * weights.text).toFixed(1)),
+      expPts: Number((86.0 * weights.experience).toFixed(1)),
+      eduPts: Number((90.0 * weights.education).toFixed(1)),
       total: 86.0,
       verified: ['Python', 'FastAPI'],
     },
     {
       rank: 3,
       name: 'Jordan Lee',
-      skillsPts: 32.0,
-      textPts: 16.0,
-      expPts: 20.0,
-      eduPts: 12.2,
+      skillsPts: Number((80.0 * weights.skills).toFixed(1)),
+      textPts: Number((80.0 * weights.text).toFixed(1)),
+      expPts: Number((80.0 * weights.experience).toFixed(1)),
+      eduPts: Number((81.3 * weights.education).toFixed(1)),
       total: 80.2,
       verified: ['Python', 'Docker'],
     },
   ];
-
-  // Benchmark calculation for interactive formula display across 4 pillars
-  const demoSkillsPts = 38.0; // max 40.0 (95% * 0.40)
-  const demoTextPts = 18.2;   // max 20.0 (91% * 0.20)
-  const demoExpPts = 24.0;    // max 25.0 (96% * 0.25)
-  const demoEduPts = 14.2;    // max 15.0 (94.7% * 0.15)
-  const demoFinalScore = demoSkillsPts + demoTextPts + demoExpPts + demoEduPts; // 94.4%
 
   return (
     <section

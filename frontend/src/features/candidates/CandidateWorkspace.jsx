@@ -4,7 +4,7 @@ import { Search, List, Table as TableIcon, Kanban, GitCompare, X } from 'lucide-
 import { Button, EmptyState, Input, Select, Skeleton } from '../../components/ui';
 import { useJobs, useRankings } from '../../hooks';
 import { computeBreakdown, sortCandidates } from '../../lib/score';
-import { STAGES, useCandidateSelection, useStageWorkflow } from './index';
+import { STAGES, normalizeStage, useCandidateSelection, useStageWorkflow } from './index';
 import ListView from './views/ListView';
 import TableView from './views/TableView';
 import BoardView from './views/BoardView';
@@ -49,7 +49,7 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
   const candidates = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     const list = rawCandidates.filter((cand) => {
-      const stage = cand.review_stage === 'Interview' ? 'Interviewing' : cand.review_stage || 'New';
+      const stage = normalizeStage(cand.review_stage);
       const stageMatches = stageFilter === 'All' || stage === stageFilter;
       const searchMatches = !q || [cand.candidate_name, cand.candidate_email, ...(cand.matched_skills || [])].some((val) => String(val || '').toLowerCase().includes(q));
       return stageMatches && searchMatches && (cand.final_score ?? 0) >= minScoreFilter;
@@ -67,8 +67,34 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
   ), [activeJob, rankingsData, rawCandidates]);
 
   const stageCounts = useMemo(() => Object.fromEntries(
-    FILTER_STAGES.map((s) => [s, s === 'All' ? rawCandidates.length : rawCandidates.filter((c) => (c.review_stage === 'Interview' ? 'Interviewing' : c.review_stage || 'New') === s).length])
+    FILTER_STAGES.map((s) => [s, s === 'All' ? rawCandidates.length : rawCandidates.filter((c) => normalizeStage(c.review_stage) === s).length])
   ), [rawCandidates]);
+
+  const viewModes = [
+    { id: 'list', label: 'List', icon: List },
+    { id: 'table', label: 'Table', icon: TableIcon },
+    { id: 'board', label: 'Board', icon: Kanban },
+  ];
+
+  const handleViewKeyDown = (e, currentIdx) => {
+    let nextIdx = null;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      nextIdx = (currentIdx + 1) % viewModes.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      nextIdx = (currentIdx - 1 + viewModes.length) % viewModes.length;
+    } else if (e.key === 'Home') {
+      nextIdx = 0;
+    } else if (e.key === 'End') {
+      nextIdx = viewModes.length - 1;
+    }
+    if (nextIdx !== null) {
+      e.preventDefault();
+      const nextId = viewModes[nextIdx].id;
+      updateParams({ view: nextId });
+      const tabElements = e.currentTarget.parentElement?.querySelectorAll('[role="tab"]');
+      tabElements?.[nextIdx]?.focus();
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-[1360px] px-4 py-7 pb-36 sm:pb-40 sm:px-8">
@@ -80,18 +106,16 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex rounded-[10px] border border-line bg-surface p-1 shadow-xs" role="tablist" aria-label="View mode">
-            {[
-              { id: 'list', label: 'List', icon: List },
-              { id: 'table', label: 'Table', icon: TableIcon },
-              { id: 'board', label: 'Board', icon: Kanban },
-            ].map(({ id, label, icon: Icon }) => (
+            {viewModes.map(({ id, label, icon: Icon }, idx) => (
               <button
                 key={id}
                 type="button"
                 role="tab"
                 aria-selected={activeView === id}
+                tabIndex={activeView === id ? 0 : -1}
+                onKeyDown={(e) => handleViewKeyDown(e, idx)}
                 onClick={() => updateParams({ view: id })}
-                className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-primary ${
                   activeView === id ? 'bg-primary text-on-primary shadow-xs' : 'text-ink-muted hover:text-ink hover:bg-surface-alt'
                 }`}
               >

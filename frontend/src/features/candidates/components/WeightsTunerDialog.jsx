@@ -1,5 +1,6 @@
 import { RotateCcw } from 'lucide-react';
-import { Dialog, Button } from '../../components/ui';
+import { Dialog, Button } from '../../../components/ui';
+import { DEFAULT_WEIGHTS } from '../../../lib/constants';
 
 export default function WeightsTunerDialog({
   isOpen,
@@ -30,17 +31,17 @@ export default function WeightsTunerDialog({
               type="button"
               onClick={() =>
                 setWeightValues({
-                  weight_skills: 0.40,
-                  weight_text: 0.20,
-                  weight_experience: 0.25,
-                  weight_education: 0.15,
+                  weight_skills: DEFAULT_WEIGHTS.skills,
+                  weight_text: DEFAULT_WEIGHTS.text,
+                  weight_experience: DEFAULT_WEIGHTS.experience,
+                  weight_education: DEFAULT_WEIGHTS.education,
                 })
               }
               className="p-2.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-left text-[13px] transition-colors cursor-pointer"
             >
               <div className="font-semibold text-ink">Balanced</div>
               <div className="text-ink-muted text-[13px] tabular-nums mt-0.5">
-                40 / 20 / 25 / 15
+                {Math.round(DEFAULT_WEIGHTS.skills * 100)} / {Math.round(DEFAULT_WEIGHTS.text * 100)} / {Math.round(DEFAULT_WEIGHTS.experience * 100)} / {Math.round(DEFAULT_WEIGHTS.education * 100)}
               </div>
             </button>
             <button

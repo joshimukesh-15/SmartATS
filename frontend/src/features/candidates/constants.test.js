@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { STAGES, STAGE_CONFIG, getStageConfig } from './constants';
+import { STAGES, STAGE_CONFIG, getStageConfig, normalizeStage, DEFAULT_WEIGHTS } from './constants';
 
 describe('Candidate constants', () => {
   it('exports all 6 canonical stages in correct pipeline sequence', () => {
@@ -11,6 +11,23 @@ describe('Candidate constants', () => {
       'Hired',
       'Rejected',
     ]);
+  });
+
+  it('provides normalizeStage that maps Interview to Interviewing and case-insensitively resolves stages', () => {
+    expect(normalizeStage('Interview')).toBe('Interviewing');
+    expect(normalizeStage('interviewing')).toBe('Interviewing');
+    expect(normalizeStage('hired')).toBe('Hired');
+    expect(normalizeStage('')).toBe('New');
+    expect(normalizeStage(null)).toBe('New');
+  });
+
+  it('exports centralized DEFAULT_WEIGHTS', () => {
+    expect(DEFAULT_WEIGHTS).toEqual({
+      skills: 0.40,
+      text: 0.20,
+      experience: 0.25,
+      education: 0.15,
+    });
   });
 
   it('provides complete STAGE_CONFIG mapping for each stage', () => {

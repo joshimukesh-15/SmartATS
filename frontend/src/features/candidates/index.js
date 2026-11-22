@@ -8,10 +8,13 @@ export * from './hooks/useCandidateKeyboard';
 export { default as useStageWorkflow } from './hooks/useStageWorkflow';
 export { default as useCandidateSelection } from './hooks/useCandidateSelection';
 export { default as useCandidateKeyboard } from './hooks/useCandidateKeyboard';
+export * from './hooks/useScoringWeights';
+export { default as useScoringWeights } from './hooks/useScoringWeights';
 
 // Components
 export { default as CandidateDetail } from './CandidateDetail';
 export { default as PipelineStageControl } from './PipelineStageControl';
+export { default as WeightsTunerDialog } from './components/WeightsTunerDialog';
 
 // Tabs
 export { default as EvaluationTab } from './tabs/EvaluationTab';

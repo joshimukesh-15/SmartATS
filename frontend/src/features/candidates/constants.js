@@ -1,4 +1,13 @@
+import { DEFAULT_WEIGHTS } from '../../lib/constants';
+
 export const STAGES = ['New', 'Reviewing', 'Interviewing', 'Offer', 'Hired', 'Rejected'];
+
+export function normalizeStage(stage) {
+  if (!stage) return 'New';
+  if (stage === 'Interview') return 'Interviewing';
+  const match = STAGES.find((s) => s.toLowerCase() === String(stage).toLowerCase());
+  return match || 'New';
+}
 
 export const STAGE_CONFIG = {
   New: {
@@ -63,9 +72,4 @@ export function getStageConfig(stage) {
   return STAGE_CONFIG[stage] || STAGE_CONFIG.New;
 }
 
-export const DEFAULT_WEIGHTS = {
-  weight_skills: 0.40,
-  weight_text: 0.20,
-  weight_experience: 0.25,
-  weight_education: 0.15,
-};
+export { DEFAULT_WEIGHTS };

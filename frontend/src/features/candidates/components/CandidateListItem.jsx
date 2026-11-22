@@ -1,6 +1,4 @@
-function displayStage(stage) {
-  return stage === 'Interview' ? 'Interviewing' : stage || 'New';
-}
+import { normalizeStage } from '../constants';
 
 function getInitials(name = '') {
   if (!name) return 'C';
@@ -18,7 +16,7 @@ export default function CandidateListItem({
   onSelect,
   onToggleCompare,
 }) {
-  const stage = displayStage(candidate.review_stage);
+  const stage = normalizeStage(candidate.review_stage);
   const name = candidate.candidate_name || 'Candidate';
   const initials = getInitials(name);
   const rank = candidate.rank || index + 1;
@@ -35,7 +33,7 @@ export default function CandidateListItem({
       <button
         type="button"
         onClick={onSelect}
-        aria-selected={selected}
+        aria-current={selected ? 'true' : undefined}
         className="flex w-full cursor-pointer items-center gap-3 p-3 text-left select-none"
       >
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line/60 bg-surface-alt text-[13px] font-semibold text-ink">

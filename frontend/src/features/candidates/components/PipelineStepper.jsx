@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
 import { Button } from '../../../components/ui';
+import { normalizeStage } from '../constants';
 
 const PIPELINE_STAGES = ['New', 'Reviewing', 'Interviewing', 'Offer', 'Hired'];
 
@@ -7,7 +8,7 @@ export default function PipelineStepper({
   currentStage,
   workflow,
 }) {
-  const normalizedStage = currentStage === 'Interview' ? 'Interviewing' : currentStage || 'New';
+  const normalizedStage = normalizeStage(currentStage);
   const currentStageIndex = PIPELINE_STAGES.indexOf(normalizedStage);
 
   return (

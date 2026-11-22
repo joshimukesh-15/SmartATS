@@ -118,8 +118,8 @@ export default function ProfilePanel({
         workflow={workflow}
       />
 
-      <div className="-mb-1 mt-1 flex gap-1 border-b border-line" role="tablist">
-        {['Evaluation', 'Skills', 'Activity'].map((tabName) => {
+      <div className="-mb-1 mt-1 flex gap-1 border-b border-line" role="tablist" aria-label="Dossier tabs">
+        {['Evaluation', 'Skills', 'Activity'].map((tabName, idx, arr) => {
           const isSel = tab.toLowerCase() === tabName.toLowerCase();
           return (
             <button
@@ -127,8 +127,27 @@ export default function ProfilePanel({
               type="button"
               role="tab"
               aria-selected={isSel}
+              tabIndex={isSel ? 0 : -1}
+              onKeyDown={(e) => {
+                let nextIdx = null;
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                  nextIdx = (idx + 1) % arr.length;
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                  nextIdx = (idx - 1 + arr.length) % arr.length;
+                } else if (e.key === 'Home') {
+                  nextIdx = 0;
+                } else if (e.key === 'End') {
+                  nextIdx = arr.length - 1;
+                }
+                if (nextIdx !== null) {
+                  e.preventDefault();
+                  setTab(arr[nextIdx].toLowerCase());
+                  const tabElements = e.currentTarget.parentElement?.querySelectorAll('[role="tab"]');
+                  tabElements?.[nextIdx]?.focus();
+                }
+              }}
               onClick={() => setTab(tabName.toLowerCase())}
-              className={`-mb-px cursor-pointer border-b-2 px-3.5 py-2.5 text-[14px] font-medium transition-colors ${
+              className={`-mb-px cursor-pointer border-b-2 px-3.5 py-2.5 text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-primary ${
                 isSel
                   ? 'border-primary text-ink'
                   : 'border-transparent text-ink-muted hover:text-ink'

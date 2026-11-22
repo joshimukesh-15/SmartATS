@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, SlidersHorizontal, Check } from 'lucide-react';
 import { ScoreBar, ScoreValue, Avatar, Tooltip, StatusBadge, Button } from '../../../components/ui';
 import { STAGES, STAGE_CONFIG } from '../constants';
 import { computeBreakdown } from '../../../lib/score';
-import { useScoringWeights } from '../../leaderboard/hooks/useScoringWeights';
-import WeightsTunerDialog from '../../leaderboard/WeightsTunerDialog';
+import { useScoringWeights } from '../hooks/useScoringWeights';
+import WeightsTunerDialog from '../components/WeightsTunerDialog';
 
 export default function TableView({
   candidates = [],
@@ -24,6 +24,7 @@ export default function TableView({
   const {
     isWeightsOpen,
     setIsWeightsOpen,
+    appliedWeights,
     weightValues,
     setWeightValues,
     normalizedWeights,
@@ -32,6 +33,17 @@ export default function TableView({
     handleResetWeights,
     isSavingWeights,
   } = useScoringWeights(activeJob, activeJobId);
+
+  // Memoize breakdown calculations keyed on candidates list and job weights
+  const candidateBreakdowns = useMemo(() => {
+    const jobWeights = appliedWeights ? { custom_weights: appliedWeights } : (activeJob || {});
+    const map = new Map();
+    candidates.forEach((cand) => {
+      const id = cand.application_id ?? cand.id ?? cand.candidate_id;
+      map.set(id, computeBreakdown(cand, jobWeights));
+    });
+    return map;
+  }, [candidates, appliedWeights, activeJob]);
 
   const handleSortClick = (key) => {
     if (!onSort) return;
@@ -103,7 +115,8 @@ export default function TableView({
           </thead>
           <tbody className="divide-y divide-line/60">
             {candidates.map((cand, idx) => {
-              const breakdown = computeBreakdown(cand, activeJob || {});
+              const id = cand.application_id ?? cand.id ?? cand.candidate_id;
+              const breakdown = candidateBreakdowns.get(id) || computeBreakdown(cand, activeJob || {});
               const isCompared = selection?.selectedForCompare?.includes(cand.application_id);
               const stageKey = cand.review_stage || 'New';
               const stageConf = STAGE_CONFIG[stageKey] || STAGE_CONFIG.New;

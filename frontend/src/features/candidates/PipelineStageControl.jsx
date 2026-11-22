@@ -1,6 +1,6 @@
 import { RotateCcw, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button, Input, Select } from '../../components/ui';
-import { STAGES } from './constants';
+import { STAGES, normalizeStage } from './constants';
 
 export default function PipelineStageControl({
   candidate,
@@ -72,7 +72,6 @@ export default function PipelineStageControl({
   const progressiveStages = STAGES.filter((s) => s !== 'Rejected');
 
   // Normalize match for alias (e.g. 'Interview' vs 'Interviewing')
-  const normalizeStage = (st) => (st === 'Interview' ? 'Interviewing' : st);
   const normalizedCurrent = normalizeStage(currentStage);
   const currentIdx = progressiveStages.indexOf(normalizedCurrent);
 

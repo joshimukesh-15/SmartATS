@@ -1,12 +1,19 @@
 import { useState, useMemo } from 'react';
 import { useUpdateJobWeights } from '../../../hooks/useJobQuality';
 import { toast } from '../../../components/ui';
-import { DEFAULT_WEIGHTS } from '../constants';
+import { DEFAULT_WEIGHTS } from '../../../lib/constants';
+
+const INITIAL_WEIGHT_VALUES = {
+  weight_skills: DEFAULT_WEIGHTS.skills,
+  weight_text: DEFAULT_WEIGHTS.text,
+  weight_experience: DEFAULT_WEIGHTS.experience,
+  weight_education: DEFAULT_WEIGHTS.education,
+};
 
 export function useScoringWeights(activeJob, activeJobId) {
   const [isWeightsOpen, setIsWeightsOpen] = useState(false);
   const [appliedWeights, setAppliedWeights] = useState(null);
-  const [weightValues, setWeightValues] = useState(DEFAULT_WEIGHTS);
+  const [weightValues, setWeightValues] = useState(INITIAL_WEIGHT_VALUES);
 
   const [prevJobId, setPrevJobId] = useState(activeJobId);
   if (prevJobId !== activeJobId) {
@@ -14,13 +21,13 @@ export function useScoringWeights(activeJob, activeJobId) {
     setAppliedWeights(null);
     if (activeJob?.custom_weights) {
       setWeightValues({
-        weight_skills: activeJob.custom_weights.weight_skills ?? 0.40,
-        weight_text: activeJob.custom_weights.weight_text ?? 0.20,
-        weight_experience: activeJob.custom_weights.weight_experience ?? 0.25,
-        weight_education: activeJob.custom_weights.weight_education ?? 0.15,
+        weight_skills: activeJob.custom_weights.weight_skills ?? DEFAULT_WEIGHTS.skills,
+        weight_text: activeJob.custom_weights.weight_text ?? DEFAULT_WEIGHTS.text,
+        weight_experience: activeJob.custom_weights.weight_experience ?? DEFAULT_WEIGHTS.experience,
+        weight_education: activeJob.custom_weights.weight_education ?? DEFAULT_WEIGHTS.education,
       });
     } else {
-      setWeightValues(DEFAULT_WEIGHTS);
+      setWeightValues(INITIAL_WEIGHT_VALUES);
     }
   }
 
@@ -65,7 +72,7 @@ export function useScoringWeights(activeJob, activeJobId) {
 
   const handleResetWeights = () => {
     setAppliedWeights(null);
-    setWeightValues(DEFAULT_WEIGHTS);
+    setWeightValues(INITIAL_WEIGHT_VALUES);
     setIsWeightsOpen(false);
     toast.info('Reverted to balanced scoring defaults');
   };

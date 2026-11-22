@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useJobs, useJobAnalytics } from '../../hooks';
 import { Select, Panel, StatStrip, useStatStripConfig, EmptyState, Skeleton, Button } from '../../components/ui';
+import { STAGES } from '../candidates/constants';
 
 export default function AnalyticsPage() {
   const { jobId: routeJobId } = useParams();
@@ -188,8 +189,8 @@ export default function AnalyticsPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  {['New', 'Reviewing', 'Interview', 'Hired', 'Rejected'].map((stage) => {
-                    const count = stageDist[stage] ?? 0;
+                  {STAGES.map((stage) => {
+                    const count = stageDist[stage] ?? stageDist[stage === 'Interviewing' ? 'Interview' : stage] ?? 0;
                     return (
                       <div
                         key={stage}

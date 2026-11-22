@@ -1,15 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Drawer, EmptyState, Button } from '../../../components/ui';
-import { STAGES } from '../constants';
+import { STAGES, normalizeStage } from '../constants';
 import CandidateDetail from '../CandidateDetail';
-
-function normalizeStage(stage) {
-  if (!stage) return 'New';
-  if (stage === 'Interview') return 'Interviewing';
-  const match = STAGES.find((s) => s.toLowerCase() === String(stage).toLowerCase());
-  return match || 'New';
-}
 
 const STAGE_DOT_MAP = {
   New: 'bg-ink-muted',
@@ -90,17 +83,18 @@ export default function BoardView({
           />
         </div>
       ) : (
-        /* 6 Stage Columns */
-        <div className="grid grid-cols-1 gap-4 overflow-x-auto pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 min-w-[900px]">
-          {STAGES.map((stage) => {
-            const stageList = columns[stage] || [];
-            const dotColor = STAGE_DOT_MAP[stage] || 'bg-ink-muted';
+        /* 6 Stage Columns: horizontal row of six 280px columns in overflow-x wrapper */
+        <div className="w-full overflow-x-auto pb-4">
+          <div className="flex gap-4">
+            {STAGES.map((stage) => {
+              const stageList = columns[stage] || [];
+              const dotColor = STAGE_DOT_MAP[stage] || 'bg-ink-muted';
 
-            return (
-              <div
-                key={stage}
-                className="flex min-w-[200px] flex-col rounded-[14px] border border-line bg-surface p-3 shadow-xs"
-              >
+              return (
+                <div
+                  key={stage}
+                  className="flex w-[280px] shrink-0 flex-col rounded-[14px] border border-line bg-surface p-3 shadow-xs"
+                >
                 {/* Column Header */}
                 <div className="mb-3 flex items-center justify-between border-b border-line/60 pb-2.5">
                   <div className="flex items-center gap-2">
@@ -189,6 +183,7 @@ export default function BoardView({
               </div>
             );
           })}
+          </div>
         </div>
       )}
 
