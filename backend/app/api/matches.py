@@ -17,7 +17,6 @@ from app.schemas.analytics import (
     TopCandidateItem
 )
 from app.schemas.application import ReviewStage, CANONICAL_STAGES
-from app.schemas.pagination import resolve_param
 from app.services.ranking import get_job_rankings
 from app.services.comparison import compare_candidates_service
 from app.services.scoring import attach_scoring_to_application
@@ -25,6 +24,8 @@ from app.utils.exporters import export_rankings_to_csv
 from app.api.deps import get_current_recruiter
 
 router = APIRouter(tags=["Screening, Matching & Analytics"])
+
+STAGE_CANONICAL_MAP = {stage.value.lower(): stage.value for stage in ReviewStage}
 
 
 @router.get("/jobs/{job_id}/rankings/", response_model=JobRankingsResponse)
@@ -43,13 +44,6 @@ def get_job_rankings_endpoint(
     formula justifications, matched/missing skill lists, equivalent skill credits,
     and dynamically adjustable scoring weights.
     """
-    limit = resolve_param(limit, 50)
-    offset = resolve_param(offset, 0)
-    w_skills = resolve_param(w_skills, None)
-    w_text = resolve_param(w_text, None)
-    w_exp = resolve_param(w_exp, None)
-    w_edu = resolve_param(w_edu, None)
-
     if limit < 1 or limit > 200:
         raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
 
@@ -283,14 +277,11 @@ def get_job_specific_analytics(job_id: int, db: Session = Depends(get_db)):
         for sk in m.matched_skills:
             matched_freq[sk] = matched_freq.get(sk, 0) + 1
 
-    job_stage_counts = {
-        "New": 0, "Reviewing": 0, "Interview": 0, "Offer": 0, "Hired": 0, "Rejected": 0
-    }
+    job_stage_counts = {s.value: 0 for s in ReviewStage}
     for a in apps:
-        st = a.review_stage or "New"
-        if st == "Interviewing":
-            st = "Interview"
-        job_stage_counts[st] = job_stage_counts.get(st, 0) + 1
+        st = a.review_stage or ReviewStage.NEW.value
+        canonical = STAGE_CANONICAL_MAP.get(st.lower(), ReviewStage.NEW.value)
+        job_stage_counts[canonical] = job_stage_counts.get(canonical, 0) + 1
 
     app_ids = [a.application_id for a in apps]
     duplicate_events = 0

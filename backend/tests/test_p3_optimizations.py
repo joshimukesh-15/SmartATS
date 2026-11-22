@@ -86,21 +86,21 @@ def test_batch_upload_rescoring_single_trigger(db_session):
 
 def test_rankings_constant_query_count(db_session):
     """
-    Requirement 2:
-    Load applications with selectinload for candidate, match_result, notes and status_history
-    so the query count does not grow with the number of candidates.
-    Asserts SQL query count for 50 seeded applications stays under 8 queries (O(1)).
+    Requirement 3:
+    Compute notes_count, last_note_at and last_stage_change_at with SQL aggregates
+    and stop selectin-loading notes and status_history.
+    Asserts SQL query count for 100 seeded applications stays constant (<= 5 queries).
     """
     job_in = JobCreate(
         title="Query Count Senior Engineer",
-        description="Testing selectinload constant query count across 50 applications.",
+        description="Testing selectinload constant query count across 100 applications.",
         required_skills=["Python", "PostgreSQL", "Docker"]
     )
     job = jobs.create_job(job_in, db_session)
     job_id = job.job_id
 
-    # Seed 50 applications with candidate, match_result, note, and status_history
-    for i in range(50):
+    # Seed 100 applications with candidate, match_result, note, and status_history
+    for i in range(100):
         cand = Candidate(name=f"Candidate {i}", email=f"cand{i}@example.com", extracted_skills=["Python", "Docker"])
         db_session.add(cand)
         db_session.flush()
@@ -153,15 +153,19 @@ def test_rankings_constant_query_count(db_session):
 
     event.listen(db_session.bind, "before_cursor_execute", before_cursor_execute)
     try:
-        rankings = get_job_rankings(db_session, job_id, limit=50, offset=0)
+        rankings = get_job_rankings(db_session, job_id, limit=100, offset=0)
     finally:
         event.remove(db_session.bind, "before_cursor_execute", before_cursor_execute)
 
-    assert len(rankings.items) == 50
-    assert rankings.total == 50
-    # Without selectinload, 50 applications would run 1 (job) + 1 (apps) + 50*4 (cand, match, note, history) = 202 queries.
-    # With selectinload, it executes 1 for Job, 1 for Applications, and 4 selectinload batch queries = ~6 queries.
-    assert len(queries) <= 8, f"Expected <= 8 queries with selectinload, got {len(queries)}"
+    assert len(rankings.items) == 100
+    assert rankings.total == 100
+    # SQL query count stays constant: 1 job + 1 apps (with subqueries) + 1 candidates + 1 match_results = 4 queries total
+    assert len(queries) <= 5, f"Expected <= 5 queries with SQL aggregates, got {len(queries)}"
+    for item in rankings.items:
+        assert item.notes_count == 1
+        assert item.last_note_at is not None
+        assert item.last_stage_change_at is not None
+        assert item.final_score > 0
 
 
 def test_slim_list_payload(db_session):
@@ -188,7 +192,7 @@ def test_slim_list_payload(db_session):
         resume_path="dummy/path/bob_slim.pdf",
         file_hash="bob_slim_hash_456",
         processing_status="COMPLETED",
-        review_stage="Interview"
+        review_stage="Interviewing"
     )
     db_session.add(app)
     db_session.commit()
@@ -199,13 +203,13 @@ def test_slim_list_payload(db_session):
         db_session.add(ApplicationNote(
             application_id=app.application_id,
             content=f"Note {idx} for Bob",
-            author="Interviewer Alice"
+            author="Recruiter Alice"
         ))
         db_session.add(ApplicationStatusHistory(
             application_id=app.application_id,
             from_stage="Reviewing" if idx == 2 else "New",
-            to_stage="Interview" if idx == 2 else "Reviewing",
-            changed_by="Interviewer Alice"
+            to_stage="Interviewing" if idx == 2 else "Reviewing",
+            changed_by="Recruiter Alice"
         ))
     db_session.commit()
 
@@ -229,7 +233,7 @@ def test_slim_list_payload(db_session):
     assert full_app.notes[0].content in ["Note 1 for Bob", "Note 2 for Bob"]
 
 
-def test_pagination_endpoints(db_session):
+def test_pagination_endpoints(db_session, client):
     """
     Requirement 4:
     Pagination: jobs, candidates, applications and rankings accept limit
@@ -243,39 +247,49 @@ def test_pagination_endpoints(db_session):
     job = jobs.create_job(job_in, db_session)
 
     # 1. Jobs pagination
-    res_jobs = jobs.list_jobs(limit=5, offset=0, db=db_session)
-    assert hasattr(res_jobs, "items")
-    assert hasattr(res_jobs, "total")
-    assert res_jobs.limit == 5
-    assert res_jobs.offset == 0
+    res_jobs = client.get("/api/v1/jobs/?limit=5&offset=0")
+    assert res_jobs.status_code == 200
+    data_jobs = res_jobs.json()
+    assert "items" in data_jobs
+    assert "total" in data_jobs
+    assert data_jobs["limit"] == 5
+    assert data_jobs["offset"] == 0
 
     # 2. Candidates pagination
-    res_cand = candidates.list_candidates(limit=5, offset=0, db=db_session)
-    assert hasattr(res_cand, "items")
-    assert hasattr(res_cand, "total")
-    assert res_cand.limit == 5
-    assert res_cand.offset == 0
+    res_cand = client.get("/api/v1/candidates/?limit=5&offset=0")
+    assert res_cand.status_code == 200
+    data_cand = res_cand.json()
+    assert "items" in data_cand
+    assert "total" in data_cand
+    assert data_cand["limit"] == 5
+    assert data_cand["offset"] == 0
 
     # 3. Applications pagination (root endpoint)
-    res_apps = resumes.list_applications(limit=5, offset=0, db=db_session)
-    assert hasattr(res_apps, "items")
-    assert hasattr(res_apps, "total")
-    assert res_apps.limit == 5
-    assert res_apps.offset == 0
+    res_apps = client.get("/api/v1/applications/?limit=5&offset=0")
+    assert res_apps.status_code == 200
+    data_apps = res_apps.json()
+    assert "items" in data_apps
+    assert "total" in data_apps
+    assert data_apps["limit"] == 5
+    assert data_apps["offset"] == 0
 
     # 4. Job Applications pagination
-    res_job_apps = resumes.get_job_applications(job_id=job.job_id, limit=5, offset=0, db=db_session)
-    assert hasattr(res_job_apps, "items")
-    assert hasattr(res_job_apps, "total")
-    assert res_job_apps.limit == 5
-    assert res_job_apps.offset == 0
+    res_job_apps = client.get(f"/api/v1/jobs/{job.job_id}/applications/?limit=5&offset=0")
+    assert res_job_apps.status_code == 200
+    data_job_apps = res_job_apps.json()
+    assert "items" in data_job_apps
+    assert "total" in data_job_apps
+    assert data_job_apps["limit"] == 5
+    assert data_job_apps["offset"] == 0
 
     # 5. Rankings pagination
-    res_rank = matches.get_job_rankings_endpoint(job_id=job.job_id, limit=5, offset=0, db=db_session)
-    assert hasattr(res_rank, "items")
-    assert hasattr(res_rank, "total")
-    assert res_rank.limit == 5
-    assert res_rank.offset == 0
+    res_rank = client.get(f"/api/v1/jobs/{job.job_id}/rankings/?limit=5&offset=0")
+    assert res_rank.status_code == 200
+    data_rank = res_rank.json()
+    assert "items" in data_rank
+    assert "total" in data_rank
+    assert data_rank["limit"] == 5
+    assert data_rank["offset"] == 0
 
     # 6. Verify FastAPI Query parameter bounds: limit max is 200, min is 1
     for endpoint in [jobs.list_jobs, candidates.list_candidates, resumes.list_applications, resumes.get_job_applications, matches.get_job_rankings_endpoint]:
@@ -293,16 +307,18 @@ def test_pagination_endpoints(db_session):
         assert offset_param.default.default == 0
 
     # 7. Reject limit above 200 with 422
-    for endpoint in [jobs.list_jobs, candidates.list_candidates, resumes.list_applications, matches.get_job_rankings_endpoint]:
-        with pytest.raises(HTTPException) as exc_info:
-            if endpoint == matches.get_job_rankings_endpoint:
-                endpoint(job_id=job.job_id, limit=201, db=db_session)
-            else:
-                endpoint(limit=201, db=db_session)
-        assert exc_info.value.status_code == 422
+    for url in [
+        "/api/v1/jobs/?limit=201",
+        "/api/v1/candidates/?limit=201",
+        "/api/v1/applications/?limit=201",
+        f"/api/v1/jobs/{job.job_id}/applications/?limit=201",
+        f"/api/v1/jobs/{job.job_id}/rankings/?limit=201",
+    ]:
+        res = client.get(url)
+        assert res.status_code == 422
 
 
-def test_scoring_weights_validation_and_normalization(db_session):
+def test_scoring_weights_validation_and_normalization(db_session, client):
     """
     Requirement 5:
     Weight params (w_skills, w_text, w_exp, w_edu): use Query(None, ge=0, le=1);
@@ -328,44 +344,22 @@ def test_scoring_weights_validation_and_normalization(db_session):
         assert param.default.default is None
 
     # 2. Negative weight rejects with 422
-    with pytest.raises(HTTPException) as exc_info:
-        matches.get_job_rankings_endpoint(
-            job_id=job_id,
-            db=db_session,
-            w_skills=-0.2
-        )
-    assert exc_info.value.status_code == 422
+    res_neg = client.get(f"/api/v1/jobs/{job_id}/rankings/?w_skills=-0.2")
+    assert res_neg.status_code == 422
 
     # 3. Above 1 weight rejects with 422
-    with pytest.raises(HTTPException) as exc_info:
-        matches.get_job_rankings_endpoint(
-            job_id=job_id,
-            db=db_session,
-            w_skills=1.5
-        )
-    assert exc_info.value.status_code == 422
+    res_above = client.get(f"/api/v1/jobs/{job_id}/rankings/?w_skills=1.5")
+    assert res_above.status_code == 422
 
     # 4. All zero weights reject with 422
-    with pytest.raises(HTTPException) as exc_info:
-        matches.get_job_rankings_endpoint(
-            job_id=job_id,
-            db=db_session,
-            w_skills=0.0,
-            w_text=0.0,
-            w_exp=0.0,
-            w_edu=0.0
-        )
-    assert exc_info.value.status_code == 422
-    assert "Weights cannot all be zero" in exc_info.value.detail
+    res_zero = client.get(f"/api/v1/jobs/{job_id}/rankings/?w_skills=0.0&w_text=0.0&w_exp=0.0&w_edu=0.0")
+    assert res_zero.status_code == 422
+    assert "Weights cannot all be zero" in res_zero.json()["detail"]
 
     # 5. Partial inputs accepted and normalized to sum to 1.0
-    res_partial = matches.get_job_rankings_endpoint(
-        job_id=job_id,
-        db=db_session,
-        w_skills=0.6,
-        w_text=0.2
-    )
-    applied = res_partial.weights_applied
+    res_partial = client.get(f"/api/v1/jobs/{job_id}/rankings/?w_skills=0.6&w_text=0.2")
+    assert res_partial.status_code == 200
+    applied = res_partial.json()["weights_applied"]
     assert applied is not None
     assert abs(sum(applied.values()) - 1.0) < 1e-2
     assert applied["weight_skills"] > applied["weight_text"]

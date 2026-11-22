@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.database.models import Candidate, Application
 from app.schemas.candidate import CandidateResponse, CandidateListItemResponse, PaginatedCandidatesResponse
-from app.schemas.pagination import resolve_param
 
 router = APIRouter(prefix="/candidates", tags=["Candidates"])
 
@@ -14,19 +13,9 @@ router = APIRouter(prefix="/candidates", tags=["Candidates"])
 def list_candidates(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db),
-    skip: Optional[int] = Query(None, ge=0)
+    db: Session = Depends(get_db)
 ):
     """Retrieves paginated registered candidate profiles without leaking full raw resume text."""
-    limit = resolve_param(limit, 50)
-    offset = resolve_param(offset, 0)
-    skip = resolve_param(skip, None)
-
-    if limit == 0 and offset > 0:
-        limit, offset = offset, limit
-    if skip is not None:
-        offset = skip
-
     if limit < 1 or limit > 200:
         raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
 

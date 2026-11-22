@@ -39,8 +39,6 @@ def get_job_rankings(
         .options(
             selectinload(Application.candidate),
             selectinload(Application.match_result),
-            selectinload(Application.notes),
-            selectinload(Application.status_history)
         )
         .filter(Application.job_id == job_id)
         .all()
@@ -58,12 +56,9 @@ def get_job_rankings(
             processed_count += 1
             evaluated_app_ids.add(app.application_id)
 
-        notes = app.notes or []
-        notes_count = len(notes)
-        last_note_at = max((n.created_at for n in notes if n.created_at), default=None) if notes else None
-
-        history = app.status_history or []
-        last_stage_change_at = max((h.created_at for h in history if h.created_at), default=None) if history else None
+        notes_count = app.notes_count or 0
+        last_note_at = app.last_note_at
+        last_stage_change_at = app.last_stage_change_at
 
         ranking_items.append(
             RankingItem(

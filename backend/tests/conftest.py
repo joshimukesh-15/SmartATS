@@ -12,8 +12,40 @@ os.environ["ENVIRONMENT"] = "development"
 os.environ["UPLOAD_DIR"] = _test_upload_dir
 os.makedirs(_test_upload_dir, exist_ok=True)
 
-from app.core.config import DEFAULT_DB_PATH  # noqa: E402
-from app.database.database import Base, engine, SessionLocal  # noqa: E402
+from app.core.config import DEFAULT_DB_PATH, settings  # noqa: E402
+from app.database.database import Base, engine, SessionLocal, get_db  # noqa: E402
+from app.core.security import create_access_token  # noqa: E402
+from app.main import app  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+
+
+@pytest.fixture(scope="session")
+def auth_headers():
+    """Generates an authenticated recruiter Bearer token."""
+    token = create_access_token({"sub": settings.DEFAULT_RECRUITER_EMAIL, "role": "recruiter"})
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="function")
+def client(auth_headers, request):
+    """Provides a TestClient pre-configured with valid recruiter auth headers and shared db session."""
+    db = None
+    if "db_session" in request.fixturenames:
+        db = request.getfixturevalue("db_session")
+    elif "isolated_db_session" in request.fixturenames:
+        db = request.getfixturevalue("isolated_db_session")
+
+    if db is not None:
+        def override_get_db():
+            yield db
+        app.dependency_overrides[get_db] = override_get_db
+
+    with TestClient(app) as c:
+        c.headers.update(auth_headers)
+        yield c
+
+    if db is not None:
+        app.dependency_overrides.pop(get_db, None)
 
 
 @pytest.fixture(scope="session", autouse=True)

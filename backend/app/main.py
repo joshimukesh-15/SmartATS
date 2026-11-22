@@ -1,11 +1,15 @@
 import os
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
+from app.core.middleware import RequestBodySizeLimitMiddleware, SecurityHeadersMiddleware
+from app.core.rate_limit import limiter
 from app.database.database import engine, Base, SessionLocal
 from app.database import models  # ensure models are registered
 from app.database.models import Application, ApplicationStatusHistory
@@ -64,6 +68,19 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.state.limiter = limiter
+
+
+def login_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Too many login attempts. Wait one minute before trying again."},
+        headers={"Retry-After": "60"},
+    )
+
+
+app.add_exception_handler(RateLimitExceeded, login_rate_limit_exceeded_handler)
+
 # CORS middleware configuration: modern browsers reject allow_credentials=True with allow_origins=["*"]
 cors_origins = [o for o in settings.ALLOWED_ORIGINS if o != "*"]
 allow_creds = True
@@ -78,6 +95,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Request-size checks run inside the security-header middleware so even 413 responses
+# receive the same browser security policy as normal API responses.
+app.add_middleware(RequestBodySizeLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Mount API Routers (auth remains public, while domain endpoints require recruiter authentication)
 app.include_router(auth.router, prefix=settings.API_V1_STR)

@@ -359,7 +359,7 @@ def test_csv_formula_injection_defense():
 # Item 13: Protect Sensitive Information (No Internal Paths or Raw Text Dumps)
 # ---------------------------------------------------------------------------
 
-def test_sensitive_info_protection(db_session):
+def test_sensitive_info_protection(db_session, client):
     cand = Candidate(
         name="Private Candidate",
         email="private@example.com",
@@ -370,29 +370,32 @@ def test_sensitive_info_protection(db_session):
     db_session.refresh(cand)
 
     # General list endpoint must NOT dump raw_text
-    candidates_list = candidates.list_candidates(0, 100, db_session)
-    cand_in_list = next((c for c in candidates_list if c.candidate_id == cand.candidate_id), None)
+    res = client.get("/api/v1/candidates/?limit=100&offset=0")
+    assert res.status_code == 200
+    candidates_list = res.json()["items"]
+    cand_in_list = next((c for c in candidates_list if c["candidate_id"] == cand.candidate_id), None)
     assert cand_in_list is not None
-    assert not hasattr(cand_in_list, "raw_text") or cand_in_list.raw_text is None
+    assert "raw_text" not in cand_in_list or cand_in_list["raw_text"] is None
 
 
 # ---------------------------------------------------------------------------
 # Item 14: Recruiter Authentication & Route Authorization
 # ---------------------------------------------------------------------------
 
-def test_recruiter_auth_and_route_authorization():
+def test_recruiter_auth_and_route_authorization(client):
     # 1. Login with invalid credentials -> 401
-    with pytest.raises(HTTPException) as exc_bad:
-        auth.recruiter_login(LoginRequest(email="wrong@recruiter.com", password="wrong"))
-    assert exc_bad.value.status_code == 401
+    res_bad = client.post("/api/v1/auth/login", json={"email": "wrong@recruiter.com", "password": "wrong"})
+    assert res_bad.status_code == 401
 
     # 2. Login with valid default credentials -> 200 + Bearer token
-    login_resp = auth.recruiter_login(LoginRequest(
-        email=settings.DEFAULT_RECRUITER_EMAIL,
-        password=settings.DEFAULT_RECRUITER_PASSWORD
-    ))
-    assert login_resp.access_token is not None
-    assert login_resp.user.email == settings.DEFAULT_RECRUITER_EMAIL
+    res_login = client.post("/api/v1/auth/login", json={
+        "email": settings.DEFAULT_RECRUITER_EMAIL,
+        "password": settings.DEFAULT_RECRUITER_PASSWORD
+    })
+    assert res_login.status_code == 200
+    login_data = res_login.json()
+    assert "access_token" in login_data
+    assert login_data["user"]["email"] == settings.DEFAULT_RECRUITER_EMAIL
 
     # 3. Protected route dependency without token -> 401 Unauthorized
     with pytest.raises(HTTPException) as exc_unauth:
@@ -400,7 +403,7 @@ def test_recruiter_auth_and_route_authorization():
     assert exc_unauth.value.status_code == 401
 
     # 4. Protected route dependency with valid token -> Succeeds
-    auth_creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials=login_resp.access_token)
+    auth_creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials=login_data["access_token"])
     current_recruiter = get_current_recruiter(auth=auth_creds)
     assert current_recruiter["email"] == settings.DEFAULT_RECRUITER_EMAIL
     assert current_recruiter["role"] == "recruiter"

@@ -16,7 +16,6 @@ from app.schemas.job import (
     JobWeightsUpdateRequest,
     PaginatedJobsResponse
 )
-from app.schemas.pagination import resolve_param
 from app.services.taxonomy import normalize_skill_name
 from app.services.job_quality import check_job_description_quality
 from app.services.scoring import rescore_job_applications
@@ -75,20 +74,9 @@ def create_job(
 def list_jobs(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db),
-    skip: Optional[int] = Query(None, ge=0)
+    db: Session = Depends(get_db)
 ):
     """Retrieves paginated job openings with application counts."""
-    limit = resolve_param(limit, 50)
-    offset = resolve_param(offset, 0)
-    skip = resolve_param(skip, None)
-
-    # Support positional calls list_jobs(0, 100, db) in tests
-    if limit == 0 and offset > 0:
-        limit, offset = offset, limit
-    if skip is not None:
-        offset = skip
-
     if limit < 1 or limit > 200:
         raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
 

@@ -62,7 +62,7 @@ def test_applicant_review_workflow(db_session):
     updated = resumes.update_application_stage(app_id, update_req, db_session)
     assert updated.review_stage == "Reviewing"
 
-    # 5. Transition stage to "Interviewing" (alias for Interview)
+    # 5. Transition stage to "Interviewing"
     update_req_2 = ApplicationStatusUpdateRequest(
         stage="Interviewing",
         note="Scheduled technical round",

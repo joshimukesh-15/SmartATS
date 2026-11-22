@@ -358,7 +358,7 @@ def test_analytics_empty_job_returns_true_zero_states(db_session):
 # 4. Test Application Count Consistency
 # ---------------------------------------------------------------------------
 
-def test_application_count_consistency(db_session):
+def test_application_count_consistency(db_session, client):
     job_in = JobCreate(
         title="Application Count Consistency Job",
         description="Testing application count field consistency across endpoints.",
@@ -390,7 +390,9 @@ def test_application_count_consistency(db_session):
     assert count_after == 2
 
     # Verify list_jobs reflects 2
-    all_jobs = jobs.list_jobs(0, 100, db_session)
-    matching_job = next(j for j in all_jobs if j.job_id == job_id)
-    list_count = getattr(matching_job, "application_count", getattr(matching_job, "applications_count", None))
+    res = client.get("/api/v1/jobs/?limit=100&offset=0")
+    assert res.status_code == 200
+    all_jobs = res.json()["items"]
+    matching_job = next(j for j in all_jobs if j["job_id"] == job_id)
+    list_count = matching_job.get("application_count", matching_job.get("applications_count"))
     assert list_count == 2

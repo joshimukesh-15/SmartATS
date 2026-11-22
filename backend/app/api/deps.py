@@ -16,7 +16,7 @@ def get_current_recruiter(
     """
     if auth and auth.credentials:
         payload = decode_access_token(auth.credentials)
-        if payload and payload.get("sub"):
+        if payload and payload.get("sub") and payload.get("token_type", "access") == "access":
             return {
                 "email": payload["sub"],
                 "role": payload.get("role", "recruiter"),

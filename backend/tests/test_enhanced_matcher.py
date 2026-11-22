@@ -85,7 +85,7 @@ def test_run_hybrid_matching_with_equivalent_skills_and_weights():
     assert "Multi-Factor Fit Formula" in res["score_explanation"]
 
 
-def test_job_weights_persistence_endpoint(db_session):
+def test_job_weights_persistence_endpoint(db_session, client):
     job_in = JobCreate(
         title="Weights Tuning Engineer",
         description="Testing weight customization",
@@ -108,15 +108,10 @@ def test_job_weights_persistence_endpoint(db_session):
     assert updated_job.custom_weights["weight_experience"] == 0.2
 
     # Query rankings with custom weights
-    rankings = matches.get_job_rankings_endpoint(
-        job_id=job_id,
-        w_skills=0.70,
-        w_text=0.10,
-        w_exp=0.10,
-        w_edu=0.10,
-        db=db_session
-    )
-    assert rankings.weights_applied["weight_skills"] == 0.7
+    res = client.get(f"/api/v1/jobs/{job_id}/rankings/?w_skills=0.70&w_text=0.10&w_exp=0.10&w_edu=0.10")
+    assert res.status_code == 200
+    rankings = res.json()
+    assert rankings["weights_applied"]["weight_skills"] == 0.7
 
 
 def test_experience_range_matching_2_to_4_years():

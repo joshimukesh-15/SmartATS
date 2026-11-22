@@ -20,7 +20,6 @@ from app.schemas.application import (
     CANONICAL_STAGES,
     ReviewStage
 )
-from app.schemas.pagination import resolve_param
 from app.core.config import settings
 from app.core.security import sanitize_filename, validate_file_extension
 from app.services.duplicate import calculate_bytes_hash, check_duplicate_application
@@ -32,15 +31,7 @@ from app.api.deps import get_current_recruiter
 router = APIRouter(tags=["Resumes & Applications"])
 
 ALLOWED_REVIEW_STAGES = CANONICAL_STAGES
-STAGE_CANONICAL_MAP = {
-    "new": ReviewStage.NEW.value,
-    "reviewing": ReviewStage.REVIEWING.value,
-    "interview": ReviewStage.INTERVIEWING.value,
-    "interviewing": ReviewStage.INTERVIEWING.value,
-    "offer": ReviewStage.OFFER.value,
-    "hired": ReviewStage.HIRED.value,
-    "rejected": ReviewStage.REJECTED.value,
-}
+STAGE_CANONICAL_MAP = {s.value.lower(): s.value for s in ReviewStage}
 
 
 @router.post("/jobs/{job_id}/upload-resumes/", response_model=List[ApplicationUploadResult], status_code=status.HTTP_202_ACCEPTED)
@@ -56,6 +47,12 @@ async def upload_resumes(
     Performs duplicate detection via SHA-256 binary hash.
     Enqueues non-duplicate resumes for background parsing and hybrid matching.
     """
+    if len(files) > settings.MAX_FILES_PER_REQUEST:
+        raise HTTPException(
+            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+            detail=f"Too many files in one request. Maximum is {settings.MAX_FILES_PER_REQUEST} files.",
+        )
+
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job opening not found.")
@@ -272,9 +269,6 @@ def get_job_applications(
     db: Session = Depends(get_db)
 ):
     """Retrieves paginated applications submitted for a job with candidates, match results, and review stage."""
-    limit = resolve_param(limit, 50)
-    offset = resolve_param(offset, 0)
-
     if limit < 1 or limit > 200:
         raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
 
@@ -304,12 +298,8 @@ def list_applications(
     db: Session = Depends(get_db)
 ):
     """Retrieves paginated applications across all jobs or filtered by job_id."""
-    limit = resolve_param(limit, 50)
-    offset = resolve_param(offset, 0)
-
     if limit < 1 or limit > 200:
         raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
-    job_id = resolve_param(job_id, None)
 
     query = db.query(Application)
     if job_id is not None:
@@ -348,7 +338,7 @@ def update_application_stage(
 ):
     """
     Updates the candidate's review stage in the hiring pipeline.
-    Valid stages: New, Reviewing, Interview, Interviewing, Offer, Rejected, Hired.
+    Valid stages: New, Reviewing, Interviewing, Offer, Hired, Rejected.
     Records an entry in the timestamped status history and optionally appends a recruiter note.
     """
     app = db.query(Application).filter(Application.application_id == application_id).first()

@@ -185,85 +185,90 @@ def test_scoring_config_endpoint_and_route():
     )
 
 
-def test_rankings_weights_and_components(db_session, seeded_job_and_apps):
+def test_rankings_weights_and_components(db_session, seeded_job_and_apps, client):
     """
     Asserts that for rankings endpoint:
     a) weights and components are returned with all 4 keys (skills, text, experience, education).
     b) final_score equals the sum of points of the 4 components.
     """
     job_id = seeded_job_and_apps["job"].job_id
-    rankings_resp = matches.get_job_rankings_endpoint(job_id=job_id, db=db_session)
+    res = client.get(f"/api/v1/jobs/{job_id}/rankings/")
+    assert res.status_code == 200
+    rankings_resp = res.json()
 
-    assert rankings_resp.total_candidates >= 2
-    assert len(rankings_resp.rankings) >= 2
+    assert rankings_resp["total"] >= 2
+    assert len(rankings_resp["items"]) >= 2
 
-    for item in rankings_resp.rankings:
+    for item in rankings_resp["items"]:
         # Check weights
-        assert item.weights is not None
+        assert item["weights"] is not None
         for pillar in ("skills", "text", "experience", "education"):
-            assert pillar in item.weights, f"Missing {pillar} in ranking item weights"
-            assert isinstance(item.weights[pillar], float)
+            assert pillar in item["weights"], f"Missing {pillar} in ranking item weights"
+            assert isinstance(item["weights"][pillar], float)
 
         # Check components
-        assert item.components is not None
+        assert item["components"] is not None
         for pillar in ("skills", "text", "experience", "education"):
-            assert pillar in item.components, f"Missing {pillar} in ranking item components"
-            comp = item.components[pillar]
+            assert pillar in item["components"], f"Missing {pillar} in ranking item components"
+            comp = item["components"][pillar]
             assert "percentage" in comp
             assert "weight" in comp
             assert "points" in comp
             assert comp["points"] == round(comp["percentage"] * comp["weight"], 2)
 
         # Check final_score = sum of points
-        expected_final = round(sum(c["points"] for c in item.components.values()), 2)
-        assert item.final_score == expected_final, (
-            f"final_score {item.final_score} != sum of points {expected_final}"
+        expected_final = round(sum(c["points"] for c in item["components"].values()), 2)
+        assert item["final_score"] == expected_final, (
+            f"final_score {item['final_score']} != sum of points {expected_final}"
         )
 
 
-def test_applications_weights_and_components(db_session, seeded_job_and_apps):
+def test_applications_weights_and_components(db_session, seeded_job_and_apps, client):
     """
     Asserts that for application endpoints (get_job_applications, get_application, update_application_stage):
     a) weights and components are returned with all 4 keys (skills, text, experience, education).
     b) final_score equals the sum of points of the 4 components.
     """
     job_id = seeded_job_and_apps["job"].job_id
-    apps_list = resumes.get_job_applications(job_id=job_id, db=db_session)
+    res = client.get(f"/api/v1/jobs/{job_id}/applications/")
+    assert res.status_code == 200
+    apps_list = res.json()["items"]
 
     assert len(apps_list) >= 2
 
     for app_item in apps_list:
         # Check weights
-        assert app_item.weights is not None
+        assert app_item["weights"] is not None
         for pillar in ("skills", "text", "experience", "education"):
-            assert pillar in app_item.weights, f"Missing {pillar} in application weights"
-            assert isinstance(app_item.weights[pillar], float)
+            assert pillar in app_item["weights"], f"Missing {pillar} in application weights"
+            assert isinstance(app_item["weights"][pillar], float)
 
         # Check components
-        assert app_item.components is not None
+        assert app_item["components"] is not None
         for pillar in ("skills", "text", "experience", "education"):
-            assert pillar in app_item.components, f"Missing {pillar} in application components"
-            comp = app_item.components[pillar]
+            assert pillar in app_item["components"], f"Missing {pillar} in application components"
+            comp = app_item["components"][pillar]
             assert "percentage" in comp
             assert "weight" in comp
             assert "points" in comp
             assert comp["points"] == round(comp["percentage"] * comp["weight"], 2)
 
         # Check final_score = sum of points
-        expected_final = round(sum(c["points"] for c in app_item.components.values()), 2)
-        assert app_item.final_score == expected_final, (
-            f"final_score {app_item.final_score} != sum of points {expected_final}"
+        expected_final = round(sum(c["points"] for c in app_item["components"].values()), 2)
+        assert app_item["final_score"] == expected_final, (
+            f"final_score {app_item['final_score']} != sum of points {expected_final}"
         )
 
-        if app_item.match_result:
-            assert app_item.match_result.weights is not None
+        if app_item.get("match_result"):
+            mr = app_item["match_result"]
+            assert mr["weights"] is not None
             for pillar in ("skills", "text", "experience", "education"):
-                assert pillar in app_item.match_result.weights
-            assert app_item.match_result.components is not None
+                assert pillar in mr["weights"]
+            assert mr["components"] is not None
             for pillar in ("skills", "text", "experience", "education"):
-                assert pillar in app_item.match_result.components
-            mr_expected_final = round(sum(c["points"] for c in app_item.match_result.components.values()), 2)
-            assert app_item.match_result.final_score == mr_expected_final
+                assert pillar in mr["components"]
+            mr_expected_final = round(sum(c["points"] for c in mr["components"].values()), 2)
+            assert mr["final_score"] == mr_expected_final
 
     # Test single application endpoint
     app1_id = seeded_job_and_apps["app1"].application_id
@@ -276,7 +281,7 @@ def test_applications_weights_and_components(db_session, seeded_job_and_apps):
     # Test stage update endpoint
     updated_app = resumes.update_application_stage(
         application_id=app1_id,
-        payload=ApplicationStatusUpdateRequest(stage="Interview", note="Solid scoring fit"),
+        payload=ApplicationStatusUpdateRequest(stage="Interviewing", note="Solid scoring fit"),
         db=db_session,
         current_recruiter={"email": "lead.recruiter@example.com"}
     )

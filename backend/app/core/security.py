@@ -3,6 +3,7 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Tuple, Optional, Dict, Any
+from uuid import uuid4
 import bcrypt
 from jose import jwt, JWTError
 from app.core.config import settings
@@ -61,8 +62,22 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "token_type": "access"})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+def create_refresh_token(
+    data: Dict[str, Any], expires_delta: Optional[timedelta] = None
+) -> Tuple[str, str, datetime]:
+    """Create a refresh JWT and return it with its revocation id and expiry."""
+    to_encode = data.copy()
+    jti = str(uuid4())
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    )
+    to_encode.update({"exp": expire, "jti": jti, "token_type": "refresh"})
+    token = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return token, jti, expire
 
 
 def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
@@ -72,3 +87,16 @@ def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
         return payload
     except JWTError:
         return None
+
+
+def decode_refresh_token(token: str) -> Optional[Dict[str, Any]]:
+    """Decode only refresh tokens with a subject and revocation id."""
+    payload = decode_access_token(token)
+    if (
+        not payload
+        or payload.get("token_type") != "refresh"
+        or not payload.get("sub")
+        or not payload.get("jti")
+    ):
+        return None
+    return payload

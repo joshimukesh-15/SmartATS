@@ -8,9 +8,11 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     JSON,
-    UniqueConstraint
+    UniqueConstraint,
+    select,
+    func
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, column_property
 from app.database.database import Base
 
 
@@ -77,7 +79,7 @@ class Application(Base):
     resume_path = Column(String(500), nullable=False)
     file_hash = Column(String(64), nullable=False, index=True)
     processing_status = Column(String(50), default="PENDING", nullable=False)  # PENDING, PROCESSING, COMPLETED, FAILED, DUPLICATE
-    review_stage = Column(String(50), default="New", nullable=False, index=True)  # New, Reviewing, Interview, Rejected, Hired
+    review_stage = Column(String(50), default="New", nullable=False, index=True)  # New, Reviewing, Interviewing, Offer, Hired, Rejected
     applied_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     # Relationships
@@ -137,6 +139,37 @@ class ApplicationNote(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     application = relationship("Application", back_populates="notes")
+
+
+Application.notes_count = column_property(
+    select(func.coalesce(func.count(ApplicationNote.note_id), 0))
+    .where(ApplicationNote.application_id == Application.application_id)
+    .correlate_except(ApplicationNote)
+    .scalar_subquery()
+)
+Application.last_note_at = column_property(
+    select(func.max(ApplicationNote.created_at))
+    .where(ApplicationNote.application_id == Application.application_id)
+    .correlate_except(ApplicationNote)
+    .scalar_subquery()
+)
+Application.last_stage_change_at = column_property(
+    select(func.max(ApplicationStatusHistory.created_at))
+    .where(ApplicationStatusHistory.application_id == Application.application_id)
+    .correlate_except(ApplicationStatusHistory)
+    .scalar_subquery()
+)
+
+
+class RefreshToken(Base):
+    """Persistent refresh-session record used to enforce logout and rotation."""
+    __tablename__ = "refresh_tokens"
+
+    jti = Column(String(36), primary_key=True)
+    subject = Column(String(255), nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    revoked_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class MatchResult(Base):

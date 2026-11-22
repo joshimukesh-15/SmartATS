@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "smartats-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ENVIRONMENT: str = "development"
 
     # Default Recruiter Credentials (for development / initial bootstrap)
@@ -27,6 +28,9 @@ class Settings(BaseSettings):
     # File Uploads
     UPLOAD_DIR: str = DEFAULT_UPLOAD_DIR
     MAX_UPLOAD_SIZE_MB: int = 15
+    MAX_FILES_PER_REQUEST: int = 25
+    MAX_REQUEST_SIZE_MB: int = 100
+    RATE_LIMIT_STORAGE_URI: str = "memory://"
 
     # Matching Weights
     WEIGHT_KEYWORD: float = 0.60
@@ -42,6 +46,8 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
     ]
 
     model_config = SettingsConfigDict(

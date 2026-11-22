@@ -16,7 +16,7 @@ def db_session():
     db.close()
 
 
-def test_job_crud_endpoints(db_session):
+def test_job_crud_endpoints(db_session, client):
     # 1. Create Job
     job_in = JobCreate(
         title="Full Stack Cloud Engineer",
@@ -42,8 +42,10 @@ def test_job_crud_endpoints(db_session):
     assert updated_job.title == "Lead Cloud Engineer"
 
     # 4. List Jobs
-    all_jobs = jobs.list_jobs(0, 100, db_session)
-    assert any(j.job_id == job_id for j in all_jobs)
+    response = client.get("/api/v1/jobs/?limit=100&offset=0")
+    assert response.status_code == 200
+    items = response.json()["items"]
+    assert any(j["job_id"] == job_id for j in items)
 
 
 def test_delete_job_removes_resume_and_orphaned_candidate(db_session, tmp_path, monkeypatch):
@@ -134,7 +136,7 @@ def test_delete_job_keeps_candidate_shared_with_another_opening(db_session, tmp_
     assert db_session.query(Candidate).filter(Candidate.candidate_id == candidate_id).first() is not None
 
 
-def test_resume_processing_and_ranking_flow(db_session):
+def test_resume_processing_and_ranking_flow(db_session, client):
     # Create test job
     job_in = JobCreate(
         title="Python Backend Lead",
@@ -183,9 +185,11 @@ def test_resume_processing_and_ranking_flow(db_session):
     assert "Python" in app.match_result.matched_skills
 
     # Test rankings endpoint
-    rankings_resp = matches.get_job_rankings_endpoint(job.job_id, db_session)
-    assert rankings_resp.total_candidates >= 1
-    assert rankings_resp.rankings[0].candidate_name == "Sarah Jenkins"
+    res = client.get(f"/api/v1/jobs/{job.job_id}/rankings/?limit=50&offset=0")
+    assert res.status_code == 200
+    rankings_resp = res.json()
+    assert rankings_resp["total"] >= 1
+    assert rankings_resp["items"][0]["candidate_name"] == "Sarah Jenkins"
 
     # Test single application match endpoint
     match_resp = matches.get_application_match_endpoint(app.application_id, db_session)
