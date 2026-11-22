@@ -4,7 +4,7 @@ import zipfile
 import inspect
 from pathlib import Path
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status, Query
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.database.database import get_db
@@ -15,12 +15,14 @@ from app.schemas.application import (
     ApplicationStatusUpdateRequest,
     ApplicationNoteCreateRequest,
     ApplicationNoteResponse,
-    ApplicationWorkflowDetailsResponse
+    ApplicationWorkflowDetailsResponse,
+    PaginatedApplicationsResponse
 )
+from app.schemas.pagination import resolve_param
 from app.core.config import settings
 from app.core.security import sanitize_filename, validate_file_extension
 from app.services.duplicate import calculate_bytes_hash, check_duplicate_application
-from app.services.processor import process_resume_application
+from app.services.processor import process_resume_application, process_resume_batch
 from app.services.scoring import attach_scoring_to_application, resolve_scoring_weights, rescore_job_applications
 from app.ml.vectorizer import vectorizer_cache
 from app.api.deps import get_current_recruiter
@@ -57,6 +59,7 @@ async def upload_resumes(
         raise HTTPException(status_code=404, detail="Job opening not found.")
 
     results: List[ApplicationUploadResult] = []
+    enqueued_app_ids: List[int] = []
 
     for file in files:
         filename = file.filename or "unknown_file"
@@ -232,8 +235,8 @@ async def upload_resumes(
             ).update({"processing_status": "Re-scoring"})
             db.commit()
 
-            # 7. Queue background processing
-            background_tasks.add_task(process_resume_application, application.application_id)
+            # 7. Collect for background batch processing
+            enqueued_app_ids.append(application.application_id)
 
             results.append(ApplicationUploadResult(
                 filename=filename,
@@ -253,21 +256,72 @@ async def upload_resumes(
                 message=f"Upload failed: {str(e)}"
             ))
 
+    if enqueued_app_ids:
+        background_tasks.add_task(process_resume_batch, enqueued_app_ids, job.job_id)
+
     return results
 
 
-@router.get("/jobs/{job_id}/applications/", response_model=List[ApplicationResponse])
-def get_job_applications(job_id: int, db: Session = Depends(get_db)):
-    """Retrieves all applications submitted for a job with candidates, match results, and review stage."""
+@router.get("/jobs/{job_id}/applications/", response_model=PaginatedApplicationsResponse)
+def get_job_applications(
+    job_id: int,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db)
+):
+    """Retrieves paginated applications submitted for a job with candidates, match results, and review stage."""
+    limit = resolve_param(limit, 50)
+    offset = resolve_param(offset, 0)
+
+    if limit < 1 or limit > 200:
+        raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
+
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job opening not found.")
 
-    applications = db.query(Application).filter(Application.job_id == job_id).order_by(Application.applied_at.desc()).all()
+    query = db.query(Application).filter(Application.job_id == job_id)
+    total = query.count()
+    applications = query.order_by(Application.applied_at.desc()).offset(offset).limit(limit).all()
     applied_weights = resolve_scoring_weights(job_custom_weights=job.custom_weights)
     for app in applications:
         attach_scoring_to_application(app, job=job, applied_weights=applied_weights)
-    return applications
+    return PaginatedApplicationsResponse(
+        items=[ApplicationResponse.model_validate(app) for app in applications],
+        total=total,
+        limit=limit,
+        offset=offset
+    )
+
+
+@router.get("/applications/", response_model=PaginatedApplicationsResponse)
+def list_applications(
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    job_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db)
+):
+    """Retrieves paginated applications across all jobs or filtered by job_id."""
+    limit = resolve_param(limit, 50)
+    offset = resolve_param(offset, 0)
+
+    if limit < 1 or limit > 200:
+        raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
+    job_id = resolve_param(job_id, None)
+
+    query = db.query(Application)
+    if job_id is not None:
+        query = query.filter(Application.job_id == job_id)
+    total = query.count()
+    applications = query.order_by(Application.applied_at.desc()).offset(offset).limit(limit).all()
+    for app in applications:
+        attach_scoring_to_application(app, db=db)
+    return PaginatedApplicationsResponse(
+        items=[ApplicationResponse.model_validate(app) for app in applications],
+        total=total,
+        limit=limit,
+        offset=offset
+    )
 
 
 @router.get("/applications/{application_id}", response_model=ApplicationResponse)

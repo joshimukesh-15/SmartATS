@@ -13,8 +13,10 @@ from app.schemas.job import (
     JobResponse,
     JobQualityCheckRequest,
     JobQualityCheckResponse,
-    JobWeightsUpdateRequest
+    JobWeightsUpdateRequest,
+    PaginatedJobsResponse
 )
+from app.schemas.pagination import resolve_param
 from app.services.taxonomy import normalize_skill_name
 from app.services.job_quality import check_job_description_quality
 from app.services.scoring import rescore_job_applications
@@ -69,14 +71,29 @@ def create_job(
     return job_dict
 
 
-@router.get("/", response_model=List[JobResponse])
+@router.get("/", response_model=PaginatedJobsResponse)
 def list_jobs(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=500),
-    db: Session = Depends(get_db)
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    skip: Optional[int] = Query(None, ge=0)
 ):
-    """Retrieves all job openings with application counts."""
-    jobs = db.query(Job).order_by(Job.created_at.desc()).offset(skip).limit(limit).all()
+    """Retrieves paginated job openings with application counts."""
+    limit = resolve_param(limit, 50)
+    offset = resolve_param(offset, 0)
+    skip = resolve_param(skip, None)
+
+    # Support positional calls list_jobs(0, 100, db) in tests
+    if limit == 0 and offset > 0:
+        limit, offset = offset, limit
+    if skip is not None:
+        offset = skip
+
+    if limit < 1 or limit > 200:
+        raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
+
+    total = db.query(func.count(Job.job_id)).scalar() or 0
+    jobs = db.query(Job).order_by(Job.created_at.desc()).offset(offset).limit(limit).all()
     job_ids = [job.job_id for job in jobs]
     count_by_job = {}
     if job_ids:
@@ -94,7 +111,12 @@ def list_jobs(
         j_resp.applications_count = count
         j_resp.status = vectorizer_cache.get_job_status(j.job_id)
         results.append(j_resp)
-    return results
+    return PaginatedJobsResponse(
+        items=results,
+        total=total,
+        limit=limit,
+        offset=offset
+    )
 
 
 @router.get("/{job_id}/quality-check/", response_model=JobQualityCheckResponse)

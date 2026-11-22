@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 from app.schemas.candidate import CandidateResponse, CandidateListItemResponse
+from app.schemas.pagination import PaginatedResponse
 
 
 class MatchResultResponse(BaseModel):
@@ -99,3 +100,6 @@ class ApplicationUploadResult(BaseModel):
     candidate_name: Optional[str] = None
     file_hash: Optional[str] = None
     message: str
+
+
+PaginatedApplicationsResponse = PaginatedResponse[ApplicationResponse]

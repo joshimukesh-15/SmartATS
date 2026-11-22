@@ -11,7 +11,7 @@ from app.services.duplicate import find_candidate_by_email
 logger = logging.getLogger(__name__)
 
 
-def process_resume_application(application_id: int):
+def process_resume_application(application_id: int, rescore: bool = True):
     """
     Synchronous/Background worker function that parses a resume, extracts entities,
     computes hybrid matching against the job description, and updates the database.
@@ -142,50 +142,48 @@ def process_resume_application(application_id: int):
 
         db.commit()
 
-        # 4. Perform per-job re-scoring across all applications
-        from app.services.scoring import rescore_job_applications
-        rescore_job_applications(job.job_id, db=db)
+        # 4. Generate hybrid match result for current application
+        candidate_name = cand.name if cand and cand.name else "Candidate"
+        candidate_skills = cand.extracted_skills if cand else []
 
-        # Ensure current application is completed
-        db.refresh(app)
-        if app.processing_status != "COMPLETED":
-            candidate_name = cand.name if cand and cand.name else "Candidate"
-            candidate_skills = cand.extracted_skills if cand else []
+        match_data = run_hybrid_matching(
+            resume_text=resume_text,
+            candidate_skills=candidate_skills,
+            job_description=job.description,
+            required_skills=job.required_skills,
+            preferred_skills=job.preferred_skills,
+            candidate_name=candidate_name
+        )
 
-            match_data = run_hybrid_matching(
-                resume_text=resume_text,
-                candidate_skills=candidate_skills,
-                job_description=job.description,
-                required_skills=job.required_skills,
-                preferred_skills=job.preferred_skills,
-                candidate_name=candidate_name
+        match = db.query(MatchResult).filter(MatchResult.application_id == app.application_id).first()
+        if not match:
+            match = MatchResult(
+                application_id=app.application_id,
+                keyword_score=match_data["keyword_score"],
+                tfidf_score=match_data["tfidf_score"],
+                final_score=match_data["final_score"],
+                matched_skills=match_data["matched_skills"],
+                missing_skills=match_data["missing_skills"],
+                preferred_matched_skills=match_data["preferred_matched_skills"],
+                score_explanation=match_data["score_explanation"]
             )
+            db.add(match)
+        else:
+            match.keyword_score = match_data["keyword_score"]
+            match.tfidf_score = match_data["tfidf_score"]
+            match.final_score = match_data["final_score"]
+            match.matched_skills = match_data["matched_skills"]
+            match.missing_skills = match_data["missing_skills"]
+            match.preferred_matched_skills = match_data["preferred_matched_skills"]
+            match.score_explanation = match_data["score_explanation"]
 
-            # Persist MatchResult
-            match = db.query(MatchResult).filter(MatchResult.application_id == app.application_id).first()
-            if not match:
-                match = MatchResult(
-                    application_id=app.application_id,
-                    keyword_score=match_data["keyword_score"],
-                    tfidf_score=match_data["tfidf_score"],
-                    final_score=match_data["final_score"],
-                    matched_skills=match_data["matched_skills"],
-                    missing_skills=match_data["missing_skills"],
-                    preferred_matched_skills=match_data["preferred_matched_skills"],
-                    score_explanation=match_data["score_explanation"]
-                )
-                db.add(match)
-            else:
-                match.keyword_score = match_data["keyword_score"]
-                match.tfidf_score = match_data["tfidf_score"]
-                match.final_score = match_data["final_score"]
-                match.matched_skills = match_data["matched_skills"]
-                match.missing_skills = match_data["missing_skills"]
-                match.preferred_matched_skills = match_data["preferred_matched_skills"]
-                match.score_explanation = match_data["score_explanation"]
+        app.processing_status = "COMPLETED"
+        db.commit()
 
-            app.processing_status = "COMPLETED"
-            db.commit()
+        # 5. Perform per-job re-scoring across all applications if requested
+        if rescore:
+            from app.services.scoring import rescore_job_applications
+            rescore_job_applications(job.job_id, db=db)
 
         logger.info(f"Successfully processed application {application_id}.")
 
@@ -210,3 +208,15 @@ def process_resume_application(application_id: int):
             logger.error("Failed to record failure status and audit for application %s: %s", application_id, inner_e)
     finally:
         db.close()
+
+
+def process_resume_batch(application_ids: list[int], job_id: int):
+    """
+    Processes a batch of resume applications, then executes a single
+    per-job rescoring pass across all applications at the end.
+    """
+    for app_id in application_ids:
+        process_resume_application(app_id, rescore=False)
+
+    from app.services.scoring import rescore_job_applications
+    rescore_job_applications(job_id)

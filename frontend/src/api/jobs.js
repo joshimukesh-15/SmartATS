@@ -1,7 +1,17 @@
 import { apiClient, getApiBaseUrl } from './client';
 
 export async function fetchJobs() {
-  return apiClient('jobs/');
+  const res = await apiClient('jobs/');
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.items)) {
+    const items = [...res.items];
+    items.total = res.total;
+    items.limit = res.limit;
+    items.offset = res.offset;
+    items.items = res.items;
+    return items;
+  }
+  return res;
 }
 
 export async function createJob(jobData) {

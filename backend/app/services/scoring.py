@@ -66,9 +66,13 @@ def resolve_scoring_weights(
     raw_x = sanitize(w_exp, sanitize(job_weights.get("weight_experience"), def_x))
     raw_e = sanitize(w_edu, sanitize(job_weights.get("weight_education"), def_e))
 
+    provided = [w for w in (w_skills, w_text, w_exp, w_edu) if w is not None]
+    if len(provided) == 4 and sum(provided) <= 0.0:
+        raise ValueError("Weights cannot all be zero.")
+
     total = raw_s + raw_t + raw_x + raw_e
     if total <= 0.0:
-        return DEFAULT_SCORING_WEIGHTS.copy()
+        raise ValueError("Weights cannot all be zero.")
 
     return {
         "weight_skills": round(raw_s / total, 3),

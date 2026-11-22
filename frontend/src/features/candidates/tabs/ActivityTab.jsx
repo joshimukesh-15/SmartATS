@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MessageSquare, History } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
+import { useApplicationHistory } from '../../../hooks/useApplicationMutations';
 
 export default function ActivityTab({
   candidate,
@@ -33,8 +34,11 @@ export default function ActivityTab({
   const showAudit = propShowAuditTrail !== undefined ? propShowAuditTrail : internalShowAudit;
   const setShowAudit = propSetShowAuditTrail !== undefined ? propSetShowAuditTrail : setInternalShowAudit;
 
-  const notesList = propNotesList || candidate?.notes || [];
-  const statusHistoryList = propStatusHistoryList || candidate?.status_history || [];
+  const appId = candidate?.application_id;
+  const { data: historyData } = useApplicationHistory(appId);
+
+  const notesList = propNotesList || (candidate?.notes && candidate.notes.length > 0 ? candidate.notes : historyData?.notes) || [];
+  const statusHistoryList = propStatusHistoryList || (candidate?.status_history && candidate.status_history.length > 0 ? candidate.status_history : historyData?.status_history) || [];
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -34,8 +34,9 @@ class RankingItem(BaseModel):
     components: Dict[str, Dict[str, float]] = Field(default_factory=dict)
     score_breakdown: Optional[Dict[str, float]] = None
     score_explanation: Optional[str] = None
-    notes: List[ApplicationNoteResponse] = Field(default_factory=list)
-    status_history: List[ApplicationStatusHistoryResponse] = Field(default_factory=list)
+    notes_count: int = 0
+    last_note_at: Optional[datetime] = None
+    last_stage_change_at: Optional[datetime] = None
     applied_at: datetime
 
     @model_validator(mode="after")
@@ -48,10 +49,35 @@ class RankingItem(BaseModel):
 class JobRankingsResponse(BaseModel):
     job_id: int
     job_title: str
-    total_candidates: int
-    processed_count: int
+    total_candidates: int = 0
+    processed_count: int = 0
     weights_applied: Optional[Dict[str, float]] = None
-    rankings: List[RankingItem]
+    rankings: List[RankingItem] = Field(default_factory=list)
+    items: List[RankingItem] = Field(default_factory=list)
+    total: int = 0
+    limit: int = 50
+    offset: int = 0
+
+    def __iter__(self):
+        return iter(self.items)
+
+    def __getitem__(self, index):
+        return self.items[index]
+
+    def __len__(self):
+        return len(self.items)
+
+    @model_validator(mode="after")
+    def sync_items_and_rankings(self):
+        if not self.items and self.rankings:
+            self.items = self.rankings
+        elif not self.rankings and self.items:
+            self.rankings = self.items
+        if not self.total and self.total_candidates:
+            self.total = self.total_candidates
+        elif not self.total_candidates and self.total:
+            self.total_candidates = self.total
+        return self
 
 
 class CandidateCompareRequest(BaseModel):

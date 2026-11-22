@@ -2,6 +2,7 @@ import math
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
+from app.schemas.pagination import PaginatedResponse
 
 
 DEFAULT_SCORING_WEIGHTS: Dict[str, float] = {
@@ -131,3 +132,6 @@ class JobResponse(JobBase):
     status: Optional[str] = "Active"
 
     model_config = ConfigDict(from_attributes=True)
+
+
+PaginatedJobsResponse = PaginatedResponse[JobResponse]

@@ -108,10 +108,15 @@ def test_applicant_review_workflow(db_session):
         resumes.update_application_stage(app_id, invalid_req, db_session)
     assert exc_info.value.status_code == 400
 
-    # 9. Verify get_job_rankings returns review_stage and notes
+    # 9. Verify get_job_rankings returns review_stage and slim audit metadata (notes_count, etc.)
     rankings = get_job_rankings(db_session, job.job_id)
     assert len(rankings.rankings) == 1
     rank_item = rankings.rankings[0]
     assert rank_item.review_stage == "Offer"
-    assert len(rank_item.notes) >= 2
-    assert len(rank_item.status_history) >= 2
+    assert rank_item.notes_count >= 2
+    assert rank_item.last_note_at is not None
+    assert rank_item.last_stage_change_at is not None
+    # Verify full notes and status_history are fetched via GET /applications/{id}
+    full_app = resumes.get_application(app_id, db_session)
+    assert len(full_app.notes) >= 2
+    assert len(full_app.status_history) >= 2

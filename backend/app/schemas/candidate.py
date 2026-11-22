@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from app.schemas.pagination import PaginatedResponse
 
 
 class CandidateBase(BaseModel):
@@ -25,3 +26,6 @@ class CandidateListItemResponse(CandidateBase):
 
 class CandidateResponse(CandidateListItemResponse):
     raw_text: Optional[str] = None
+
+
+PaginatedCandidatesResponse = PaginatedResponse[CandidateListItemResponse]

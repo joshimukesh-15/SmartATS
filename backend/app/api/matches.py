@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.database.database import get_db
@@ -10,6 +10,7 @@ from app.schemas.match import (
     CandidateCompareRequest,
     CandidateCompareResponse
 )
+from app.schemas.pagination import resolve_param
 from app.services.ranking import get_job_rankings
 from app.services.comparison import compare_candidates_service
 from app.services.scoring import attach_scoring_to_application
@@ -23,16 +24,36 @@ router = APIRouter(tags=["Screening, Matching & Analytics"])
 def get_job_rankings_endpoint(
     job_id: int,
     db: Session = Depends(get_db),
-    w_skills: Optional[float] = None,
-    w_text: Optional[float] = None,
-    w_exp: Optional[float] = None,
-    w_edu: Optional[float] = None
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    w_skills: Optional[float] = Query(None, ge=0.0, le=1.0),
+    w_text: Optional[float] = Query(None, ge=0.0, le=1.0),
+    w_exp: Optional[float] = Query(None, ge=0.0, le=1.0),
+    w_edu: Optional[float] = Query(None, ge=0.0, le=1.0)
 ):
     """
     Returns ranked candidates for a specific job with complete score breakdowns,
     formula justifications, matched/missing skill lists, equivalent skill credits,
     and dynamically adjustable scoring weights.
     """
+    limit = resolve_param(limit, 50)
+    offset = resolve_param(offset, 0)
+    w_skills = resolve_param(w_skills, None)
+    w_text = resolve_param(w_text, None)
+    w_exp = resolve_param(w_exp, None)
+    w_edu = resolve_param(w_edu, None)
+
+    if limit < 1 or limit > 200:
+        raise HTTPException(status_code=422, detail="limit must be between 1 and 200")
+
+    for w_val, w_label in [(w_skills, "w_skills"), (w_text, "w_text"), (w_exp, "w_exp"), (w_edu, "w_edu")]:
+        if w_val is not None and (w_val < 0.0 or w_val > 1.0):
+            raise HTTPException(status_code=422, detail=f"{w_label} must be between 0.0 and 1.0")
+
+    provided = [w for w in (w_skills, w_text, w_exp, w_edu) if w is not None]
+    if len(provided) == 4 and sum(provided) == 0.0:
+        raise HTTPException(status_code=422, detail="Weights cannot all be zero.")
+
     try:
         return get_job_rankings(
             db=db,
@@ -40,9 +61,13 @@ def get_job_rankings_endpoint(
             w_skills=w_skills,
             w_text=w_text,
             w_exp=w_exp,
-            w_edu=w_edu
+            w_edu=w_edu,
+            limit=limit,
+            offset=offset
         )
     except ValueError as e:
+        if "Weights cannot all be zero" in str(e):
+            raise HTTPException(status_code=422, detail=str(e))
         raise HTTPException(status_code=404, detail=str(e))
 
 
