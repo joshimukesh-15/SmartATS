@@ -369,3 +369,130 @@ def test_scoring_weights_validation_and_normalization(db_session):
     assert applied is not None
     assert abs(sum(applied.values()) - 1.0) < 1e-2
     assert applied["weight_skills"] > applied["weight_text"]
+
+
+def test_engine_does_not_point_to_default_database():
+    """Asserts that engine URL does not point to default smartats.db during tests."""
+    from app.core.config import DEFAULT_DB_PATH
+    engine_url = str(engine.url).replace("\\", "/")
+    assert DEFAULT_DB_PATH not in engine_url
+    assert "smartats-test-" in engine_url or "test.db" in engine_url
+
+
+def test_overview_analytics_contract_and_invariants(db_session):
+    """
+    Asserts /analytics/overview clean contract:
+    - histogram counts sum to number of completed match results
+    - stage counts sum to total applications
+    - duplicates are not double-counted
+    - top candidates include all-job scope with job title
+    """
+    job = jobs.create_job(
+        JobCreate(
+            title="Overview Analytics Architect",
+            description="Testing overview analytics contract with verified invariants.",
+            required_skills=["Python", "SQL"]
+        ),
+        db_session
+    )
+
+    # Create 3 completed apps with match results and 1 failed
+    scores = [42.0, 76.5, 95.0]
+    stages = ["Reviewing", "Interviewing", "Offer"]
+
+    for i, (score, stage) in enumerate(zip(scores, stages, strict=True)):
+        cand = Candidate(name=f"Overview Cand {i}", email=f"ov_cand_{i}@example.com")
+        db_session.add(cand)
+        db_session.commit()
+        db_session.refresh(cand)
+
+        app = Application(
+            job_id=job.job_id,
+            candidate_id=cand.candidate_id,
+            resume_path=f"dummy/path/ov_{i}.pdf",
+            file_hash=f"ov_hash_{i}_{datetime.now(timezone.utc).timestamp()}",
+            processing_status="COMPLETED",
+            review_stage=stage
+        )
+        db_session.add(app)
+        db_session.commit()
+        db_session.refresh(app)
+
+        match = MatchResult(
+            application_id=app.application_id,
+            keyword_score=score,
+            tfidf_score=score,
+            final_score=score
+        )
+        db_session.add(match)
+
+    # 1 Failed app without match result in "New" stage
+    cand_fail = Candidate(name="Failed Cand", email="fail@example.com")
+    db_session.add(cand_fail)
+    db_session.commit()
+    db_session.refresh(cand_fail)
+
+    app_fail = Application(
+        job_id=job.job_id,
+        candidate_id=cand_fail.candidate_id,
+        resume_path="dummy/path/fail.pdf",
+        file_hash=f"ov_hash_fail_{datetime.now(timezone.utc).timestamp()}",
+        processing_status="FAILED",
+        review_stage="New"
+    )
+    db_session.add(app_fail)
+    db_session.commit()
+    db_session.refresh(app_fail)
+
+    # Add duplicate event history (single source of truth)
+    dup_history = ApplicationStatusHistory(
+        application_id=app_fail.application_id,
+        from_stage="New",
+        to_stage="New",
+        note="Duplicate resume upload detected (resume_dup.pdf). Skipped redundant processing.",
+        changed_by="System"
+    )
+    db_session.add(dup_history)
+    db_session.commit()
+
+    overview = matches.get_platform_overview_analytics(db_session)
+
+    # 1. Total applications and stage distribution invariant
+    total_apps = db_session.query(Application).count()
+    assert overview.totals.applications == total_apps
+    stage_sum = sum(overview.stage_distribution.values())
+    assert stage_sum == total_apps, f"Sum of stages {stage_sum} != total applications {total_apps}"
+
+    # Only canonical stages must exist as keys
+    expected_stages = {"New", "Reviewing", "Interviewing", "Offer", "Hired", "Rejected"}
+    assert set(overview.stage_distribution.keys()) == expected_stages
+
+    # 2. Histogram counts sum to total completed match results
+    total_completed_matches = (
+        db_session.query(MatchResult)
+        .join(Application)
+        .filter(Application.processing_status == "COMPLETED", MatchResult.final_score.isnot(None))
+        .count()
+    )
+    histogram_sum = sum(b.count for b in overview.score_histogram)
+    assert len(overview.score_histogram) == 6
+    assert histogram_sum == total_completed_matches, (
+        f"Histogram sum {histogram_sum} != total completed matches {total_completed_matches}"
+    )
+
+    # 3. Duplicates blocked is counted from single source (audit events)
+    expected_dups = (
+        db_session.query(ApplicationStatusHistory)
+        .filter(ApplicationStatusHistory.note.like("%Duplicate resume upload%"))
+        .count()
+    )
+    assert overview.totals.duplicates_blocked == expected_dups
+
+    # 4. Top candidates include job title and are ordered descending by score
+    assert len(overview.top_candidates) <= 5
+    if len(overview.top_candidates) >= 2:
+        for idx in range(len(overview.top_candidates) - 1):
+            assert overview.top_candidates[idx].final_score >= overview.top_candidates[idx + 1].final_score
+            assert overview.top_candidates[idx].job_title
+            assert overview.top_candidates[idx].stage in expected_stages
+

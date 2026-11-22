@@ -16,7 +16,9 @@ from app.schemas.application import (
     ApplicationNoteCreateRequest,
     ApplicationNoteResponse,
     ApplicationWorkflowDetailsResponse,
-    PaginatedApplicationsResponse
+    PaginatedApplicationsResponse,
+    CANONICAL_STAGES,
+    ReviewStage
 )
 from app.schemas.pagination import resolve_param
 from app.core.config import settings
@@ -29,15 +31,15 @@ from app.api.deps import get_current_recruiter
 
 router = APIRouter(tags=["Resumes & Applications"])
 
-ALLOWED_REVIEW_STAGES = ["New", "Reviewing", "Interview", "Interviewing", "Offer", "Hired", "Rejected"]
+ALLOWED_REVIEW_STAGES = CANONICAL_STAGES
 STAGE_CANONICAL_MAP = {
-    "new": "New",
-    "reviewing": "Reviewing",
-    "interview": "Interview",
-    "interviewing": "Interview",
-    "offer": "Offer",
-    "hired": "Hired",
-    "rejected": "Rejected",
+    "new": ReviewStage.NEW.value,
+    "reviewing": ReviewStage.REVIEWING.value,
+    "interview": ReviewStage.INTERVIEWING.value,
+    "interviewing": ReviewStage.INTERVIEWING.value,
+    "offer": ReviewStage.OFFER.value,
+    "hired": ReviewStage.HIRED.value,
+    "rejected": ReviewStage.REJECTED.value,
 }
 
 

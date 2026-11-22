@@ -1,8 +1,21 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 from app.schemas.candidate import CandidateResponse, CandidateListItemResponse
 from app.schemas.pagination import PaginatedResponse
+
+
+class ReviewStage(str, Enum):
+    NEW = "New"
+    REVIEWING = "Reviewing"
+    INTERVIEWING = "Interviewing"
+    OFFER = "Offer"
+    HIRED = "Hired"
+    REJECTED = "Rejected"
+
+
+CANONICAL_STAGES: List[str] = [s.value for s in ReviewStage]
 
 
 class MatchResultResponse(BaseModel):
@@ -45,7 +58,7 @@ class ApplicationStatusHistoryResponse(BaseModel):
 
 
 class ApplicationStatusUpdateRequest(BaseModel):
-    stage: str = Field(..., description="Stage name: New, Reviewing, Interview, Rejected, Hired")
+    stage: str = Field(..., description="Stage name: New, Reviewing, Interviewing, Offer, Hired, Rejected")
     note: Optional[str] = Field(None, description="Optional note or explanation for the stage transition")
     changed_by: Optional[str] = Field("Recruiter", description="Name of the person making the change")
 

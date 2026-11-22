@@ -71,7 +71,7 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
   ), [rawCandidates]);
 
   return (
-    <div className="mx-auto w-full max-w-[1360px] px-4 py-7 pb-20 sm:px-8">
+    <div className="mx-auto w-full max-w-[1360px] px-4 py-7 pb-36 sm:pb-40 sm:px-8">
       {/* Top Header & Navigation Segmented Control */}
       <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>

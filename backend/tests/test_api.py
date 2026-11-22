@@ -233,6 +233,8 @@ def test_comparison_endpoint(db_session):
 
 def test_analytics_endpoints(db_session):
     overview = matches.get_platform_overview_analytics(db_session)
-    assert overview["total_jobs"] > 0
-    assert overview["total_candidates"] > 0
-    assert "score_distribution" in overview
+    assert overview.totals.jobs > 0
+    assert overview.totals.candidates > 0
+    assert len(overview.score_histogram) == 6
+    assert "Interviewing" in overview.stage_distribution
+    assert "Offer" in overview.stage_distribution

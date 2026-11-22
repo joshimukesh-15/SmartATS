@@ -17,22 +17,25 @@ export default function PipelineFunnel({ pipelineStages, defaultJobId }) {
         {defaultJobId && (
           <button
             type="button"
-            onClick={() => navigate(`/studio/leaderboard/${defaultJobId}`)}
+            onClick={() => navigate(`/studio/candidates?job=${defaultJobId}`)}
             className="text-[13px] text-ink-muted hover:text-ink flex items-center gap-1 cursor-pointer font-medium"
           >
-            <span>View Leaderboard</span>
+            <span>View Candidates</span>
             <ChevronRight className="w-4 h-4" strokeWidth={1.75} />
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-1">
         {pipelineStages.map((item, idx) => (
           <div
             key={item.stage}
             onClick={() =>
-              defaultJobId &&
-              navigate(`/studio/leaderboard/${defaultJobId}?stage=${item.stage}`)
+              navigate(
+                defaultJobId
+                  ? `/studio/candidates?job=${defaultJobId}&stage=${item.stage}`
+                  : `/studio/candidates?stage=${item.stage}`
+              )
             }
             className={`p-4 rounded-[10px] bg-surface-alt/40 border border-line border-l-4 ${item.borderTone} hover:bg-surface-alt transition-colors cursor-pointer space-y-1.5`}
           >

@@ -69,7 +69,7 @@ def test_applicant_review_workflow(db_session):
         changed_by="Recruiter Sarah"
     )
     updated_stage = resumes.update_application_stage(app_id, update_req_2, db_session)
-    assert updated_stage.review_stage == "Interview"
+    assert updated_stage.review_stage == "Interviewing"
 
     # 5b. Transition stage to "Offer"
     offer_req = ApplicationStatusUpdateRequest(
@@ -98,7 +98,7 @@ def test_applicant_review_workflow(db_session):
 
     # Check stage audit entries
     stages_in_history = [h.to_stage for h in history_resp.status_history]
-    assert "Interview" in stages_in_history
+    assert "Interviewing" in stages_in_history
     assert "Reviewing" in stages_in_history
     assert "Offer" in stages_in_history
 

@@ -7,7 +7,8 @@ export default function PipelineStepper({
   currentStage,
   workflow,
 }) {
-  const currentStageIndex = PIPELINE_STAGES.indexOf(currentStage);
+  const normalizedStage = currentStage === 'Interview' ? 'Interviewing' : currentStage || 'New';
+  const currentStageIndex = PIPELINE_STAGES.indexOf(normalizedStage);
 
   return (
     <div className="rounded-[14px] border border-line bg-surface p-6 shadow-xs">
@@ -17,7 +18,7 @@ export default function PipelineStepper({
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {PIPELINE_STAGES.map((stage, idx) => {
-          const isCur = stage === currentStage;
+          const isCur = stage === normalizedStage;
           const isDone = currentStageIndex > idx;
           return (
             <button
@@ -40,15 +41,15 @@ export default function PipelineStepper({
         })}
         <button
           type="button"
-          onClick={() => workflow.handleStageButtonClick(currentStage === 'Rejected' ? 'Reviewing' : 'Rejected')}
+          onClick={() => workflow.handleStageButtonClick(normalizedStage === 'Rejected' ? 'Reviewing' : 'Rejected')}
           disabled={workflow.isUpdatingStage}
           className={`flex cursor-pointer items-center gap-1.5 rounded-[10px] border px-3.5 py-2 text-[13px] font-medium transition-colors disabled:opacity-50 sm:ml-auto ${
-            currentStage === 'Rejected'
+            normalizedStage === 'Rejected'
               ? 'border-primary/30 bg-primary/10 text-primary'
               : 'border-transparent bg-danger/10 text-danger hover:bg-danger/20'
           }`}
         >
-          {currentStage === 'Rejected' ? 'Reopen candidate' : 'Reject'}
+          {normalizedStage === 'Rejected' ? 'Reopen candidate' : 'Reject'}
         </button>
       </div>
 

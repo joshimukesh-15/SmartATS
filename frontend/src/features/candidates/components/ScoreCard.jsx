@@ -33,17 +33,17 @@ export default function ScoreCard({
         </div>
 
         <div className="mt-2">
-          <div className="grid grid-cols-[1.4fr_70px_90px_1.6fr_80px] items-center gap-3 py-2 text-[13px] text-ink-muted max-[1000px]:grid-cols-[1.4fr_60px_80px]">
+          <div className="grid grid-cols-[minmax(0,1.4fr)_55px_65px_70px] lg:grid-cols-[1.4fr_70px_90px_1.6fr_80px] items-center gap-3 py-2 text-[13px] text-ink-muted">
             <span>Part</span>
             <span>Weight</span>
             <span>Match</span>
-            <span className="hidden min-[1001px]:block"></span>
+            <span className="hidden lg:block"></span>
             <span className="text-right">Points</span>
           </div>
           {parts.map((p) => (
             <div
               key={p.name}
-              className="grid grid-cols-[1.4fr_70px_90px_1.6fr_80px] items-center gap-3 border-t border-line py-3.5 text-[14px] max-[1000px]:grid-cols-[1.4fr_60px_80px]"
+              className="grid grid-cols-[minmax(0,1.4fr)_55px_65px_70px] lg:grid-cols-[1.4fr_70px_90px_1.6fr_80px] items-center gap-3 border-t border-line py-3.5 text-[14px]"
             >
               <div className="flex min-w-0 items-center font-semibold text-ink">
                 <span className={`mr-2.5 inline-block h-2.5 w-2.5 shrink-0 rounded-full ${p.dotClass}`} />
@@ -51,7 +51,7 @@ export default function ScoreCard({
               </div>
               <span className="tabular-nums text-ink-muted">{p.weight}%</span>
               <span className="tabular-nums text-ink-muted">{p.match.toFixed(1)}%</span>
-              <div className="hidden h-1.5 overflow-hidden rounded-full bg-surface-alt min-[1001px]:block">
+              <div className="hidden h-1.5 overflow-hidden rounded-full bg-surface-alt lg:block">
                 <div
                   className={`h-full rounded-full transition-[width] duration-500 ${p.barClass}`}
                   style={{ width: `${Math.min(Math.max(p.match, 0), 100)}%` }}

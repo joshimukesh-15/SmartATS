@@ -10,6 +10,13 @@ from app.schemas.match import (
     CandidateCompareRequest,
     CandidateCompareResponse
 )
+from app.schemas.analytics import (
+    OverviewAnalyticsResponse,
+    OverviewTotals,
+    ScoreHistogramBucket,
+    TopCandidateItem
+)
+from app.schemas.application import ReviewStage, CANONICAL_STAGES
 from app.schemas.pagination import resolve_param
 from app.services.ranking import get_job_rankings
 from app.services.comparison import compare_candidates_service
@@ -123,9 +130,11 @@ def export_job_rankings_csv(
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.get("/analytics/overview")
+@router.get("/analytics/overview", response_model=OverviewAnalyticsResponse)
 def get_platform_overview_analytics(db: Session = Depends(get_db)):
-    """Returns system-wide metrics and distributions for recruiter dashboard."""
+    """Returns platform overview analytics adhering to the unified metrics contract."""
+    from app.api.resumes import STAGE_CANONICAL_MAP
+
     total_jobs = db.query(Job).count()
     total_candidates = db.query(Candidate).count()
     total_applications = db.query(Application).count()
@@ -136,66 +145,120 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
         .all()
     )
 
-    # Score distribution for completed matches
-    all_scores = [
-        m[0] for m in db.query(MatchResult.final_score).all() if m[0] is not None
-    ]
-    
-    score_ranges = {
-        "80-100%": len([s for s in all_scores if s >= 80]),
-        "60-79%": len([s for s in all_scores if 60 <= s < 80]),
-        "<60%": len([s for s in all_scores if s < 60]),
-        "90-100%": len([s for s in all_scores if s >= 90]),
-        "75-89%": len([s for s in all_scores if 75 <= s < 90]),
-        "50-74%": len([s for s in all_scores if 50 <= s < 75]),
-        "<50%": len([s for s in all_scores if s < 50])
-    }
+    completed_count = status_counts.get("COMPLETED", 0)
+    pending_count = (
+        status_counts.get("PENDING", 0)
+        + status_counts.get("PROCESSING", 0)
+        + status_counts.get("Re-scoring", 0)
+    )
+    failed_count = status_counts.get("FAILED", 0)
 
+    # Count duplicates blocked from one source only: the status history audit events
+    duplicates_blocked = (
+        db.query(ApplicationStatusHistory)
+        .filter(ApplicationStatusHistory.note.like("%Duplicate resume upload%"))
+        .count()
+    )
+
+    # Completed match results scores for average and 6 non-overlapping histogram buckets
+    completed_match_scores = [
+        round(m[0], 1)
+        for m in (
+            db.query(MatchResult.final_score)
+            .join(Application, MatchResult.application_id == Application.application_id)
+            .filter(
+                Application.processing_status == "COMPLETED",
+                MatchResult.final_score.isnot(None)
+            )
+            .all()
+        )
+    ]
+
+    total_evals = len(completed_match_scores)
+    average_score = round(sum(completed_match_scores) / total_evals, 1) if total_evals > 0 else 0.0
+
+    # 6 non-overlapping histogram buckets: 0-49, 50-59, 60-69, 70-79, 80-89, 90-100
+    # Sum of counts equals total number of match results
+    b0 = len([s for s in completed_match_scores if s < 50.0])
+    b1 = len([s for s in completed_match_scores if 50.0 <= s < 60.0])
+    b2 = len([s for s in completed_match_scores if 60.0 <= s < 70.0])
+    b3 = len([s for s in completed_match_scores if 70.0 <= s < 80.0])
+    b4 = len([s for s in completed_match_scores if 80.0 <= s < 90.0])
+    b5 = len([s for s in completed_match_scores if s >= 90.0])
+
+    score_histogram = [
+        ScoreHistogramBucket(label="0–49%", min=0.0, max=49.99, count=b0),
+        ScoreHistogramBucket(label="50–59%", min=50.0, max=59.99, count=b1),
+        ScoreHistogramBucket(label="60–69%", min=60.0, max=69.99, count=b2),
+        ScoreHistogramBucket(label="70–79%", min=70.0, max=79.99, count=b3),
+        ScoreHistogramBucket(label="80–89%", min=80.0, max=89.99, count=b4),
+        ScoreHistogramBucket(label="90–100%", min=90.0, max=100.0, count=b5),
+    ]
+
+    # Stage distribution over canonical stages
     stage_counts_raw = dict(
         db.query(Application.review_stage, func.count(Application.application_id))
         .group_by(Application.review_stage)
         .all()
     )
-    stage_counts = {
-        "New": stage_counts_raw.get("New", 0),
-        "Reviewing": stage_counts_raw.get("Reviewing", 0),
-        "Interview": stage_counts_raw.get("Interview", 0) + stage_counts_raw.get("Interviewing", 0),
-        "Offer": stage_counts_raw.get("Offer", 0),
-        "Hired": stage_counts_raw.get("Hired", 0),
-        "Rejected": stage_counts_raw.get("Rejected", 0)
+
+    stage_distribution: Dict[str, int] = {
+        ReviewStage.NEW.value: 0,
+        ReviewStage.REVIEWING.value: 0,
+        ReviewStage.INTERVIEWING.value: 0,
+        ReviewStage.OFFER.value: 0,
+        ReviewStage.HIRED.value: 0,
+        ReviewStage.REJECTED.value: 0,
     }
 
-    avg_score = round(sum(all_scores) / len(all_scores), 1) if all_scores else 0.0
+    for raw_stage, count in stage_counts_raw.items():
+        canonical = STAGE_CANONICAL_MAP.get(raw_stage.lower() if raw_stage else "new", ReviewStage.NEW.value)
+        stage_distribution[canonical] = stage_distribution.get(canonical, 0) + count
 
-    # Duplicate counts include any explicit DUPLICATE application records plus tracked duplicate upload events
-    overview_dup_events = (
-        db.query(ApplicationStatusHistory)
-        .filter(ApplicationStatusHistory.note.like("%Duplicate resume upload%"))
-        .count()
+    # Top candidates across ALL jobs (top 5 by final score)
+    top_apps = (
+        db.query(Application)
+        .join(MatchResult, Application.application_id == MatchResult.application_id)
+        .join(Job, Application.job_id == Job.job_id)
+        .outerjoin(Candidate, Application.candidate_id == Candidate.candidate_id)
+        .filter(Application.processing_status == "COMPLETED")
+        .order_by(MatchResult.final_score.desc(), Application.applied_at.desc())
+        .limit(5)
+        .all()
     )
-    total_duplicates = status_counts.get("DUPLICATE", 0) + overview_dup_events
 
-    return {
-        "total_jobs": total_jobs,
-        "total_candidates": total_candidates,
-        "total_applications": total_applications,
-        "processed_resumes": status_counts.get("COMPLETED", 0),
-        "pending_resumes": status_counts.get("PENDING", 0) + status_counts.get("PROCESSING", 0),
-        "failed_resumes": status_counts.get("FAILED", 0),
-        "duplicate_resumes": total_duplicates,
-        "duplicate_count": total_duplicates,
-        "average_score": avg_score,
-        "avg_final_score": avg_score,
-        "score_distribution": score_ranges,
-        "score_buckets": {
-            "80-100%": len([s for s in all_scores if s >= 80]),
-            "60-79%": len([s for s in all_scores if 60 <= s < 80]),
-            "40-59%": len([s for s in all_scores if 40 <= s < 60]),
-            "<40%": len([s for s in all_scores if s < 40]),
-            "<60%": len([s for s in all_scores if s < 60])
-        },
-        "stage_distribution": stage_counts
-    }
+    top_candidates: List[TopCandidateItem] = []
+    for app in top_apps:
+        cand_name = app.candidate.name if app.candidate and app.candidate.name else "Candidate"
+        job_title = app.job.title if app.job and app.job.title else "Position"
+        stage = STAGE_CANONICAL_MAP.get(app.review_stage.lower() if app.review_stage else "new", ReviewStage.NEW.value)
+        score = round(app.match_result.final_score, 1) if app.match_result else 0.0
+        top_candidates.append(
+            TopCandidateItem(
+                application_id=app.application_id,
+                name=cand_name,
+                job_title=job_title,
+                stage=stage,
+                final_score=score
+            )
+        )
+
+    return OverviewAnalyticsResponse(
+        totals=OverviewTotals(
+            jobs=total_jobs,
+            active_jobs=total_jobs,
+            candidates=total_candidates,
+            applications=total_applications,
+            completed=completed_count,
+            pending=pending_count,
+            failed=failed_count,
+            duplicates_blocked=duplicates_blocked
+        ),
+        average_score=average_score,
+        score_histogram=score_histogram,
+        stage_distribution=stage_distribution,
+        top_candidates=top_candidates
+    )
 
 
 @router.get("/jobs/{job_id}/analytics")
