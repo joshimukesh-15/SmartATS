@@ -1,9 +1,12 @@
 import os
+import logging
 import threading
 from typing import List, Optional, Dict, Tuple
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from app.ml.preprocessing import preprocess_text
+
+logger = logging.getLogger(__name__)
 
 # Path to neutral corpus
 _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -39,8 +42,8 @@ def load_neutral_corpus(file_path: Optional[str] = None) -> List[str]:
                     clean = preprocess_text(doc.strip())
                     if clean:
                         loaded.append(clean)
-        except Exception:
-            pass
+        except (FileNotFoundError, PermissionError, UnicodeDecodeError, OSError) as e:
+            logger.exception("Failed to load neutral corpus from %s: %s", target_path, e)
 
     # Safety fallback if file is empty or missing
     if not loaded:
@@ -179,7 +182,8 @@ def compute_tfidf_similarity(
         similarity = float(sim_matrix[0][0])
         similarity = max(0.0, min(1.0, similarity))
         return round(similarity * 100.0, 2)
-    except Exception:
+    except (ValueError, TypeError, AttributeError) as e:
+        logger.exception("Error computing TF-IDF text similarity: %s", e)
         return 0.0
 
 

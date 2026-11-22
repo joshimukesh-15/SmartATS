@@ -1,7 +1,60 @@
+import uuid
+import logging
+from contextvars import ContextVar
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.core.config import settings
+
+REQUEST_ID_CTX_KEY = "request_id"
+_request_id_ctx_var: ContextVar[str] = ContextVar(REQUEST_ID_CTX_KEY, default="-")
+
+
+def get_current_request_id() -> str:
+    """Returns the active request ID from context storage or a fallback dash."""
+    return _request_id_ctx_var.get() or "-"
+
+
+class RequestIDLogFilter(logging.Filter):
+    """Logging filter that injects request_id into every LogRecord."""
+
+    def filter(self, record):
+        record.request_id = get_current_request_id()
+        return True
+
+
+class RequestIDMiddleware:
+    """Assigns or propagates X-Request-ID across the ASGI pipeline, scope state, and logging context."""
+
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        headers = dict(scope.get("headers", []))
+        req_id_raw = headers.get(b"x-request-id", b"").decode("latin1").strip()
+        req_id = req_id_raw if req_id_raw else uuid.uuid4().hex
+
+        state = scope.setdefault("state", {})
+        state["request_id"] = req_id
+
+        token = _request_id_ctx_var.set(req_id)
+
+        async def send_with_request_id(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                msg_headers = list(message.get("headers", []))
+                if not any(k.lower() == b"x-request-id" for k, _ in msg_headers):
+                    msg_headers.append((b"x-request-id", req_id.encode("latin1")))
+                message["headers"] = msg_headers
+            await send(message)
+
+        try:
+            await self.app(scope, receive, send_with_request_id)
+        finally:
+            _request_id_ctx_var.reset(token)
 
 
 SECURITY_HEADERS = {

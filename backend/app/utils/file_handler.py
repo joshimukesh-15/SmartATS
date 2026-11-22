@@ -1,8 +1,11 @@
 import os
+import logging
 import aiofiles
 from fastapi import UploadFile, HTTPException
 from app.core.config import settings
 from app.core.security import sanitize_filename, validate_file_extension
+
+logger = logging.getLogger(__name__)
 
 
 async def save_upload_file(upload_file: UploadFile) -> str:
@@ -30,8 +33,8 @@ async def save_upload_file(upload_file: UploadFile) -> str:
                 # Clean up partially written file
                 try:
                     os.remove(destination_path)
-                except OSError:
-                    pass
+                except OSError as remove_err:
+                    logger.warning("Could not clean up oversized file %s: %s", destination_path, remove_err)
                 raise HTTPException(
                     status_code=413,
                     detail=f"File exceeds maximum allowed size of {settings.MAX_UPLOAD_SIZE_MB}MB."

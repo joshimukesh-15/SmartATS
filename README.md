@@ -152,29 +152,36 @@ All numeric scores, percentages, and dates use `tabular-nums` for vertical align
 
 Benchmarking is performed via `backend/scripts/evaluate.py` across labeled candidate datasets:
 
-### Entity Extraction Metrics (Dataset: 3 jobs, 8 candidates)
+### Entity Extraction Metrics (3 jobs, 8 labeled resumes)
 
-| Metric | Before Part 7 (3 jobs, 8 candidates) | After Part 7 (3 jobs, 8 candidates) | Measurement Method |
-|---|---|---|---|
-| **Email Extraction Accuracy** | **100.0%** (8/8) | **100.0%** (8/8) | RFC-compliant regular expression parsing |
-| **Phone Extraction Accuracy** | **100.0%** (8/8) | **100.0%** (8/8) | International and US digit pattern matching |
-| **Name Extraction Accuracy** | **87.5%** (7/8) | **87.5%** (7/8) | Header heuristic & entity capitalization |
-| **Skill Extraction Precision** | **97.7%** | **97.7%** | Canonical taxonomy token overlap |
-| **Skill Extraction Recall** | **100.0%** | **100.0%** | Ground-truth coverage across labeled profiles |
-| **Skill Extraction F1-Score** | **98.8%** | **98.8%** | Harmonic mean of precision and recall |
-| **Avg Extraction Latency** | **3.50 ms** / resume | **3.28 ms** / resume | Wall-clock execution time per document |
+These measurements evaluate the current extractor over the full labeled set; they are not a before/after comparison.
 
-### Ranking Algorithm Performance & Latency: Before vs. After Part 7 (Dataset: 3 jobs, 8 candidates)
+| Metric | Current result (8 resumes) | Measurement method |
+|---|---:|---|
+| **Email extraction accuracy** | **100.0%** (8/8) | Email pattern parsing |
+| **Phone extraction accuracy** | **100.0%** (8/8) | International and US digit matching |
+| **Name extraction accuracy** | **87.5%** (7/8) | Header heuristic and entity capitalization |
+| **Skill extraction precision** | **97.7%** | Canonical taxonomy token overlap |
+| **Skill extraction recall** | **100.0%** | Ground-truth coverage across labeled profiles |
+| **Skill extraction F1-score** | **98.8%** | Harmonic mean of precision and recall |
+| **Average extraction latency** | **3.28 ms / resume** | Mean wall-clock time per document |
 
-Evaluated across all 3 benchmark job requisitions and 8 candidates, showing the impact of the per-job TF-IDF corpus vectorizer with `sublinear_tf=True`, `smooth_idf=True`, sorted vocabulary, and neutral technical corpus stability:
+### Ranking Fit Comparison (3 jobs, 8 candidates)
 
-| Algorithm Configuration | Precision@1 (3 jobs, 8 candidates) | Precision@3 (3 jobs, 8 candidates) | Recall@3 (3 jobs, 8 candidates) | NDCG@3 (3 jobs, 8 candidates) | Avg Latency Before Part 7 (3 jobs, 8 candidates) | Avg Latency After Part 7 (3 jobs, 8 candidates) |
-|---|---|---|---|---|---|---|
-| **Keyword Only (Baseline)** | 1.00 | 1.00 | 0.87 | 1.000 | 3.27 ms | **2.36 ms** |
-| **TF-IDF Only (Baseline)** | 1.00 | 0.89 | 0.76 | 0.974 | 2.74 ms | **1.83 ms** |
-| **Hybrid (70% KW / 30% Text)** | 1.00 | 1.00 | 0.87 | 1.000 | 2.81 ms | **1.82 ms** |
-| **Hybrid (60% KW / 40% Text)** | 1.00 | 1.00 | 0.87 | 1.000 | 2.71 ms | **1.94 ms** |
-| **Hybrid (50% KW / 50% Text)** | 1.00 | 1.00 | 0.87 | 1.000 | 2.86 ms | **1.82 ms** |
+The single-document fit is the baseline that fits TF-IDF on one resume at a time. The corpus fit builds a per-job TF-IDF vocabulary from that job's candidate resumes. Both use the same small labeled dataset; these results are not production-scale estimates.
+
+| Algorithm configuration | TF-IDF fit mode | Evaluation set | Precision@1 | Precision@3 | Recall@3 | NDCG@3 | Average latency |
+|---|---|---|---:|---:|---:|---:|---:|
+| **Keyword only** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 3.27 ms |
+| **Keyword only** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **2.36 ms** |
+| **TF-IDF only** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 0.89 | 0.76 | 0.974 | 2.74 ms |
+| **TF-IDF only** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 0.89 | 0.76 | 0.974 | **1.83 ms** |
+| **Hybrid (70% keyword / 30% text)** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.81 ms |
+| **Hybrid (70% keyword / 30% text)** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **1.82 ms** |
+| **Hybrid (60% keyword / 40% text)** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.71 ms |
+| **Hybrid (60% keyword / 40% text)** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **1.94 ms** |
+| **Hybrid (50% keyword / 50% text)** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.86 ms |
+| **Hybrid (50% keyword / 50% text)** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **1.82 ms** |
 
 *Full evaluation outputs are exported to [`backend/reports/evaluation_report.csv`](backend/reports/evaluation_report.csv).*
 
@@ -206,7 +213,7 @@ source .venv/bin/activate
 .venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r requirements.txt -r requirements-dev.txt
 
 # Run database migrations and seed sample requisitions & candidates
 python -m alembic upgrade head
@@ -282,7 +289,9 @@ All recruiter actions require a Bearer token in the `Authorization: Bearer <toke
 - `GET /api/v1/scoring/config`: Returns default 4-pillar weights and mathematical formula description.
 
 ### Recruiter Authentication
-- `POST /api/v1/auth/login`: Authenticates recruiter credentials and returns JWT access token.
+- `POST /api/v1/auth/login`: Authenticates recruiter credentials and returns a 30-minute access token and seven-day refresh token.
+- `POST /api/v1/auth/refresh`: Rotates a refresh token and issues a new access token.
+- `POST /api/v1/auth/logout`: Revokes the supplied refresh token.
 - `GET /api/v1/auth/me`: Returns current authenticated recruiter profile.
 
 ### Jobs & Requisitions

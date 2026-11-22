@@ -1,7 +1,10 @@
 import os
+import logging
 from typing import List, Union
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
 
 
 BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -50,6 +53,10 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5174",
     ]
 
+    MAX_CONCURRENT_PARSING: int = 4
+    PARSE_TIMEOUT_SECONDS: int = 30
+    MAX_RESUME_PAGES: int = 20
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -68,8 +75,8 @@ class Settings(BaseSettings):
                     parsed = json.loads(v_strip)
                     if isinstance(parsed, list):
                         return [str(item).strip() for item in parsed if str(item).strip()]
-                except Exception:
-                    pass
+                except (json.JSONDecodeError, TypeError) as e:
+                    logger.debug("Failed to parse ALLOWED_ORIGINS as JSON array: %s", e)
             return [origin.strip() for origin in v_strip.split(",") if origin.strip()]
         if isinstance(v, (list, tuple)):
             return [str(origin).strip() for origin in v if str(origin).strip()]

@@ -2,6 +2,7 @@ import os
 import math
 import logging
 from typing import Dict, Any, Optional, List
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.database.database import SessionLocal
 from app.database.models import Application, Job, MatchResult, Candidate
@@ -387,8 +388,8 @@ def rescore_job_applications(job_id: int, db: Optional[Session] = None) -> List[
                     r_text, _ = extract_resume_text(app.resume_path)
                     if cand:
                         cand.raw_text = r_text
-                except Exception:
-                    pass
+                except (ValueError, FileNotFoundError, OSError) as text_err:
+                    logger.exception("Failed to extract resume text for app %s: %s", app.application_id, text_err)
             if r_text:
                 resume_texts.append(r_text)
 
@@ -453,14 +454,14 @@ def rescore_job_applications(job_id: int, db: Optional[Session] = None) -> List[
         db.commit()
         return updated_ids
 
-    except Exception as e:
+    except (SQLAlchemyError, ValueError, KeyError, RuntimeError, OSError) as e:
         logger.exception("Error during rescore_job_applications for job %s: %s", job_id, e)
         db.rollback()
         try:
             from app.ml.vectorizer import vectorizer_cache
             vectorizer_cache.set_job_status(job_id, "Active")
-        except Exception:
-            pass
+        except (KeyError, ValueError, RuntimeError) as status_err:
+            logger.exception("Failed to reset vectorizer job status for job %s: %s", job_id, status_err)
         return []
     finally:
         if should_close_db:

@@ -1,11 +1,13 @@
 import os
 import io
+import logging
 import zipfile
 import inspect
 from pathlib import Path
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status, Query
 from fastapi.responses import FileResponse
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.database.models import Job, Application, Candidate, ApplicationStatusHistory, ApplicationNote
@@ -27,6 +29,8 @@ from app.services.processor import process_resume_application, process_resume_ba
 from app.services.scoring import attach_scoring_to_application, resolve_scoring_weights, rescore_job_applications
 from app.ml.vectorizer import vectorizer_cache
 from app.api.deps import get_current_recruiter
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Resumes & Applications"])
 
@@ -247,7 +251,8 @@ async def upload_resumes(
                 message="Resume uploaded successfully. Screening and matching queued in background."
             ))
 
-        except Exception as e:
+        except (SQLAlchemyError, ValueError, OSError, RuntimeError) as e:
+            logger.exception("Upload processing error for file %s: %s", filename, e)
             db.rollback()
             results.append(ApplicationUploadResult(
                 filename=filename,
@@ -324,6 +329,31 @@ def get_application(application_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Application not found.")
     attach_scoring_to_application(app, db=db)
     return app
+
+
+@router.get("/applications/{application_id}/status")
+def get_application_status(application_id: int, db: Session = Depends(get_db)):
+    """Retrieves processing status and audit message for an application."""
+    app = db.query(Application).filter(Application.application_id == application_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found.")
+
+    last_history = (
+        db.query(ApplicationStatusHistory)
+        .filter(ApplicationStatusHistory.application_id == application_id)
+        .order_by(ApplicationStatusHistory.created_at.desc())
+        .first()
+    )
+    last_message = last_history.note if last_history else None
+
+    return {
+        "application_id": app.application_id,
+        "processing_status": app.processing_status,
+        "status": app.processing_status,
+        "review_stage": app.review_stage,
+        "message": last_message,
+        "updated_at": last_history.created_at if last_history else app.applied_at
+    }
 
 
 @router.patch("/applications/{application_id}/stage", response_model=ApplicationResponse)
@@ -444,8 +474,8 @@ def delete_application(
     if app.resume_path and os.path.exists(app.resume_path):
         try:
             os.remove(app.resume_path)
-        except OSError:
-            pass
+        except OSError as file_err:
+            logger.warning("Could not delete stored resume file %s: %s", app.resume_path, file_err)
 
     db.delete(app)
     db.commit()

@@ -3,7 +3,8 @@ import io
 import pytest
 from unittest.mock import MagicMock, patch
 from app.database.database import SessionLocal, Base, engine
-from app.database.models import Job, Application
+from app.database.models import Job, Application, Candidate, ApplicationStatusHistory
+from app.services.processor import process_resume_application
 from app.schemas.job import JobCreate
 from app.api import jobs, resumes
 from app.core.config import settings
@@ -213,3 +214,97 @@ def test_upload_outcome_partial_batch(db_session):
     assert status_by_name["brand_new.pdf"] == "ACCEPTED"
     assert status_by_name["existing_copy.pdf"] == "DUPLICATE"
     assert status_by_name["bad_executable.exe"] == "REJECTED"
+
+
+def test_corrupt_pdf_fails_with_readable_message_and_retry_works(db_session, client, tmp_path):
+    # 1. Create Job
+    job = jobs.create_job(JobCreate(
+        title="Corrupt Resume Handling Engineer",
+        description="Testing that corrupt PDF marks application FAILED and retry works.",
+        required_skills=["Python"]
+    ), db_session)
+
+    # 2. Create a corrupted PDF file on disk
+    corrupt_pdf_path = tmp_path / "corrupt_resume.pdf"
+    corrupt_pdf_path.write_bytes(b"%PDF-1.4\ncorrupted-random-binary-not-a-valid-pdf-stream\x00\xff\xfe")
+
+    # 3. Create Candidate & Application
+    cand = Candidate(name="Corrupt Candidate")
+    db_session.add(cand)
+    db_session.commit()
+    db_session.refresh(cand)
+
+    app = Application(
+        job_id=job.job_id,
+        candidate_id=cand.candidate_id,
+        resume_path=str(corrupt_pdf_path),
+        file_hash="corrupt_hash_test_12345",
+        processing_status="PENDING"
+    )
+    db_session.add(app)
+    db_session.commit()
+    db_session.refresh(app)
+
+    # 4. Process application
+    process_resume_application(app.application_id)
+    db_session.refresh(app)
+
+    # 5. Assert marked FAILED with readable message
+    assert app.processing_status == "FAILED"
+    history = db_session.query(ApplicationStatusHistory).filter(
+        ApplicationStatusHistory.application_id == app.application_id
+    ).order_by(ApplicationStatusHistory.created_at.desc()).first()
+    assert history is not None
+    assert "Could not read PDF document" in history.note or "failed" in history.note.lower()
+
+    # 6. Check GET /applications/{id}/status
+    res_status = client.get(f"/api/v1/applications/{app.application_id}/status")
+    assert res_status.status_code == 200
+    status_json = res_status.json()
+    assert status_json["processing_status"] == "FAILED"
+    assert status_json["message"] is not None
+
+    # 7. Check root /applications/{id}/status alias
+    res_root_status = client.get(f"/applications/{app.application_id}/status")
+    assert res_root_status.status_code == 200
+    assert res_root_status.json()["processing_status"] == "FAILED"
+
+    # 8. Check retry with corrected PDF file works end-to-end
+    import fitz
+    valid_doc = fitz.open()
+    page = valid_doc.new_page()
+    page.insert_text((50, 72), "Candidate Name: Retry Success Candidate\nSkills: Python, FastAPI\nExperience: 5 years")
+    valid_doc.save(str(corrupt_pdf_path))
+    valid_doc.close()
+
+    res_retry = client.post(f"/api/v1/applications/{app.application_id}/retry")
+    assert res_retry.status_code == 200
+    db_session.refresh(app)
+    assert app.processing_status == "COMPLETED"
+
+    # Verify status endpoint reflects COMPLETED
+    res_completed_status = client.get(f"/api/v1/applications/{app.application_id}/status")
+    assert res_completed_status.status_code == 200
+    assert res_completed_status.json()["processing_status"] == "COMPLETED"
+
+
+def test_ready_and_request_id_endpoints(client):
+    # Test /ready endpoint
+    res_ready = client.get("/ready")
+    assert res_ready.status_code == 200
+    assert res_ready.json()["status"] == "ready"
+    assert res_ready.json()["database"] == "connected"
+
+    # Test X-Request-ID propagation
+    custom_id = "test-custom-req-id-12345"
+    res_req = client.get("/health", headers={"X-Request-ID": custom_id})
+    assert res_req.status_code == 200
+    assert res_req.headers.get("X-Request-ID") == custom_id
+
+    # Test global exception handler format {error, message, request_id}
+    res_404 = client.get("/api/v1/applications/99999999")
+    assert res_404.status_code == 404
+    err_json = res_404.json()
+    assert "error" in err_json
+    assert "message" in err_json
+    assert "request_id" in err_json

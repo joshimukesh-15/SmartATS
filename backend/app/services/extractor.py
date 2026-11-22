@@ -1,7 +1,10 @@
 import re
+import logging
 from datetime import datetime
 from typing import List, Optional, Set, Dict, Any, Tuple
 from app.services.taxonomy import SKILLS_TAXONOMY, normalize_skill_name
+
+logger = logging.getLogger(__name__)
 
 
 EMAIL_PATTERN = re.compile(
@@ -181,8 +184,9 @@ def extract_experience_years(text: str) -> float:
             val = float(match.group(1))
             if 0.5 <= val <= 45.0 and val > max_years:
                 max_years = val
-        except (ValueError, IndexError):
-            pass
+        except (ValueError, IndexError) as parse_err:
+            logger.debug("Failed parsing experience year float: %s", parse_err)
+            continue
 
     # 2. Check employment date spans (e.g. "2018 - 2024", "2019 – Present")
     year_span_pattern = re.compile(

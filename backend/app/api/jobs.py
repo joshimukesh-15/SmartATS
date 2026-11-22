@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Query
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.database.models import Job, Application, Candidate
@@ -273,7 +274,8 @@ def delete_job(
             if orphaned_ids:
                 db.query(Candidate).filter(Candidate.candidate_id.in_(orphaned_ids)).delete(synchronize_session=False)
         db.commit()
-    except Exception:
+    except SQLAlchemyError as db_err:
+        logger.exception("Database error while deleting job %s: %s", job_id, db_err)
         db.rollback()
         raise
 

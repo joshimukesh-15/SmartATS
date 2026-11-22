@@ -41,15 +41,21 @@ def extract_pdf_text(file_path: str) -> Tuple[str, bool]:
         if doc.is_encrypted:
             doc.close()
             raise ValueError("Document is password-protected or encrypted. Please provide an unencrypted document.")
+        if len(doc) > settings.MAX_RESUME_PAGES:
+            num_pages = len(doc)
+            doc.close()
+            raise ValueError(f"PDF exceeds maximum allowed pages ({num_pages} > {settings.MAX_RESUME_PAGES}).")
         for page_num in range(len(doc)):
             page = doc.load_page(page_num)
             page_text = page.get_text("text")
             if page_text and page_text.strip():
                 extracted_pages.append(page_text.strip())
         doc.close()
-    except Exception as e:
-        logger.error(f"PyMuPDF error reading {file_path}: {e}")
-        raise ValueError(f"Could not read PDF document: {str(e)}")
+    except ValueError:
+        raise
+    except (fitz.FileDataError, fitz.EmptyFileError, OSError) as e:
+        logger.exception("PyMuPDF error reading %s: %s", file_path, e)
+        raise ValueError(f"Could not read PDF document: {str(e)}") from e
 
     full_text = "\n\n".join(extracted_pages)
     cleaned = clean_extracted_text(full_text)
@@ -75,6 +81,8 @@ def extract_docx_text(file_path: str) -> Tuple[str, bool]:
 
     try:
         doc = docx.Document(file_path)
+        if len(doc.paragraphs) > 2000:
+            raise ValueError(f"DOCX document exceeds maximum allowed paragraph count ({len(doc.paragraphs)} > 2000).")
         content_lines = []
 
         # 1. Paragraph text
@@ -96,9 +104,11 @@ def extract_docx_text(file_path: str) -> Tuple[str, bool]:
 
         full_text = "\n".join(content_lines)
         return clean_extracted_text(full_text), False
-    except Exception as e:
-        logger.error(f"python-docx error reading {file_path}: {e}")
-        raise ValueError(f"Could not read DOCX document: {str(e)}")
+    except ValueError:
+        raise
+    except (docx.opc.exceptions.PackageNotFoundError, docx.opc.exceptions.OpcError, OSError, KeyError) as e:
+        logger.exception("python-docx error reading %s: %s", file_path, e)
+        raise ValueError(f"Could not read DOCX document: {str(e)}") from e
 
 
 def extract_resume_text(file_path: str) -> Tuple[str, bool]:

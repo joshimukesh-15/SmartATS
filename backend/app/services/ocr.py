@@ -25,9 +25,9 @@ try:
         pytesseract.get_tesseract_version()
         TESSERACT_AVAILABLE = True
         logger.info("Tesseract OCR is available and configured.")
-    except Exception:
+    except (pytesseract.TesseractNotFoundError, FileNotFoundError, PermissionError, OSError) as e:
         TESSERACT_AVAILABLE = False
-        logger.warning("Tesseract binary not detected. OCR fallback will be inactive.")
+        logger.warning("Tesseract binary not detected (%s). OCR fallback will be inactive.", e)
 except ImportError:
     pytesseract = None
     logger.warning("pytesseract is not installed.")
@@ -59,7 +59,7 @@ def extract_ocr_from_pdf(file_path: str, max_pages: int = 5) -> str:
             if page_text and page_text.strip():
                 extracted_pages.append(page_text.strip())
         doc.close()
-    except Exception as e:
-        logger.error(f"Error during OCR extraction on {file_path}: {e}")
+    except (fitz.FileDataError, fitz.EmptyFileError, OSError, ValueError, RuntimeError) as e:
+        logger.exception("Error during OCR extraction on %s: %s", file_path, e)
 
     return "\n\n".join(extracted_pages)

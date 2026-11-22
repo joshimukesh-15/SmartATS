@@ -1,5 +1,6 @@
 import re
 import os
+import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Tuple, Optional, Dict, Any
@@ -7,6 +8,8 @@ from uuid import uuid4
 import bcrypt
 from jose import jwt, JWTError
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 def sanitize_filename(filename: str) -> str:
@@ -52,7 +55,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
             plain_password.encode("utf-8")[:72],
             hashed_password.encode("utf-8")
         )
-    except Exception:
+    except (ValueError, TypeError) as e:
+        logger.exception("Failed to verify password: %s", e)
         return False
 
 

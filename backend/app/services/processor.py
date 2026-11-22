@@ -1,6 +1,9 @@
 import logging
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from app.core.config import settings
 from app.database.database import SessionLocal
 from app.database.models import Application, Candidate, Job, MatchResult, ApplicationStatusHistory
 from app.services.parser import extract_resume_text
@@ -9,6 +12,12 @@ from app.services.matcher import run_hybrid_matching
 from app.services.duplicate import find_candidate_by_email
 
 logger = logging.getLogger(__name__)
+
+# Bounded thread pool for concurrent resume parsing
+_parsing_executor = ThreadPoolExecutor(
+    max_workers=settings.MAX_CONCURRENT_PARSING,
+    thread_name_prefix="resume-parser"
+)
 
 
 def process_resume_application(application_id: int, rescore: bool = True):
@@ -30,12 +39,27 @@ def process_resume_application(application_id: int, rescore: bool = True):
         job = app.job
         cand = app.candidate
 
-        # 1. Parse resume text
+        # 1. Parse resume text with bounded concurrency and timeout
         try:
-            resume_text, used_ocr = extract_resume_text(app.resume_path)
-        except Exception as e:
+            future = _parsing_executor.submit(extract_resume_text, app.resume_path)
+            resume_text, used_ocr = future.result(timeout=settings.PARSE_TIMEOUT_SECONDS)
+        except FuturesTimeoutError:
+            err_msg = f"Resume parsing timed out after {settings.PARSE_TIMEOUT_SECONDS}s. File may be excessively complex or malformed."
+            logger.exception("Application %s text extraction timed out: %s", application_id, err_msg)
+            app.processing_status = "FAILED"
+            audit = ApplicationStatusHistory(
+                application_id=app.application_id,
+                from_stage=app.review_stage or "New",
+                to_stage=app.review_stage or "New",
+                note=err_msg[:500],
+                changed_by="System"
+            )
+            db.add(audit)
+            db.commit()
+            return
+        except (ValueError, FileNotFoundError, OSError) as e:
             err_msg = f"Failed to extract resume text: {str(e)}"
-            logger.error("Application %s text extraction failed: %s", application_id, err_msg)
+            logger.exception("Application %s text extraction failed: %s", application_id, err_msg)
             app.processing_status = "FAILED"
             audit = ApplicationStatusHistory(
                 application_id=app.application_id,
@@ -187,9 +211,9 @@ def process_resume_application(application_id: int, rescore: bool = True):
 
         logger.info(f"Successfully processed application {application_id}.")
 
-    except Exception as e:
+    except (SQLAlchemyError, ValueError, KeyError, RuntimeError, OSError) as e:
         err_msg = f"Unhandled error during resume processing: {str(e)}"
-        logger.exception("Application %s processing failed with unhandled exception: %s", application_id, e)
+        logger.exception("Application %s processing failed with error: %s", application_id, e)
         db.rollback()
         try:
             app = db.query(Application).filter(Application.application_id == application_id).first()
@@ -204,8 +228,8 @@ def process_resume_application(application_id: int, rescore: bool = True):
                 )
                 db.add(audit)
                 db.commit()
-        except Exception as inner_e:
-            logger.error("Failed to record failure status and audit for application %s: %s", application_id, inner_e)
+        except (SQLAlchemyError, OSError) as inner_e:
+            logger.exception("Failed to record failure status and audit for application %s: %s", application_id, inner_e)
     finally:
         db.close()
 

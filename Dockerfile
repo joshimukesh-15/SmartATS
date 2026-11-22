@@ -38,8 +38,7 @@ RUN groupadd -g 1000 appgroup && \
 
 # Install Python requirements
 COPY backend/requirements.txt ./backend/requirements.txt
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r backend/requirements.txt
+RUN python -m pip install --no-cache-dir -r backend/requirements.txt
 
 # Copy backend application source
 COPY --chown=appuser:appgroup backend/ /app/backend/

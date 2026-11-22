@@ -1,26 +1,41 @@
 import os
 import logging
+from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError, DBAPIError
+from sqlalchemy.orm import Session
 from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
-from app.core.middleware import RequestBodySizeLimitMiddleware, SecurityHeadersMiddleware
+from app.core.middleware import (
+    RequestBodySizeLimitMiddleware,
+    SecurityHeadersMiddleware,
+    RequestIDMiddleware,
+    RequestIDLogFilter,
+    get_current_request_id
+)
 from app.core.rate_limit import limiter
-from app.database.database import engine, Base, SessionLocal
+from app.database.database import engine, Base, SessionLocal, get_db
 from app.database import models  # ensure models are registered
 from app.database.models import Application, ApplicationStatusHistory
 from app.api import jobs, resumes, candidates, matches, auth, scoring
 from app.api.deps import get_current_recruiter
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+# Configure structured logging with request ID
+_log_handler = logging.StreamHandler()
+_log_handler.addFilter(RequestIDLogFilter())
+_log_handler.setFormatter(
+    logging.Formatter("%(asctime)s [%(levelname)s] [req:%(request_id)s] %(name)s: %(message)s")
 )
+logging.root.handlers = [_log_handler]
+logging.root.setLevel(logging.INFO)
 logger = logging.getLogger("smartats")
 
 
@@ -47,8 +62,8 @@ def recover_stale_processing_tasks():
                     db.add(audit)
                 db.commit()
                 logger.info("Successfully recovered %d stale applications to FAILED status.", len(stale_apps))
-    except Exception as e:
-        logger.error("Error during startup task recovery: %s", e)
+    except (SQLAlchemyError, DBAPIError, OSError) as e:
+        logger.exception("Error during startup task recovery: %s", e)
 
 
 @asynccontextmanager
@@ -72,10 +87,66 @@ app.state.limiter = limiter
 
 
 def login_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    req_id = getattr(request.state, "request_id", None) or get_current_request_id()
     return JSONResponse(
         status_code=429,
-        content={"detail": "Too many login attempts. Wait one minute before trying again."},
-        headers={"Retry-After": "60"},
+        content={
+            "error": "RateLimitExceeded",
+            "message": "Too many login attempts. Wait one minute before trying again.",
+            "detail": "Too many login attempts. Wait one minute before trying again.",
+            "request_id": req_id
+        },
+        headers={"Retry-After": "60", "X-Request-ID": req_id},
+    )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    req_id = getattr(request.state, "request_id", None) or get_current_request_id()
+    detail = exc.detail
+    message = detail if isinstance(detail, str) else str(detail)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": "HTTPException",
+            "message": message,
+            "detail": detail,
+            "request_id": req_id
+        },
+        headers={"X-Request-ID": req_id}
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    req_id = getattr(request.state, "request_id", None) or get_current_request_id()
+    errors = exc.errors()
+    message = "; ".join(f"{e.get('loc', [])}: {e.get('msg', '')}" for e in errors)
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": "ValidationError",
+            "message": message,
+            "detail": errors,
+            "request_id": req_id
+        },
+        headers={"X-Request-ID": req_id}
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    req_id = getattr(request.state, "request_id", None) or get_current_request_id()
+    logger.exception("Unhandled server exception on %s %s [req:%s]: %s", request.method, request.url.path, req_id, exc)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "InternalServerError",
+            "message": "An unexpected error occurred while processing the request.",
+            "detail": str(exc) if settings.ENVIRONMENT != "production" else "Internal server error",
+            "request_id": req_id
+        },
+        headers={"X-Request-ID": req_id}
     )
 
 
@@ -100,6 +171,7 @@ app.add_middleware(
 # receive the same browser security policy as normal API responses.
 app.add_middleware(RequestBodySizeLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestIDMiddleware)
 
 # Mount API Routers (auth remains public, while domain endpoints require recruiter authentication)
 app.include_router(auth.router, prefix=settings.API_V1_STR)
@@ -129,6 +201,39 @@ app.include_router(
 @app.get("/health", tags=["System"])
 def health_check():
     return {"status": "healthy", "service": settings.PROJECT_NAME}
+
+
+@app.get("/ready", tags=["System"])
+def readiness_check(db: Session = Depends(get_db)):
+    """Readiness probe checking database connectivity and upload directory writability."""
+    try:
+        db.execute(text("SELECT 1"))
+    except (SQLAlchemyError, DBAPIError) as e:
+        logger.exception("Readiness check database connection failed: %s", e)
+        raise HTTPException(status_code=503, detail="Database connection unavailable")
+
+    upload_dir = Path(settings.UPLOAD_DIR).resolve()
+    if not upload_dir.exists():
+        try:
+            upload_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            logger.exception("Readiness check could not create upload directory %s: %s", upload_dir, e)
+            raise HTTPException(status_code=503, detail=f"Upload directory unavailable: {e}")
+    elif not os.access(upload_dir, os.W_OK):
+        raise HTTPException(status_code=503, detail="Upload directory is not writable")
+
+    return {
+        "status": "ready",
+        "database": "connected",
+        "upload_dir": str(upload_dir)
+    }
+
+
+@app.get("/applications/{application_id}/status", tags=["Resumes & Applications"])
+def root_application_status_endpoint(application_id: int, db: Session = Depends(get_db)):
+    """Root-level alias for application processing status."""
+    from app.api.resumes import get_application_status
+    return get_application_status(application_id, db)
 
 
 # Mount built React frontend if distribution files exist (SPA support)
