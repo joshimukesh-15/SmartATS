@@ -22,7 +22,7 @@ export default function ProfileHeader({
   const initials = getInitials(name);
 
   return (
-    <div className="sticky top-0 z-10 flex flex-wrap items-center gap-3.5 border-b border-line bg-canvas/90 py-3 backdrop-blur-md">
+    <div className="sticky top-14 z-10 flex flex-wrap items-center gap-3.5 border-b border-line bg-canvas/95 py-3 backdrop-blur-md">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-surface-alt text-[15px] font-semibold text-ink">
         {initials}
       </div>

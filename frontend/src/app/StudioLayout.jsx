@@ -107,16 +107,12 @@ export default function StudioLayout() {
   };
 
   return (
-    <div
-      className={`min-h-screen bg-canvas text-ink flex flex-col md:flex-row font-sans selection:bg-primary selection:text-on-primary ${
-        isRecruitingWorkspace ? 'xl:h-dvh xl:min-h-0 xl:overflow-hidden' : ''
-      }`}
-    >
+    <div className="min-h-screen bg-canvas text-ink flex flex-col md:flex-row font-sans selection:bg-primary selection:text-on-primary">
       {/* 232px Sidebar */}
       <Navbar />
 
       {/* Main Studio View Area */}
-      <div className={`flex-1 flex flex-col min-w-0 ${isRecruitingWorkspace ? 'xl:min-h-0' : ''}`}>
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar with Breadcrumb, Search Input with <Kbd>, and Primary Action */}
         <header className="h-14 border-b border-line bg-surface/80 backdrop-blur-xs px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20">
           {/* Breadcrumb */}
@@ -148,9 +144,7 @@ export default function StudioLayout() {
         {/* Content Outlet */}
         <main
           className={`flex-1 w-full mx-auto px-6 sm:px-8 lg:px-12 ${
-            isRecruitingWorkspace
-              ? 'max-w-none xl:min-h-0 xl:overflow-hidden xl:flex xl:flex-col xl:px-6 xl:py-4 2xl:px-8'
-              : 'max-w-6xl py-8'
+            isRecruitingWorkspace ? 'max-w-none py-6 xl:px-8' : 'max-w-6xl py-8'
           }`}
         >
           <ErrorBoundary>

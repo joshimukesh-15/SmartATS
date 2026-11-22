@@ -15,7 +15,7 @@ export default function ListView({
   return (
     <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside
-        className="sticky top-4 flex max-h-[calc(100vh-32px)] flex-col gap-2 overflow-y-auto"
+        className="sticky top-20 flex max-h-[calc(100vh-96px)] flex-col gap-2 overflow-y-auto pr-1"
         aria-label="Candidates"
       >
         <div className="flex items-center justify-between px-1 pb-1">
