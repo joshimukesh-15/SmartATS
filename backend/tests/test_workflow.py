@@ -62,13 +62,23 @@ def test_applicant_review_workflow(db_session):
     updated = resumes.update_application_stage(app_id, update_req, db_session)
     assert updated.review_stage == "Reviewing"
 
-    # 5. Transition stage to "Interview"
+    # 5. Transition stage to "Interviewing" (alias for Interview)
     update_req_2 = ApplicationStatusUpdateRequest(
-        stage="Interview",
+        stage="Interviewing",
         note="Scheduled technical round",
         changed_by="Recruiter Sarah"
     )
-    resumes.update_application_stage(app_id, update_req_2, db_session)
+    updated_stage = resumes.update_application_stage(app_id, update_req_2, db_session)
+    assert updated_stage.review_stage == "Interview"
+
+    # 5b. Transition stage to "Offer"
+    offer_req = ApplicationStatusUpdateRequest(
+        stage="Offer",
+        note="Extending formal offer",
+        changed_by="Recruiter Sarah"
+    )
+    updated_offer = resumes.update_application_stage(app_id, offer_req, db_session)
+    assert updated_offer.review_stage == "Offer"
 
     # 6. Add standalone recruiter note
     note_req = ApplicationNoteCreateRequest(
@@ -82,14 +92,15 @@ def test_applicant_review_workflow(db_session):
 
     # 7. Check workflow history
     history_resp = resumes.get_application_workflow_history(app_id, db_session)
-    assert history_resp.review_stage == "Interview"
-    assert len(history_resp.status_history) >= 2
-    assert len(history_resp.notes) >= 2  # status note + standalone note
+    assert history_resp.review_stage == "Offer"
+    assert len(history_resp.status_history) >= 3
+    assert len(history_resp.notes) >= 3  # status notes + standalone note
 
     # Check stage audit entries
     stages_in_history = [h.to_stage for h in history_resp.status_history]
     assert "Interview" in stages_in_history
     assert "Reviewing" in stages_in_history
+    assert "Offer" in stages_in_history
 
     # 8. Check invalid stage raises 400
     with pytest.raises(HTTPException) as exc_info:
@@ -101,6 +112,6 @@ def test_applicant_review_workflow(db_session):
     rankings = get_job_rankings(db_session, job.job_id)
     assert len(rankings.rankings) == 1
     rank_item = rankings.rankings[0]
-    assert rank_item.review_stage == "Interview"
+    assert rank_item.review_stage == "Offer"
     assert len(rank_item.notes) >= 2
     assert len(rank_item.status_history) >= 2

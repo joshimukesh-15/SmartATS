@@ -27,7 +27,16 @@ from app.api.deps import get_current_recruiter
 
 router = APIRouter(tags=["Resumes & Applications"])
 
-ALLOWED_REVIEW_STAGES = ["New", "Reviewing", "Interview", "Rejected", "Hired"]
+ALLOWED_REVIEW_STAGES = ["New", "Reviewing", "Interview", "Interviewing", "Offer", "Hired", "Rejected"]
+STAGE_CANONICAL_MAP = {
+    "new": "New",
+    "reviewing": "Reviewing",
+    "interview": "Interview",
+    "interviewing": "Interview",
+    "offer": "Offer",
+    "hired": "Hired",
+    "rejected": "Rejected",
+}
 
 
 @router.post("/jobs/{job_id}/upload-resumes/", response_model=List[ApplicationUploadResult], status_code=status.HTTP_202_ACCEPTED)
@@ -273,6 +282,8 @@ def get_application(application_id: int, db: Session = Depends(get_db)):
 
 @router.patch("/applications/{application_id}/stage", response_model=ApplicationResponse)
 @router.patch("/applications/{application_id}/status", response_model=ApplicationResponse)
+@router.put("/applications/{application_id}/stage", response_model=ApplicationResponse)
+@router.put("/applications/{application_id}/status", response_model=ApplicationResponse)
 def update_application_stage(
     application_id: int,
     payload: ApplicationStatusUpdateRequest,
@@ -281,19 +292,19 @@ def update_application_stage(
 ):
     """
     Updates the candidate's review stage in the hiring pipeline.
-    Valid stages: New, Reviewing, Interview, Rejected, Hired.
+    Valid stages: New, Reviewing, Interview, Interviewing, Offer, Rejected, Hired.
     Records an entry in the timestamped status history and optionally appends a recruiter note.
     """
     app = db.query(Application).filter(Application.application_id == application_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Application not found.")
 
-    target_stage = payload.stage.strip()
-    matched_stage = next((s for s in ALLOWED_REVIEW_STAGES if s.lower() == target_stage.lower()), None)
+    target_stage = payload.stage.strip().lower()
+    matched_stage = STAGE_CANONICAL_MAP.get(target_stage)
     if not matched_stage:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid stage '{target_stage}'. Must be one of: {', '.join(ALLOWED_REVIEW_STAGES)}"
+            detail=f"Invalid stage '{payload.stage}'. Must be one of: {', '.join(ALLOWED_REVIEW_STAGES)}"
         )
 
     old_stage = app.review_stage or "New"

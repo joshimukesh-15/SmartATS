@@ -25,6 +25,7 @@ export function useUpdateApplicationStage(jobId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.jobs.rankings(jobId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.jobs.analytics(jobId) });
       }
+      queryClient.invalidateQueries({ queryKey: ['jobs', 'rankings'] });
       queryClient.invalidateQueries({
         queryKey: queryKeys.applications.history(variables.applicationId),
       });

@@ -28,11 +28,12 @@ export function useStageWorkflow(jobIdOrOptions, maybeSelectedCandidate) {
   const [targetStage, setTargetStage] = useState('');
   const [transitionNote, setTransitionNote] = useState('');
 
-  const currentCandidateStage = selectedCandidate?.review_stage || 'New';
+  const normalizeStage = (s) => (s === 'Interview' ? 'Interviewing' : s || 'New');
+  const currentCandidateStage = normalizeStage(selectedCandidate?.review_stage);
 
   const handleStageButtonClick = useCallback(
     (newStage) => {
-      if (!selectedCandidate || newStage === currentCandidateStage) return;
+      if (!selectedCandidate || normalizeStage(newStage) === currentCandidateStage) return;
       setTargetStage(newStage);
       setTransitionNote('');
       setShowTransitionPrompt(true);

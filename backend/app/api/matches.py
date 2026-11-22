@@ -134,7 +134,8 @@ def get_platform_overview_analytics(db: Session = Depends(get_db)):
     stage_counts = {
         "New": stage_counts_raw.get("New", 0),
         "Reviewing": stage_counts_raw.get("Reviewing", 0),
-        "Interview": stage_counts_raw.get("Interview", 0),
+        "Interview": stage_counts_raw.get("Interview", 0) + stage_counts_raw.get("Interviewing", 0),
+        "Offer": stage_counts_raw.get("Offer", 0),
         "Hired": stage_counts_raw.get("Hired", 0),
         "Rejected": stage_counts_raw.get("Rejected", 0)
     }
@@ -195,10 +196,12 @@ def get_job_specific_analytics(job_id: int, db: Session = Depends(get_db)):
             matched_freq[sk] = matched_freq.get(sk, 0) + 1
 
     job_stage_counts = {
-        "New": 0, "Reviewing": 0, "Interview": 0, "Hired": 0, "Rejected": 0
+        "New": 0, "Reviewing": 0, "Interview": 0, "Offer": 0, "Hired": 0, "Rejected": 0
     }
     for a in apps:
         st = a.review_stage or "New"
+        if st == "Interviewing":
+            st = "Interview"
         job_stage_counts[st] = job_stage_counts.get(st, 0) + 1
 
     app_ids = [a.application_id for a in apps]
