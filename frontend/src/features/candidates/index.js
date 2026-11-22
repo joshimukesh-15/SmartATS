@@ -12,7 +12,8 @@ export * from './hooks/useScoringWeights';
 export { default as useScoringWeights } from './hooks/useScoringWeights';
 
 // Components
-export { default as CandidateDetail } from './CandidateDetail';
+export { default as ProfilePanel } from './components/ProfilePanel';
+export { default as CandidateListItem } from './components/CandidateListItem';
 export { default as PipelineStageControl } from './PipelineStageControl';
 export { default as WeightsTunerDialog } from './components/WeightsTunerDialog';
 

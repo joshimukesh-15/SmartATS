@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, SlidersHorizontal, Check } from 'lucide-react';
 import { ScoreBar, ScoreValue, Avatar, Tooltip, StatusBadge, Button } from '../../../components/ui';
-import { STAGES, STAGE_CONFIG } from '../constants';
+import { STAGES, STAGE_CONFIG, displayName } from '../constants';
 import { computeBreakdown } from '../../../lib/score';
 import { useScoringWeights } from '../hooks/useScoringWeights';
 import WeightsTunerDialog from '../components/WeightsTunerDialog';
@@ -123,11 +123,12 @@ export default function TableView({
               const matchedSkills = cand.matched_skills || [];
               const visibleSkills = matchedSkills.slice(0, 3);
               const overflowSkills = matchedSkills.slice(3);
+              const cleanName = displayName(cand.candidate_name);
 
               return (
                 <tr key={cand.application_id || idx} onClick={() => handleRowClick(cand)} className="cursor-pointer select-none transition-colors hover:bg-surface-alt/50">
                   <td className="hidden px-2 py-3 text-center sm:table-cell" onClick={(e) => { e.stopPropagation(); selection?.handleToggleCompare(cand.application_id); }}>
-                    <input type="checkbox" checked={Boolean(isCompared)} onChange={() => {}} className="rounded-[4px] border-line accent-primary cursor-pointer" aria-label={`Select ${cand.candidate_name || 'candidate'} for compare`} />
+                    <input type="checkbox" checked={Boolean(isCompared)} onChange={() => {}} className="rounded-[4px] border-line accent-primary cursor-pointer" aria-label={`Select ${cleanName} for compare`} />
                   </td>
                   <td className="hidden px-2 py-3 text-center sm:table-cell">
                     <span className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums ${idx === 0 ? 'bg-primary text-on-primary' : 'bg-surface-alt text-ink'}`}>
@@ -136,10 +137,10 @@ export default function TableView({
                   </td>
                   <td className="py-3 px-3">
                     <div className="flex items-center gap-3">
-                      <Avatar name={cand.candidate_name || 'Candidate'} size="sm" />
+                      <Avatar name={cleanName} size="sm" />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-ink text-[15px] leading-[1.4] truncate">{cand.candidate_name || 'Candidate'}</span>
+                          <span className="font-semibold text-ink text-[15px] leading-[1.4] truncate">{cleanName}</span>
                           {cand.processing_status && <StatusBadge status={cand.processing_status} />}
                         </div>
                         <div className="text-[13px] leading-[1.5] text-ink-muted truncate">{cand.candidate_email || '—'}</div>

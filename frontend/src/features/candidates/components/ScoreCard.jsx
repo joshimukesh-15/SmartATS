@@ -62,50 +62,52 @@ export default function ScoreCard({
           ))}
         </div>
 
-        <details className="mt-5 rounded-xl border border-line bg-surface-alt/40 px-3.5 py-2.5 text-[12px] text-ink-muted">
+        <details className="mt-5 rounded-xl border border-line bg-surface-alt/40 px-3.5 py-2.5 text-[13px] text-ink-muted">
           <summary className="cursor-pointer font-medium text-ink">Scoring explanation</summary>
-          <p className="mt-2 leading-relaxed whitespace-pre-line">
+          <p className="mt-2 leading-relaxed whitespace-pre-line text-[13px]">
             {candidate.score_explanation || breakdown.formulaSummary || 'Each pillar score is multiplied by its configured weight to calculate the total.'}
           </p>
         </details>
       </div>
 
-      {/* Strengths & Gaps Two-Column */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <div className="rounded-[14px] border border-line bg-surface p-6 shadow-xs">
-          <h3 className="text-[17px] font-semibold text-ink">Strengths</h3>
-          <p className="mt-1 mb-4 text-[14px] text-ink-muted">From parts scoring 80% or more.</p>
-          {insights.strengths.length ? (
-            <ul className="space-y-2.5 text-[14px] text-ink">
-              {insights.strengths.map((str) => (
-                <li key={str} className="flex items-start gap-2.5">
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
-                  <span>{str}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <span className="text-[14px] text-ink-muted">No standout strengths yet.</span>
+      {/* Strengths & Gaps (Hidden when empty, no placeholder cards) */}
+      {(insights.strengths.length > 0 || insights.gaps.length > 0) && (
+        <div
+          className={`grid grid-cols-1 ${
+            insights.strengths.length > 0 && insights.gaps.length > 0 ? 'md:grid-cols-2' : ''
+          } gap-5`}
+        >
+          {insights.strengths.length > 0 && (
+            <div className="rounded-[14px] border border-line bg-surface p-6 shadow-xs">
+              <h3 className="text-[17px] font-semibold text-ink">Strengths</h3>
+              <p className="mt-1 mb-4 text-[13px] text-ink-muted">From parts scoring 80% or more.</p>
+              <ul className="space-y-2.5 text-[14px] text-ink">
+                {insights.strengths.map((str) => (
+                  <li key={str} className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                    <span>{str}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
-        </div>
 
-        <div className="rounded-[14px] border border-line bg-surface p-6 shadow-xs">
-          <h3 className="text-[17px] font-semibold text-ink">Gaps to review</h3>
-          <p className="mt-1 mb-4 text-[14px] text-ink-muted">From parts scoring under 40%.</p>
-          {insights.gaps.length ? (
-            <ul className="space-y-2.5 text-[14px] text-ink">
-              {insights.gaps.map((gap) => (
-                <li key={gap} className="flex items-start gap-2.5">
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full border-2 border-champagne" />
-                  <span>{gap}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <span className="text-[14px] text-ink-muted">No gaps flagged.</span>
+          {insights.gaps.length > 0 && (
+            <div className="rounded-[14px] border border-line bg-surface p-6 shadow-xs">
+              <h3 className="text-[17px] font-semibold text-ink">Gaps to review</h3>
+              <p className="mt-1 mb-4 text-[13px] text-ink-muted">From parts scoring under 40%.</p>
+              <ul className="space-y-2.5 text-[14px] text-ink">
+                {insights.gaps.map((gap) => (
+                  <li key={gap} className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full border-2 border-champagne" />
+                    <span>{gap}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

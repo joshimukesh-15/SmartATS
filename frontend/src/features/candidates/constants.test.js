@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { STAGES, STAGE_CONFIG, getStageConfig, normalizeStage, DEFAULT_WEIGHTS } from './constants';
+import { STAGES, STAGE_CONFIG, getStageConfig, normalizeStage, displayName, DEFAULT_WEIGHTS } from './constants';
 
 describe('Candidate constants', () => {
   it('exports all 6 canonical stages in correct pipeline sequence', () => {
@@ -48,5 +48,16 @@ describe('Candidate constants', () => {
   it('getStageConfig returns config or defaults safely to New', () => {
     expect(getStageConfig('Hired').label).toBe('Hired');
     expect(getStageConfig('UnknownStage').label).toBe('New');
+  });
+
+  it('displayName cleanly strips raw filenames, file extensions, and generic resume labels', () => {
+    expect(displayName('Resume Updated Sarah Jenkins')).toBe('Sarah Jenkins');
+    expect(displayName('resume_john_doe.pdf')).toBe('John Doe');
+    expect(displayName('jane_doe_resume_updated.docx')).toBe('Jane Doe');
+    expect(displayName('2024_curriculum_vitae_alex.pdf')).toBe('Alex');
+    expect(displayName('Resume Updated')).toBe('Candidate');
+    expect(displayName('')).toBe('Candidate');
+    expect(displayName(null)).toBe('Candidate');
+    expect(displayName('Sarah Jenkins')).toBe('Sarah Jenkins');
   });
 });

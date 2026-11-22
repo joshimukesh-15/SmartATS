@@ -135,8 +135,39 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
 
       {/* Shared Filter Bar */}
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <div className="min-w-[240px] max-w-[420px] flex-1">
+        <div className="min-w-[200px] max-w-[340px] flex-1">
           <Input placeholder="Search by name, email, or skill" leftIcon={<Search className="h-4 w-4 text-ink-muted" />} value={searchQuery} onChange={(e) => updateParams({ search: e.target.value })} />
+        </div>
+        <div className="w-48 max-w-full">
+          <Select
+            aria-label="Sort candidates"
+            value={`${sortBy}-${sortOrder}`}
+            onChange={(e) => {
+              const [newSort, newOrder] = e.target.value.split('-');
+              updateParams({ sort: newSort, order: newOrder });
+            }}
+          >
+            <option value="score-desc">Score: High to Low</option>
+            <option value="score-asc">Score: Low to High</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+            <option value="newest-desc">Newest first</option>
+            <option value="stage-asc">Stage</option>
+          </Select>
+        </div>
+        <div className="w-36 max-w-full">
+          <Select
+            aria-label="Filter by minimum score"
+            value={minScoreFilter ? String(minScoreFilter) : '0'}
+            onChange={(e) => updateParams({ minScore: e.target.value === '0' ? null : e.target.value })}
+          >
+            <option value="0">All scores</option>
+            <option value="50">Score ≥ 50%</option>
+            <option value="60">Score ≥ 60%</option>
+            <option value="70">Score ≥ 70%</option>
+            <option value="80">Score ≥ 80%</option>
+            <option value="90">Score ≥ 90%</option>
+          </Select>
         </div>
         <div className="flex flex-wrap items-center gap-1.5" aria-label="Filter candidates by stage">
           {FILTER_STAGES.map((st) => (
@@ -175,12 +206,26 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
         </>
       )}
 
-      {/* Floating Compare Bar */}
-      {selection.selectedForCompare.length >= 2 && (
+      {/* Floating Bulk-Select Bar */}
+      {selection.selectedForCompare.length >= 1 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 rounded-[12px] border border-line bg-surface px-5 py-3 shadow-2xl animate-in slide-in-from-bottom-3 duration-200">
-          <span className="text-[14px] font-semibold text-ink">Compare ({selection.selectedForCompare.length} candidates)</span>
-          <Button variant="primary" size="sm" leftIcon={<GitCompare className="w-4 h-4" />} onClick={() => setIsCompareOpen(true)}>Compare now</Button>
-          <button type="button" onClick={selection.clearCompare} className="p-1.5 rounded-[6px] text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors" title="Clear comparison selection"><X className="w-4 h-4" /></button>
+          <span className="text-[14px] font-semibold text-ink">
+            Compare ({selection.selectedForCompare.length} candidates)
+          </span>
+          {selection.selectedForCompare.length >= 2 && (
+            <Button variant="primary" size="sm" leftIcon={<GitCompare className="w-4 h-4" />} onClick={() => setIsCompareOpen(true)}>
+              Compare now
+            </Button>
+          )}
+          <button
+            type="button"
+            onClick={selection.clearCompare}
+            className="p-1.5 rounded-[6px] text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors cursor-pointer"
+            title="Clear comparison selection"
+            aria-label="Clear selection"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 

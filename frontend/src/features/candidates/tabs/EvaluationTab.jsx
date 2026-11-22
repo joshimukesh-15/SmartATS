@@ -1,10 +1,9 @@
 import { SlidersHorizontal, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
 import { ScoreBar } from '../../../components/ui/ScoreBar';
 
-export default function EvaluationTab({ candidate, breakdown, compact = false }) {
+export default function EvaluationTab({ candidate, breakdown }) {
   if (!candidate || !breakdown) return null;
 
-  // Derive component weights, percentages, and points from candidate.components or breakdown
   const compSkills = candidate.components?.skills;
   const compText = candidate.components?.text;
   const compExp = candidate.components?.experience;
@@ -38,7 +37,6 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
     compEdu
   );
 
-  // Derive strengths and gaps dynamically if not explicitly provided
   const strengths = candidate.strengths || [];
   const gaps = candidate.gaps || [];
 
@@ -56,69 +54,10 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
     pText < 50 ? `Lower text semantic density against job description` : null,
   ].filter(Boolean);
 
-  if (compact) {
-    const pillars = [
-      ['Skills', wSkills, pSkills, ptsSkills, 'bg-primary'],
-      ['Text', wText, pText, ptsText, 'bg-champagne'],
-      ...(hasMultiPillar ? [
-        ['Experience', wExp, pExp, ptsExp, 'bg-ink-muted'],
-        ['Education', wEdu, pEdu, ptsEdu, 'bg-champagne/70'],
-      ] : []),
-    ];
-
-    return (
-      <div className="space-y-2 py-2 text-[12px] animate-fadeIn">
-        <div className="grid grid-cols-2 gap-2">
-          {pillars.map(([label, weight, percentage, points, color]) => (
-            <div key={label} className="rounded-lg border border-line bg-surface p-2">
-              <div className="flex items-center justify-between gap-2 text-ink-muted">
-                <span className="flex min-w-0 items-center gap-1.5 font-medium">
-                  <span className={`h-2 w-2 shrink-0 rounded-full ${color}`} />
-                  <span className="truncate">{label}</span>
-                  <span className="shrink-0">{Math.round(weight * 100)}%</span>
-                </span>
-                <span className="shrink-0 tabular-nums">{Number(percentage).toFixed(0)}%</span>
-              </div>
-              <div className="mt-0.5 font-semibold tabular-nums text-ink">{Number(points).toFixed(1)} pts</div>
-            </div>
-          ))}
-        </div>
-        {(derivedStrengths.length > 0 || derivedGaps.length > 0) && (
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-lg bg-surface-alt/50 px-2.5 py-2">
-              <div className="flex items-center gap-1 font-semibold text-ink">
-                <TrendingUp className="h-3.5 w-3.5 text-champagne" /> Strengths
-              </div>
-              <p className="mt-1 line-clamp-2 text-ink-muted">
-                {derivedStrengths.slice(0, 1).join(' · ') || 'No notable strengths detected'}
-                {derivedStrengths.length > 1 ? ` +${derivedStrengths.length - 1} more` : ''}
-              </p>
-            </div>
-            <div className="rounded-lg bg-surface-alt/50 px-2.5 py-2">
-              <div className="flex items-center gap-1 font-semibold text-ink">
-                <AlertCircle className="h-3.5 w-3.5 text-ink-subtle" /> Gaps
-              </div>
-              <p className="mt-1 line-clamp-2 text-ink-muted">
-                {derivedGaps.slice(0, 1).join(' · ') || 'No critical gaps identified'}
-                {derivedGaps.length > 1 ? ` +${derivedGaps.length - 1} more` : ''}
-              </p>
-            </div>
-          </div>
-        )}
-        {(candidate.score_explanation || breakdown.formulaSummary) && (
-          <details className="rounded-lg border border-line px-2.5 py-2 text-ink-muted">
-            <summary className="cursor-pointer font-medium text-ink">Scoring explanation</summary>
-            <p className="mt-1 whitespace-pre-line leading-relaxed">{candidate.score_explanation || breakdown.formulaSummary}</p>
-          </details>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4 animate-fadeIn">
       {/* 1. Score Progress Bar */}
-      <div className="p-4 rounded-[12px] bg-surface-alt/50 border border-line space-y-2">
+      <div className="rounded-[12px] border border-line bg-surface p-4 space-y-2">
         <div className="flex items-center justify-between text-[13px]">
           <span className="font-semibold text-ink">
             {hasMultiPillar ? 'Multi-Pillar Score Progress' : 'Dual-Track Score Progress'}
@@ -139,12 +78,11 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
       </div>
 
       {/* 2. Component Pillar Cards Grid */}
-      <div className={`grid gap-3 text-[13px] ${hasMultiPillar ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
-        {/* Skills */}
-        <div className="p-3.5 rounded-[12px] border border-line bg-surface space-y-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[13px]">
+        <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
           <div className="flex items-center justify-between text-ink-muted">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="h-2 w-2 rounded-full bg-primary" />
               Skills Coverage ({Math.round(wSkills * 100)}%)
             </span>
             <span className="tabular-nums text-[13px]">
@@ -156,11 +94,10 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
           </div>
         </div>
 
-        {/* Text Match */}
-        <div className="p-3.5 rounded-[12px] border border-line bg-surface space-y-1">
+        <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
           <div className="flex items-center justify-between text-ink-muted">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full bg-champagne" />
+              <span className="h-2 w-2 rounded-full bg-champagne" />
               Semantic Text ({Math.round(wText * 100)}%)
             </span>
             <span className="tabular-nums text-[13px]">
@@ -172,12 +109,11 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
           </div>
         </div>
 
-        {/* Experience (4-pillar) */}
         {hasMultiPillar && (
-          <div className="p-3.5 rounded-[12px] border border-line bg-surface space-y-1">
+          <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-2 h-2 rounded-full bg-ink-muted" />
+                <span className="h-2 w-2 rounded-full bg-ink-muted" />
                 Experience Fit ({Math.round(wExp * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -190,12 +126,11 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
           </div>
         )}
 
-        {/* Education (4-pillar) */}
         {hasMultiPillar && (
-          <div className="p-3.5 rounded-[12px] border border-line bg-surface space-y-1">
+          <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-2 h-2 rounded-full bg-champagne/70 border border-champagne" />
+                <span className="h-2 w-2 rounded-full bg-champagne/70 border border-champagne" />
                 Education ({Math.round(wEdu * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -210,7 +145,7 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
       </div>
 
       {/* 3. Component Point Math */}
-      <div className="p-3.5 rounded-[12px] border border-line bg-surface space-y-2">
+      <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-2">
         <div className="flex items-center justify-between text-[13px] font-semibold text-ink">
           <span>{hasMultiPillar ? 'Multi-Pillar Point Math' : 'Dual-Track Point Math'}</span>
           <span className="tabular-nums text-primary font-bold">
@@ -220,7 +155,7 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
         <div data-testid="eval-tab-point-math-lines" className="space-y-1.5 text-[13px] tabular-nums">
           <div className="flex items-center justify-between text-ink">
             <span className="flex items-center gap-1.5 text-ink-muted">
-              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="h-2 w-2 rounded-full bg-primary" />
               <span>Skills ({(wSkills * 100).toFixed(0)}%)</span>
             </span>
             <span className="font-medium">
@@ -230,7 +165,7 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
 
           <div className="flex items-center justify-between text-ink">
             <span className="flex items-center gap-1.5 text-ink-muted">
-              <span className="w-2 h-2 rounded-full bg-champagne" />
+              <span className="h-2 w-2 rounded-full bg-champagne" />
               <span>Text ({(wText * 100).toFixed(0)}%)</span>
             </span>
             <span className="font-medium">
@@ -242,7 +177,7 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
             <>
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="w-2 h-2 rounded-full bg-ink-muted" />
+                  <span className="h-2 w-2 rounded-full bg-ink-muted" />
                   <span>Experience ({(wExp * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">
@@ -252,7 +187,7 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
 
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="w-2 h-2 rounded-full bg-champagne/40" />
+                  <span className="h-2 w-2 rounded-full bg-champagne/40" />
                   <span>Education ({(wEdu * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">
@@ -265,56 +200,52 @@ export default function EvaluationTab({ candidate, breakdown, compact = false })
       </div>
 
       {/* 4. Matched Criteria, Strengths & Gaps */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[13px]">
-        {/* Strengths */}
-        <div className="p-3.5 rounded-[12px] border border-line bg-surface space-y-2">
-          <div className="flex items-center gap-1.5 font-semibold text-ink">
-            <TrendingUp className="w-4 h-4 text-champagne shrink-0" strokeWidth={1.75} />
-            <span>Profile Strengths</span>
-          </div>
-          {derivedStrengths.length > 0 ? (
-            <ul className="space-y-1.5 text-ink-muted text-[13px]">
-              {derivedStrengths.map((str, idx) => (
-                <li key={idx} className="flex items-start gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-champagne shrink-0 mt-0.5" strokeWidth={1.75} />
-                  <span>{str}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-ink-muted italic text-[13px]">No notable strengths detected.</p>
+      {(derivedStrengths.length > 0 || derivedGaps.length > 0) && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[13px]">
+          {derivedStrengths.length > 0 && (
+            <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-2">
+              <div className="flex items-center gap-1.5 font-semibold text-ink">
+                <TrendingUp className="h-4 w-4 text-champagne shrink-0" strokeWidth={1.75} />
+                <span>Profile Strengths</span>
+              </div>
+              <ul className="space-y-1.5 text-ink-muted text-[13px]">
+                {derivedStrengths.map((str, idx) => (
+                  <li key={idx} className="flex items-start gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-champagne shrink-0 mt-0.5" strokeWidth={1.75} />
+                    <span>{str}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {derivedGaps.length > 0 && (
+            <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-2">
+              <div className="flex items-center gap-1.5 font-semibold text-ink">
+                <AlertCircle className="h-4 w-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
+                <span>Identified Gaps</span>
+              </div>
+              <ul className="space-y-1.5 text-ink-muted text-[13px]">
+                {derivedGaps.map((gap, idx) => (
+                  <li key={idx} className="flex items-start gap-1.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-ink-subtle shrink-0" />
+                    <span>{gap}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
+      )}
 
-        {/* Gaps / Risks */}
-        <div className="p-3.5 rounded-[12px] border border-line bg-surface space-y-2">
-          <div className="flex items-center gap-1.5 font-semibold text-ink">
-            <AlertCircle className="w-4 h-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
-            <span>Identified Gaps</span>
-          </div>
-          {derivedGaps.length > 0 ? (
-            <ul className="space-y-1.5 text-ink-muted text-[13px]">
-              {derivedGaps.map((gap, idx) => (
-                <li key={idx} className="flex items-start gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-ink-subtle shrink-0 mt-1.5" />
-                  <span>{gap}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-ink-muted italic text-[13px]">No critical skill or background gaps identified.</p>
-          )}
-        </div>
-      </div>
-
-      {/* 5. Transparent Math Formula & Audit */}
+      {/* 5. Formula Explanation & Audit */}
       {(candidate.score_explanation || breakdown.formulaSummary) && (
-        <div className="p-4 rounded-[12px] bg-surface-alt/40 border border-line space-y-1.5 text-[13px]">
-          <div className="font-semibold text-ink flex items-center gap-1.5">
-            <SlidersHorizontal className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+        <div className="rounded-[12px] border border-line bg-surface-alt/40 p-4 space-y-1.5 text-[13px]">
+          <div className="flex items-center gap-1.5 font-semibold text-ink">
+            <SlidersHorizontal className="h-4 w-4 text-champagne" strokeWidth={1.75} />
             <span>Formula Explanation & Audit</span>
           </div>
-          <p className="text-ink-muted leading-relaxed whitespace-pre-line text-[13px]">
+          <p className="leading-relaxed whitespace-pre-line text-[13px] text-ink-muted">
             {candidate.score_explanation || breakdown.formulaSummary}
           </p>
         </div>

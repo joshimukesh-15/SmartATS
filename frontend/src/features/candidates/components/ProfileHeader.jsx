@@ -1,6 +1,7 @@
 import { Eye, Download, GitCompare } from 'lucide-react';
 import { Button, StatusBadge } from '../../../components/ui';
 import { downloadResumeFile, previewResumeFile } from '../../../api/applications';
+import { displayName } from '../constants';
 
 function getInitials(name = '') {
   if (!name) return 'C';
@@ -19,20 +20,21 @@ export default function ProfileHeader({
   compared,
   onToggleCompare,
 }) {
-  const initials = getInitials(name);
+  const cleanName = displayName(name || candidate?.candidate_name);
+  const initials = getInitials(cleanName);
 
   return (
-    <div className="sticky top-14 z-10 flex flex-wrap items-center gap-3.5 border-b border-line bg-canvas/95 py-3 backdrop-blur-md">
+    <div className="sticky top-0 z-10 flex flex-wrap items-center gap-3.5 border-b border-line bg-canvas/95 py-3 backdrop-blur-md">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-surface-alt text-[15px] font-semibold text-ink">
         {initials}
       </div>
       <div className="min-w-0">
-        <h2 className="truncate text-[22px] font-semibold tracking-[-0.02em] text-ink">{name}</h2>
-        <div className="truncate text-[14px] text-ink-muted">
+        <h2 className="truncate text-[22px] font-semibold tracking-[-0.02em] text-ink">{cleanName}</h2>
+        <div className="truncate text-[13px] text-ink-muted">
           {experienceText} · {emailText}
         </div>
       </div>
-      <span className="rounded-lg border border-champagne/30 bg-champagne-soft px-2.5 py-0.5 text-[13px] font-semibold text-champagne">
+      <span className="rounded-[8px] border border-line bg-surface-alt px-2.5 py-0.5 text-[13px] font-semibold text-ink">
         Rank #{rank}
       </span>
       <StatusBadge status={currentStage} size="sm" />
@@ -45,13 +47,13 @@ export default function ProfileHeader({
               leftIcon={<Eye className="h-3.5 w-3.5" />}
               onClick={() => previewResumeFile(candidate.application_id)}
             >
-              Preview resume
+              Preview
             </Button>
             <Button
               variant="secondary"
               size="sm"
               leftIcon={<Download className="h-3.5 w-3.5" />}
-              onClick={() => downloadResumeFile(candidate.application_id, `${name}_Resume.pdf`)}
+              onClick={() => downloadResumeFile(candidate.application_id, `${cleanName}_Resume.pdf`)}
             >
               Download
             </Button>

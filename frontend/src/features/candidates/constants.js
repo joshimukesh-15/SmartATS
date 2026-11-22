@@ -9,6 +9,31 @@ export function normalizeStage(stage) {
   return match || 'New';
 }
 
+/**
+ * Strips raw filenames, file extensions, and generic phrases like "Resume Updated"
+ * to return a clean human candidate display name.
+ */
+export function displayName(name) {
+  if (!name || typeof name !== 'string') return 'Candidate';
+  let clean = name.trim();
+  // Strip common file extensions (.pdf, .docx, .doc, .rtf, .txt, .odt)
+  clean = clean.replace(/\.(pdf|docx?|txt|rtf|odt)$/i, '');
+  // Replace underscores and multiple dashes with spaces first so word boundaries work
+  clean = clean.replace(/[-_]+/g, ' ');
+  // Strip phrases like "Resume Updated", "Resume", "Updated", "CV" case-insensitively
+  clean = clean.replace(/\b(resume\s+updated|updated\s+resume|resume|updated|cv|curriculum\s+vitae)\b/gi, '');
+  // Remove leading numbers, dates, hashes or symbols (e.g. "12345 ", "2024 ", "#1 ")
+  clean = clean.replace(/^[0-9#\s.]+/, '');
+  // Collapse whitespace
+  clean = clean.replace(/\s+/g, ' ').trim();
+  if (!clean) return 'Candidate';
+  // If the string is all lowercase, convert to Title Case
+  if (clean === clean.toLowerCase()) {
+    clean = clean.replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+  return clean;
+}
+
 export const STAGE_CONFIG = {
   New: {
     label: 'New',

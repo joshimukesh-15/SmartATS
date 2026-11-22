@@ -3,10 +3,7 @@ import ProfileHeader from './ProfileHeader';
 import PipelineStepper from './PipelineStepper';
 import ScoreCard from './ScoreCard';
 import ActivityTab from '../tabs/ActivityTab';
-
-function displayStage(stage) {
-  return stage === 'Interview' ? 'Interviewing' : stage || 'New';
-}
+import { normalizeStage, displayName } from '../constants';
 
 function computeInsights(candidate, breakdown) {
   const strengths = [];
@@ -20,9 +17,9 @@ function computeInsights(candidate, breakdown) {
   ];
 
   parts.forEach((p) => {
-    if (p.score >= 80) {
+    if (typeof p.score === 'number' && p.score >= 80) {
       strengths.push(`${p.name} is a strong match at ${p.score.toFixed(0)}%`);
-    } else if (p.score < 40) {
+    } else if (typeof p.score === 'number' && p.score < 40 && p.score >= 0) {
       gaps.push(`${p.name} is low at ${p.score.toFixed(1)}%, worth checking in interview`);
     }
   });
@@ -47,14 +44,17 @@ export default function ProfilePanel({
   activeJob,
   breakdown,
   selectedIndex,
+  safeSelectedIndex,
   compared,
   onToggleCompare,
   workflow,
+  stageWorkflow,
 }) {
+  const effectiveWorkflow = workflow || stageWorkflow || {};
   const [tab, setTab] = useState('evaluation');
-  const currentStage = displayStage(candidate.review_stage);
-  const name = candidate.candidate_name || 'Candidate';
-  const rank = candidate.rank || selectedIndex + 1;
+  const currentStage = normalizeStage(candidate?.review_stage);
+  const name = displayName(candidate?.candidate_name);
+  const rank = candidate?.rank || (selectedIndex != null ? selectedIndex + 1 : (safeSelectedIndex != null ? safeSelectedIndex + 1 : 1));
 
   const matchedSkills = candidate.matched_skills || [];
   const requiredSkills = activeJob?.required_skills || [];
@@ -115,7 +115,7 @@ export default function ProfilePanel({
 
       <PipelineStepper
         currentStage={currentStage}
-        workflow={workflow}
+        workflow={effectiveWorkflow}
       />
 
       <div className="-mb-1 mt-1 flex gap-1 border-b border-line" role="tablist" aria-label="Dossier tabs">
@@ -227,7 +227,7 @@ export default function ProfilePanel({
         <div className="rounded-[14px] border border-line bg-surface p-6 shadow-xs">
           <h3 className="text-[17px] font-semibold text-ink">Notes and activity</h3>
           <p className="mt-1 mb-4 text-[14px] text-ink-muted">Newest first.</p>
-          <ActivityTab candidate={candidate} stageWorkflow={workflow} />
+          <ActivityTab candidate={candidate} stageWorkflow={effectiveWorkflow} />
         </div>
       )}
     </section>

@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Drawer, EmptyState, Button } from '../../../components/ui';
-import { STAGES, normalizeStage } from '../constants';
-import CandidateDetail from '../CandidateDetail';
+import { STAGES, normalizeStage, displayName } from '../constants';
+import ProfilePanel from '../components/ProfilePanel';
+import { computeBreakdown } from '../../../lib/score';
 
 const STAGE_DOT_MAP = {
   New: 'bg-ink-muted',
@@ -117,6 +118,7 @@ export default function BoardView({
                       const matchPercent = Math.round(Number(cand.final_score ?? 0));
                       const years = cand.experience_years;
                       const id = cand.application_id ?? cand.id ?? cand.candidate_id;
+                      const cleanName = displayName(cand.candidate_name);
 
                       return (
                         <div
@@ -133,10 +135,10 @@ export default function BoardView({
                           className="group cursor-pointer rounded-[10px] border border-line bg-surface p-3 transition-all hover:border-primary/40 hover:bg-surface-alt/40 shadow-xs"
                         >
                           <div className="flex items-start gap-2.5">
-                            <Avatar name={cand.candidate_name || 'Candidate'} size="sm" />
+                            <Avatar name={cleanName} size="sm" />
                             <div className="min-w-0 flex-1">
                               <div className="truncate text-[14px] font-semibold text-ink group-hover:text-primary">
-                                {cand.candidate_name || 'Candidate'}
+                                {cleanName}
                               </div>
                               <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px] text-ink-muted">
                                 <span className="font-semibold tabular-nums text-ink">
@@ -196,12 +198,14 @@ export default function BoardView({
         size="lg"
       >
         {activeCandidate && (
-          <CandidateDetail
+          <ProfilePanel
             candidate={activeCandidate}
             activeJob={activeJob}
-            stageWorkflow={workflow}
-            selectedForCompare={selection?.selectedForCompare || []}
-            onToggleCompare={() => selection?.handleToggleCompare?.(activeCandidate.application_id)}
+            breakdown={computeBreakdown(activeCandidate, activeJob || {})}
+            selectedIndex={candidates.indexOf(activeCandidate)}
+            compared={selection?.selectedForCompare?.includes(activeCandidate.application_id ?? activeCandidate.id)}
+            onToggleCompare={() => selection?.handleToggleCompare?.(activeCandidate.application_id ?? activeCandidate.id)}
+            workflow={workflow}
           />
         )}
       </Drawer>
