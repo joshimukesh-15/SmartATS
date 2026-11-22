@@ -1,23 +1,24 @@
 @import 'tailwindcss';
 
 :root {
-  --canvas: #f2f3f7;
+  --canvas: #f5f5f7;
   --surface: #ffffff;
-  --surface-alt: #dedee6;
-  --line: #c3c3c3;
-  --ink: #11141c;
-  --ink-muted: #4e5768;
-  --ink-subtle: #7c8594;
-  --primary: #181d26;
+  --surface-alt: #e8e8ed;
+  --line: #d2d2d7;
+  --ink: #1d1d1f;
+  --ink-muted: #6e6e73;
+  --ink-subtle: #86868b;
+  --primary: #0071e3;
   --on-primary: #ffffff;
-  --champagne: #5a6678;
-  --champagne-soft: #dedee6;
-  --danger: #b42318;
+  --champagne: #0066cc;
+  --champagne-soft: #edf4fe;
+  --danger: #e03e3e;
 
-  --shadow-xs: 0 1px 2px rgba(17, 20, 28, 0.04);
-  --shadow-sm: 0 1px 3px rgba(17, 20, 28, 0.05), 0 4px 14px -2px rgba(124, 133, 148, 0.10);
-  --shadow-md: 0 2px 5px rgba(17, 20, 28, 0.04), 0 12px 32px -8px rgba(124, 133, 148, 0.16);
-  --shadow-lg: 0 24px 64px -16px rgba(17, 20, 28, 0.22);
+  /* Apple-grade feather-light diffusion shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.12);
 
   /* Motion Tokens */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -28,23 +29,23 @@
 }
 
 .dark {
-  --canvas: #0b0d12;
-  --surface: #131720;
-  --surface-alt: #1a202c;
-  --line: #262c39;
-  --ink: #f0f1f7;
-  --ink-muted: #9ba4b5;
-  --ink-subtle: #7c8594;
-  --primary: #dedee6;
-  --on-primary: #0b0d12;
-  --champagne: #9aa7ba;
-  --champagne-soft: #19202c;
-  --danger: #e05248;
+  --canvas: #000000;
+  --surface: #161617;
+  --surface-alt: #262629;
+  --line: #333336;
+  --ink: #f5f5f7;
+  --ink-muted: #86868b;
+  --ink-subtle: #636366;
+  --primary: #2997ff;
+  --on-primary: #000000;
+  --champagne: #2997ff;
+  --champagne-soft: rgba(41, 151, 255, 0.14);
+  --danger: #ff453a;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(222, 222, 230, 0.06);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(222, 222, 230, 0.06);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(222, 222, 230, 0.06);
-  --shadow-lg: 0 24px 64px -16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(222, 222, 230, 0.06);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-lg: 0 20px 48px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 @theme {
@@ -61,7 +62,14 @@
   --color-champagne-soft: var(--champagne-soft);
   --color-danger: var(--danger);
 
-  /* User Signature MNC Palette */
+  /* Apple Core Design System Palette */
+  --color-apple-black: #000000;
+  --color-apple-white: #ffffff;
+  --color-apple-gray: #f5f5f7;
+  --color-apple-blue: #0071e3;
+  --color-apple-shark: #1d1d1f;
+
+  /* Refined secondary tones */
   --color-slate-mist: #dedee6;
   --color-platinum: #c3c3c3;
   --color-slate-steel: #7c8594;
