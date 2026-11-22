@@ -4,18 +4,18 @@ export default function ProofStrip() {
   const metrics = [
     {
       stat: '100.0%',
-      label: 'Deterministic verification rate',
-      caption: 'Zero hallucinated skills on benchmarked candidate resumes',
+      label: 'Skill extraction recall',
+      caption: 'All labeled skills found across the benchmark profiles',
     },
     {
       stat: '98.8%',
       label: 'Skill extraction F1-score',
-      caption: 'Benchmark on labeled engineering candidate profiles',
+      caption: 'Harmonic mean of skill precision and recall',
     },
     {
       stat: '1.000',
-      label: 'NDCG@3 ranking accuracy',
-      caption: 'Deterministic ranking across hybrid scoring configurations',
+      label: 'NDCG@3 · hybrid ranking',
+      caption: 'Ranking quality across the benchmark job requisitions',
     },
   ];
 
@@ -33,6 +33,9 @@ export default function ProofStrip() {
             </div>
           ))}
         </Panel>
+        <p className="mt-3 text-right text-[11px] text-ink-subtle">
+          Internal benchmark · 8 labeled profiles across 3 job requisitions
+        </p>
 
         <div className="mt-5 grid overflow-hidden rounded-[20px] border border-line bg-surface shadow-xs sm:grid-cols-[220px_minmax(0,1fr)]">
           <img
