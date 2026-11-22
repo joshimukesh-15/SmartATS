@@ -106,7 +106,7 @@ export default function JobsPage() {
         <EmptyState
           title="Could not load openings"
           description="A network error occurred while retrieving job openings."
-          action={<Button onClick={() => refetch()}>Try again</Button>}
+          action={<Button onClick={() => refetch()}>Retry</Button>}
         />
       ) : filteredJobs.length === 0 ? (
         <EmptyState
@@ -120,8 +120,90 @@ export default function JobsPage() {
           action={!search && <Button onClick={() => setIsCreateOpen(true)}>Create job opening</Button>}
         />
       ) : (
-        <div className="rounded-[14px] border border-line bg-surface overflow-hidden shadow-xs">
-          <Table>
+        <>
+          {/* Mobile Stacked Card Rows (< 768px) */}
+          <div className="md:hidden space-y-3">
+            {filteredJobs.map((job) => {
+              const appCount = job.application_count ?? job.applications_count ?? 0;
+              const formattedDate = job.created_at
+                ? new Date(job.created_at).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                : 'Recently';
+
+              return (
+                <div
+                  key={job.job_id}
+                  className="p-4 rounded-[14px] border border-line bg-surface space-y-3 shadow-xs"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-ink text-[15px]">{job.title}</h3>
+                      <p className="text-[13px] text-ink-muted line-clamp-2 mt-0.5">
+                        {job.description || 'No description provided'}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-[13px] font-semibold text-ink tabular-nums bg-surface-alt px-2 py-0.5 rounded-[8px] border border-line">
+                      {appCount} {appCount === 1 ? 'applicant' : 'applicants'}
+                    </span>
+                  </div>
+
+                  {job.required_skills?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {job.required_skills.map((skill, sIdx) => (
+                        <Tag key={sIdx} variant="default">
+                          {skill}
+                        </Tag>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-2 border-t border-line text-[13px] text-ink-muted">
+                    <span>Updated {formattedDate}</span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setInspectedJob(job)}
+                        className="px-2.5 py-1 min-h-[36px] rounded-[8px] text-[13px] font-medium border border-line bg-surface hover:bg-surface-alt transition-colors"
+                        title="Inspect JD"
+                      >
+                        JD
+                      </button>
+                      <IconButton
+                        variant="ghost"
+                        size="sm"
+                        aria-label="Upload resumes"
+                        onClick={() => navigate(`/studio/upload?jobId=${job.job_id}`)}
+                      >
+                        <UploadCloud className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
+                      </IconButton>
+                      <IconButton
+                        variant="ghost"
+                        size="sm"
+                        aria-label={`Delete ${job.title} opening`}
+                        onClick={() => setJobToDelete(job)}
+                      >
+                        <Trash2 className="w-4 h-4 text-ink-muted hover:text-danger" strokeWidth={1.75} />
+                      </IconButton>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        rightIcon={<ArrowUpRight className="w-4 h-4" strokeWidth={1.75} />}
+                        onClick={() => navigate(`/studio/leaderboard/${job.job_id}`)}
+                      >
+                        Open
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View (>= 768px) */}
+          <div className="hidden md:block rounded-[14px] border border-line bg-surface overflow-hidden shadow-xs">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[28%]">Position Title</TableHead>
@@ -218,6 +300,7 @@ export default function JobsPage() {
             </TableBody>
           </Table>
         </div>
+        </>
       )}
 
       {/* Modals */}

@@ -100,7 +100,76 @@ export default function TableView({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-[14px] border border-line bg-surface shadow-xs">
+      {/* Mobile Stacked Candidate Cards (< 768px) */}
+      <div className="md:hidden space-y-3">
+        {candidates.map((cand, idx) => {
+          const id = cand.application_id ?? cand.id ?? cand.candidate_id;
+          const breakdown = candidateBreakdowns.get(id) || computeBreakdown(cand, activeJob || {});
+          const isCompared = selection?.selectedForCompare?.includes(cand.application_id);
+          const stageKey = cand.review_stage || 'New';
+          const stageConf = STAGE_CONFIG[stageKey] || STAGE_CONFIG.New;
+          const cleanName = displayName(cand.candidate_name);
+
+          return (
+            <div
+              key={cand.application_id || idx}
+              onClick={() => handleRowClick(cand)}
+              className="p-4 rounded-[14px] border border-line bg-surface space-y-3 shadow-xs cursor-pointer hover:border-primary/40 transition-colors"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(isCompared)}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => selection?.handleToggleCompare(cand.application_id)}
+                    className="rounded-[4px] border-line accent-primary cursor-pointer shrink-0"
+                    aria-label={`Select ${cleanName} for compare`}
+                  />
+                  <span className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums shrink-0 ${idx === 0 ? 'bg-primary text-on-primary' : 'bg-surface-alt text-ink'}`}>
+                    {cand.rank || idx + 1}
+                  </span>
+                  <Avatar name={cleanName} size="sm" />
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-ink text-[15px] truncate">{cleanName}</h3>
+                    <div className="text-[13px] text-ink-muted truncate">{cand.candidate_email || '—'}</div>
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <ScoreValue score={breakdown.finalScore} size="sm" />
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <ScoreBar
+                skillsPoints={breakdown.skillsCoveredPoints}
+                textMatchPoints={breakdown.textMatchPoints}
+                experiencePoints={breakdown.experiencePoints}
+                educationPoints={breakdown.educationPoints}
+                finalScore={breakdown.finalScore}
+                height="h-1.5"
+              />
+
+              {/* Stage and info footer */}
+              <div className="flex items-center justify-between pt-2 border-t border-line text-[13px] text-ink-muted" onClick={(e) => e.stopPropagation()}>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-[8px] font-medium border ${stageConf.badge}`}>
+                  {stageKey}
+                </span>
+
+                {cand.experience_years !== undefined && (
+                  <span className="tabular-nums font-medium text-ink">
+                    {cand.experience_years} yrs experience
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop Table View (>= 768px) */}
+      <div className="hidden md:block overflow-x-auto rounded-[14px] border border-line bg-surface shadow-xs">
         <table className="w-full border-collapse text-left text-[14px]">
           <thead>
             <tr className="border-b border-line bg-surface-alt/40 text-[13px] text-ink-muted">

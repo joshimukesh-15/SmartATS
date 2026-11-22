@@ -34,6 +34,10 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = () => {
     clearAuthToken();
     navigate('/login', { replace: true });

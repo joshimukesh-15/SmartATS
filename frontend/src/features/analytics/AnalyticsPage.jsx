@@ -7,13 +7,13 @@ export default function AnalyticsPage() {
   const { jobId: routeJobId } = useParams();
   const navigate = useNavigate();
 
-  const { data: jobs = [], isLoading: jobsLoading } = useJobs();
+  const { data: jobs = [], isLoading: jobsLoading, isError: jobsError, refetch: refetchJobs } = useJobs();
 
   // Active Job ID
   const activeJobId = routeJobId || (jobs.length > 0 ? String(jobs[0].job_id) : '');
   const activeJob = jobs.find((j) => String(j.job_id) === String(activeJobId));
 
-  const { data: analytics, isLoading: analyticsLoading } = useJobAnalytics(activeJobId);
+  const { data: analytics, isLoading: analyticsLoading, isError: analyticsError, refetch: refetchAnalytics } = useJobAnalytics(activeJobId);
 
   const handleJobChange = (newJobId) => {
     navigate(`/studio/analytics/${newJobId}`);
@@ -111,6 +111,21 @@ export default function AnalyticsPage() {
             <Skeleton className="h-72 w-full rounded-[14px]" />
           </div>
         </div>
+      ) : jobsError || analyticsError ? (
+        <EmptyState
+          title="Could not load analytics"
+          description="A network error occurred while retrieving job analytics data."
+          action={
+            <Button
+              onClick={() => {
+                refetchJobs();
+                refetchAnalytics();
+              }}
+            >
+              Retry
+            </Button>
+          }
+        />
       ) : jobs.length === 0 ? (
         <EmptyState
           title="No jobs to analyze"

@@ -24,7 +24,7 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
   const activeJobId = searchParams.get('job') || searchParams.get('jobId') || (jobs[0] ? String(jobs[0].job_id) : '');
   const activeJob = jobs.find((job) => String(job.job_id) === String(activeJobId));
 
-  const { data: rankingsData, isLoading: rankingsLoading } = useRankings(activeJobId);
+  const { data: rankingsData, isLoading: rankingsLoading, isError: rankingsError, refetch: refetchRankings } = useRankings(activeJobId);
   const rawCandidates = useMemo(() => rankingsData?.rankings || [], [rankingsData?.rankings]);
 
   // URL filters: search, stage, minScore, sort, order
@@ -184,6 +184,14 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <Skeleton className="h-[480px] rounded-[14px]" />
           <Skeleton className="h-[480px] rounded-[14px]" />
+        </div>
+      ) : rankingsError ? (
+        <div className="flex min-h-[380px] items-center justify-center rounded-[14px] border border-line bg-surface p-8">
+          <EmptyState
+            title="Failed to load candidates"
+            description="A network error occurred while retrieving candidate rankings."
+            action={<Button onClick={() => refetchRankings()}>Retry</Button>}
+          />
         </div>
       ) : !candidates.length && !searchQuery && stageFilter === 'All' && !rawCandidates.length ? (
         <div className="flex min-h-[380px] items-center justify-center rounded-[14px] border border-dashed border-line bg-surface p-8">
