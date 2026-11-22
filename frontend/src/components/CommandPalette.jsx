@@ -9,6 +9,7 @@ import {
   Kanban,
   GitCompare,
   BarChart3,
+  Users,
   Globe,
   Sun,
   Keyboard,
@@ -112,6 +113,13 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
                   >
                     <UploadCloud className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
                     <span>Upload Resumes</span>
+                  </Command.Item>
+                  <Command.Item
+                    onSelect={() => runCommand(() => navigate('/studio/candidates'))}
+                    className="flex items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-surface-alt text-ink select-none font-medium"
+                  >
+                    <Users className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
+                    <span>Candidates</span>
                   </Command.Item>
                   <Command.Item
                     onSelect={() => runCommand(() => navigate('/studio/leaderboard'))}

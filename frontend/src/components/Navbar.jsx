@@ -8,6 +8,7 @@ import {
   Kanban,
   GitCompare,
   BarChart3,
+  Users,
   Globe,
   Menu,
   Search,
@@ -25,6 +26,7 @@ const NAV_GROUPS = [
       { path: '/studio', label: 'Overview', icon: LayoutDashboard, exact: true },
       { path: '/studio/jobs', label: 'Jobs', icon: Briefcase },
       { path: '/studio/upload', label: 'Upload', icon: UploadCloud },
+      { path: '/studio/candidates', label: 'Candidates', icon: Users },
     ],
   },
   {

@@ -46,6 +46,94 @@ def test_job_crud_endpoints(db_session):
     assert any(j.job_id == job_id for j in all_jobs)
 
 
+def test_delete_job_removes_resume_and_orphaned_candidate(db_session, tmp_path, monkeypatch):
+    upload_root = tmp_path / "resumes"
+    upload_root.mkdir()
+    monkeypatch.setattr("app.api.jobs.settings.UPLOAD_DIR", str(upload_root))
+
+    job = jobs.create_job(JobCreate(
+        title="Delete cleanup role",
+        description="A sufficiently long job description for cleanup testing.",
+        required_skills=["Python"]
+    ), db_session)
+    candidate = Candidate(name="Delete cleanup candidate", raw_text="Sensitive resume text")
+    db_session.add(candidate)
+    db_session.commit()
+    db_session.refresh(candidate)
+
+    resume_path = upload_root / "delete_cleanup_resume.pdf"
+    resume_path.write_bytes(b"resume")
+    application = Application(
+        job_id=job.job_id,
+        candidate_id=candidate.candidate_id,
+        resume_path=str(resume_path),
+        file_hash="delete-cleanup-unique-hash",
+        processing_status="COMPLETED"
+    )
+    db_session.add(application)
+    db_session.commit()
+    candidate_id = candidate.candidate_id
+
+    jobs.delete_job(job.job_id, db_session)
+
+    assert not resume_path.exists()
+    assert db_session.query(Application).filter(Application.job_id == job.job_id).count() == 0
+    assert db_session.query(Candidate).filter(Candidate.candidate_id == candidate_id).first() is None
+
+
+def test_delete_job_keeps_candidate_shared_with_another_opening(db_session, tmp_path, monkeypatch):
+    # This module shares a database session across tests; clear stale identities
+    # left by the preceding cleanup test before SQLite reuses deleted row IDs.
+    db_session.expunge_all()
+    upload_root = tmp_path / "resumes"
+    upload_root.mkdir()
+    monkeypatch.setattr("app.api.jobs.settings.UPLOAD_DIR", str(upload_root))
+
+    job_to_delete = jobs.create_job(JobCreate(
+        title="Shared candidate role one",
+        description="A sufficiently long job description for shared candidate testing.",
+        required_skills=["Python"]
+    ), db_session)
+    remaining_job = jobs.create_job(JobCreate(
+        title="Shared candidate role two",
+        description="Another sufficiently long job description for shared candidate testing.",
+        required_skills=["Python"]
+    ), db_session)
+    candidate = Candidate(name="Shared candidate", raw_text="Candidate resume text")
+    db_session.add(candidate)
+    db_session.commit()
+    db_session.refresh(candidate)
+
+    first_resume = upload_root / "shared_one.pdf"
+    second_resume = upload_root / "shared_two.pdf"
+    first_resume.write_bytes(b"resume one")
+    second_resume.write_bytes(b"resume two")
+    db_session.add_all([
+        Application(
+            job_id=job_to_delete.job_id,
+            candidate_id=candidate.candidate_id,
+            resume_path=str(first_resume),
+            file_hash="shared-candidate-role-one-hash",
+            processing_status="COMPLETED"
+        ),
+        Application(
+            job_id=remaining_job.job_id,
+            candidate_id=candidate.candidate_id,
+            resume_path=str(second_resume),
+            file_hash="shared-candidate-role-two-hash",
+            processing_status="COMPLETED"
+        )
+    ])
+    db_session.commit()
+    candidate_id = candidate.candidate_id
+
+    jobs.delete_job(job_to_delete.job_id, db_session)
+
+    assert not first_resume.exists()
+    assert second_resume.exists()
+    assert db_session.query(Candidate).filter(Candidate.candidate_id == candidate_id).first() is not None
+
+
 def test_resume_processing_and_ranking_flow(db_session):
     # Create test job
     job_in = JobCreate(

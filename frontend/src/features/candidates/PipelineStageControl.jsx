@@ -1,5 +1,5 @@
 import { RotateCcw, CheckCircle2, ArrowRight } from 'lucide-react';
-import { Button, Input } from '../../components/ui';
+import { Button, Input, Select } from '../../components/ui';
 import { STAGES } from './constants';
 
 export default function PipelineStageControl({
@@ -15,6 +15,7 @@ export default function PipelineStageControl({
   transitionNote: propTransitionNote,
   setTransitionNote: propSetTransitionNote,
   isUpdatingStage: propIsUpdatingStage,
+  compact = false,
   className = '',
 }) {
   if (!candidate) return null;
@@ -74,6 +75,58 @@ export default function PipelineStageControl({
   const normalizeStage = (st) => (st === 'Interview' ? 'Interviewing' : st);
   const normalizedCurrent = normalizeStage(currentStage);
   const currentIdx = progressiveStages.indexOf(normalizedCurrent);
+
+  if (compact) {
+    return (
+      <div className={`space-y-2 ${className}`}>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium uppercase tracking-wide text-ink-muted">Recruitment stage</p>
+            <p className="truncate text-[13px] font-semibold text-ink">{currentStage}</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <div className="w-36">
+              <Select
+                aria-label="Move candidate to stage"
+                value={normalizedCurrent}
+                disabled={isUpdating}
+                className="h-8 text-[13px]"
+                onChange={(event) => {
+                  if (event.target.value !== normalizedCurrent) handleStageClick(event.target.value);
+                }}
+              >
+                {STAGES.map((stage) => (
+                  <option key={stage} value={stage}>{stage}</option>
+                ))}
+              </Select>
+            </div>
+            {isRejected ? (
+              <Button variant="secondary" size="sm" onClick={() => handleStageClick('Reviewing')} disabled={isUpdating}>
+                Reopen
+              </Button>
+            ) : (
+              <Button variant="secondary" size="sm" onClick={() => handleStageClick('Rejected')} disabled={isUpdating}>
+                Reject
+              </Button>
+            )}
+          </div>
+        </div>
+        {showPrompt && (
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 rounded-[10px] border border-line bg-surface-alt/50 p-2.5">
+            <Input
+              aria-label="Transition reason"
+              placeholder={`Reason for moving to ${target} (optional)`}
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              className="text-[13px]"
+            />
+            <Button variant="secondary" size="sm" onClick={handleCancel} disabled={isUpdating}>Cancel</Button>
+            <Button variant="primary" size="sm" onClick={handleConfirm} loading={isUpdating}>Confirm</Button>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={`space-y-2.5 ${className}`}>

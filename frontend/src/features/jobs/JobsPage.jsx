@@ -8,8 +8,9 @@ import {
   Briefcase,
   ShieldCheck,
   UploadCloud,
+  AlertTriangle,
 } from 'lucide-react';
-import { useJobs, useDeleteJob, useCreateJob } from '../../hooks';
+import { useJobs, useDeleteJob } from '../../hooks';
 import {
   Table,
   TableHeader,
@@ -23,6 +24,7 @@ import {
   Tag,
   EmptyState,
   Skeleton,
+  Dialog,
   toast,
 } from '../../components/ui';
 import CreateJobDialog from './CreateJobDialog';
@@ -32,11 +34,11 @@ export default function JobsPage() {
   const navigate = useNavigate();
   const { data: jobs = [], isLoading, isError, refetch } = useJobs();
   const deleteJobMutation = useDeleteJob();
-  const createJobMutation = useCreateJob();
 
   const [search, setSearch] = useState('');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [inspectedJob, setInspectedJob] = useState(null);
+  const [jobToDelete, setJobToDelete] = useState(null);
 
   useEffect(() => {
     const handleOpenCreate = () => setIsCreateOpen(true);
@@ -44,22 +46,12 @@ export default function JobsPage() {
     return () => window.removeEventListener('smartats:open-create-job', handleOpenCreate);
   }, []);
 
-  const handleDelete = (job) => {
-    deleteJobMutation.mutate(job.job_id, {
+  const handleDelete = () => {
+    if (!jobToDelete) return;
+    deleteJobMutation.mutate(jobToDelete.job_id, {
       onSuccess: () => {
-        toast.success(`Deleted opening "${job.title}"`, {
-          action: {
-            label: 'Undo',
-            onClick: () => {
-              createJobMutation.mutate({
-                title: job.title,
-                description: job.description,
-                required_skills: job.required_skills,
-                preferred_skills: job.preferred_skills,
-              });
-            },
-          },
-        });
+        toast.success(`Deleted opening "${jobToDelete.title}"`);
+        setJobToDelete(null);
       },
       onError: (err) => {
         toast.error(`Failed to delete opening: ${err.message}`);
@@ -181,7 +173,7 @@ export default function JobsPage() {
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         {/* Hover row action shortcuts */}
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                        <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => setInspectedJob(job)}
@@ -205,7 +197,7 @@ export default function JobsPage() {
                             size="sm"
                             aria-label="Delete opening"
                             title="Delete opening"
-                            onClick={() => handleDelete(job)}
+                            onClick={() => setJobToDelete(job)}
                           >
                             <Trash2 className="w-4 h-4 text-ink-muted hover:text-danger" strokeWidth={1.75} />
                           </IconButton>
@@ -233,6 +225,40 @@ export default function JobsPage() {
       {/* Modals */}
       <CreateJobDialog isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
       <JobQualityDialog job={inspectedJob} onClose={() => setInspectedJob(null)} />
+      <Dialog
+        isOpen={Boolean(jobToDelete)}
+        onClose={() => !deleteJobMutation.isPending && setJobToDelete(null)}
+        title="Delete job opening?"
+        description="This action permanently removes the opening and its applications."
+        maxWidth="max-w-lg"
+      >
+        {jobToDelete && (
+          <div className="space-y-5">
+            <div className="flex gap-3 rounded-[12px] border border-danger/20 bg-danger/5 p-4">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-danger" aria-hidden="true" />
+              <div>
+                <p className="text-[14px] font-semibold text-ink">{jobToDelete.title}</p>
+                <p className="mt-1 text-[13px] leading-5 text-ink-muted">
+                  {jobToDelete.application_count ?? jobToDelete.applications_count ?? 0} candidate
+                  application(s) and their saved resumes will be removed. This cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => setJobToDelete(null)}
+                disabled={deleteJobMutation.isPending}
+              >
+                Keep opening
+              </Button>
+              <Button variant="danger" onClick={handleDelete} loading={deleteJobMutation.isPending}>
+                Delete opening
+              </Button>
+            </div>
+          </div>
+        )}
+      </Dialog>
     </div>
   );
 }

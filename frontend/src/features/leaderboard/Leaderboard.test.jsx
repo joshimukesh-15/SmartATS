@@ -1,7 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import LeaderboardPage from './LeaderboardPage';
+
+function CurrentLocation() {
+  const location = useLocation();
+  return <output data-testid="current-location">{location.pathname}{location.search}</output>;
+}
 
 // Mock TanStack hooks
 vi.mock('../../hooks', () => ({
@@ -87,9 +92,10 @@ vi.mock('../../hooks', () => ({
 }));
 
 describe('Leaderboard Page', () => {
-  it('renders candidates and allows selecting rows', () => {
+  it('opens the selected candidate in the dedicated review workspace', () => {
     render(
       <MemoryRouter>
+        <CurrentLocation />
         <LeaderboardPage />
       </MemoryRouter>
     );
@@ -101,23 +107,22 @@ describe('Leaderboard Page', () => {
     const alexRow = screen.getAllByText('Alex Rivera')[0].closest('tr');
     fireEvent.click(alexRow);
 
-    // Verify right panel updates (detail panel shows Alex's email)
-    const emails = screen.getAllByText('alex@example.com');
-    expect(emails.length).toBeGreaterThan(0);
+    expect(screen.getByTestId('current-location')).toHaveTextContent(
+      '/studio/candidates?jobId=1&candidate=app-2'
+    );
   });
 
-  it('displays candidate review stages and notes in detail panel', () => {
+  it('keeps review details out of the ranking page', () => {
     render(
       <MemoryRouter>
         <LeaderboardPage />
       </MemoryRouter>
     );
 
-    // Sarah is selected by default; verify stage badge and note
+    // Stage actions remain in the ranking table, while profile content lives in Candidates.
     expect(screen.getAllByText('Interview').length).toBeGreaterThan(0);
-    expect(
-      screen.getByText('Excellent candidate during system screen')
-    ).toBeInTheDocument();
+    expect(screen.queryByText('Excellent candidate during system screen')).not.toBeInTheDocument();
+    expect(screen.queryByText('Scoring explanation')).not.toBeInTheDocument();
   });
 
   it('filters candidates by stage when clicking stage pill', () => {
@@ -134,24 +139,6 @@ describe('Leaderboard Page', () => {
     // Only Alex should be present (Alex has 'New', Sarah has 'Interview')
     expect(screen.getAllByText('Alex Rivera').length).toBeGreaterThan(0);
     expect(screen.queryByText('Sarah Jenkins')).not.toBeInTheDocument();
-  });
-
-  it('supports keyboard navigation via ArrowDown and ArrowUp', () => {
-    render(
-      <MemoryRouter>
-        <LeaderboardPage />
-      </MemoryRouter>
-    );
-
-    // Press ArrowDown to select next candidate
-    fireEvent.keyDown(window, { key: 'ArrowDown' });
-    const alexEmails = screen.getAllByText('alex@example.com');
-    expect(alexEmails.length).toBeGreaterThan(0);
-
-    // Press ArrowUp to select first candidate again
-    fireEvent.keyDown(window, { key: 'ArrowUp' });
-    const sarahEmails = screen.getAllByText('sarah@example.com');
-    expect(sarahEmails.length).toBeGreaterThan(0);
   });
 
   it('renders recognized experience, seniority, education, and equivalent skills', () => {

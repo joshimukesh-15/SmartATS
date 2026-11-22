@@ -13,6 +13,7 @@ const ROUTE_TITLES = {
   '/studio/': 'Overview',
   '/studio/jobs': 'Jobs',
   '/studio/upload': 'Upload',
+  '/studio/candidates': 'Candidates',
   '/studio/leaderboard': 'Leaderboard',
   '/studio/review': 'Pipeline',
   '/studio/compare': 'Compare',
@@ -37,10 +38,14 @@ export default function StudioLayout() {
 
   // Derive breadcrumb title
   const currentPath = location.pathname.replace(/\/$/, '');
+  const isLeaderboardPage = currentPath.startsWith('/studio/leaderboard');
+  const isCandidateWorkspace = currentPath.startsWith('/studio/candidates');
+  const isRecruitingWorkspace = isLeaderboardPage || isCandidateWorkspace;
   let pageTitle = ROUTE_TITLES[currentPath];
   if (!pageTitle) {
     if (currentPath.startsWith('/studio/jobs')) pageTitle = 'Jobs';
     else if (currentPath.startsWith('/studio/upload')) pageTitle = 'Upload';
+    else if (currentPath.startsWith('/studio/candidates')) pageTitle = 'Candidates';
     else if (currentPath.startsWith('/studio/leaderboard')) pageTitle = 'Leaderboard';
     else if (currentPath.startsWith('/studio/review')) pageTitle = 'Pipeline';
     else if (currentPath.startsWith('/studio/compare')) pageTitle = 'Compare';
@@ -76,7 +81,7 @@ export default function StudioLayout() {
         </Button>
       );
     }
-    if (location.pathname.includes('/studio/leaderboard')) {
+    if (location.pathname.includes('/studio/leaderboard') || location.pathname.includes('/studio/candidates')) {
       return (
         <Button
           variant="secondary"
@@ -102,12 +107,16 @@ export default function StudioLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col md:flex-row font-sans selection:bg-primary selection:text-on-primary">
+    <div
+      className={`min-h-screen bg-canvas text-ink flex flex-col md:flex-row font-sans selection:bg-primary selection:text-on-primary ${
+        isRecruitingWorkspace ? 'xl:h-dvh xl:min-h-0 xl:overflow-hidden' : ''
+      }`}
+    >
       {/* 232px Sidebar */}
       <Navbar />
 
       {/* Main Studio View Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`flex-1 flex flex-col min-w-0 ${isRecruitingWorkspace ? 'xl:min-h-0' : ''}`}>
         {/* Top Bar with Breadcrumb, Search Input with <Kbd>, and Primary Action */}
         <header className="h-14 border-b border-line bg-surface/80 backdrop-blur-xs px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20">
           {/* Breadcrumb */}
@@ -137,7 +146,13 @@ export default function StudioLayout() {
         </header>
 
         {/* Content Outlet */}
-        <main className="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
+        <main
+          className={`flex-1 w-full mx-auto px-6 sm:px-8 lg:px-12 ${
+            isRecruitingWorkspace
+              ? 'max-w-none xl:min-h-0 xl:overflow-hidden xl:flex xl:flex-col xl:px-6 xl:py-4 2xl:px-8'
+              : 'max-w-6xl py-8'
+          }`}
+        >
           <ErrorBoundary>
             <Suspense fallback={<RouteSkeleton />}>
               <Outlet />

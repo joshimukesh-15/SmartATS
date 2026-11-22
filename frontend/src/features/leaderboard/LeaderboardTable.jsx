@@ -4,7 +4,6 @@ import CandidateRow from './CandidateRow';
 
 export default function LeaderboardTable({
   candidates = [],
-  safeSelectedIndex,
   selectedForCompare = [],
   activeJob,
   onSelectCandidate,
@@ -13,7 +12,6 @@ export default function LeaderboardTable({
   setOpenStageMenuId,
   onQuickStageChange,
   tableContainerRef,
-  density = 'comfortable',
   sortBy = 'score',
   sortOrder = 'desc',
   onSort,
@@ -32,7 +30,7 @@ export default function LeaderboardTable({
     return (
       <th
         onClick={() => handleSortClick(key)}
-        className={`px-4 py-3 font-medium cursor-pointer select-none group transition-colors hover:text-ink ${
+        className={`py-3 font-medium cursor-pointer select-none group transition-colors hover:text-ink ${
           alignment === 'right' ? 'text-right' : alignment === 'center' ? 'text-center' : 'text-left'
         } ${extraClasses}`}
       >
@@ -63,25 +61,29 @@ export default function LeaderboardTable({
       className="w-full rounded-[14px] border border-line bg-surface overflow-hidden focus:outline-none transition-all duration-200 shadow-xs"
       tabIndex={0}
     >
-      <div className="overflow-x-auto max-h-[700px]">
-        <table className="w-full text-left text-[14px] text-ink border-collapse">
+      <div className="max-h-[700px] overflow-x-hidden xl:h-full xl:max-h-none xl:overflow-y-auto">
+        <table className="w-full table-fixed border-collapse text-left text-[14px] text-ink">
           {/* Sticky Header with Backdrop Blur */}
           <thead className="sticky top-0 bg-surface/90 backdrop-blur-md z-10 border-b border-line text-[13px] font-medium text-ink-muted">
             <tr>
-              <th className="w-10 px-3 py-3 text-center">
+              <th className="hidden w-10 px-2 py-3 text-center sm:table-cell">
                 <span className="sr-only">Select</span>
               </th>
-              {renderSortHeader('rank', 'Rank', 'center', 'w-16 px-3')}
-              {renderSortHeader('name', 'Candidate', 'left', 'px-4')}
-              {renderSortHeader('stage', 'Stage', 'left', 'w-32 px-3')}
-              {renderSortHeader('skills', 'Skills', 'right', 'w-24 px-3 hidden sm:table-cell')}
-              {renderSortHeader('text', 'Text', 'right', 'w-24 px-3 hidden sm:table-cell')}
-              {renderSortHeader('score', 'Final Score', 'right', 'w-32 px-4')}
+              {renderSortHeader('rank', 'Rank', 'center', 'hidden w-14 px-2 sm:table-cell')}
+              {renderSortHeader('name', 'Candidate', 'left', 'px-3')}
+              {renderSortHeader('stage', 'Stage', 'left', 'w-24 px-2 xl:w-32')}
+              {renderSortHeader('skills', 'Skills', 'right', 'hidden w-20 px-2 2xl:table-cell')}
+              {renderSortHeader('text', 'Text', 'right', 'hidden w-20 px-2 2xl:table-cell')}
+              {renderSortHeader(
+                'score',
+                <><span className="sm:hidden">Score</span><span className="hidden sm:inline">Final Score</span></>,
+                'right',
+                'w-20 px-2 sm:w-28 sm:px-3'
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
             {candidates.map((candidate, idx) => {
-              const isSelected = safeSelectedIndex === idx;
               const isCompared = selectedForCompare.includes(candidate.application_id);
               const breakdown = computeBreakdown(candidate, activeJob);
 
@@ -90,7 +92,6 @@ export default function LeaderboardTable({
                   key={candidate.application_id || idx}
                   candidate={candidate}
                   idx={idx}
-                  isSelected={isSelected}
                   isCompared={isCompared}
                   breakdown={breakdown}
                   onSelectCandidate={onSelectCandidate}
@@ -98,7 +99,6 @@ export default function LeaderboardTable({
                   openStageMenuId={openStageMenuId}
                   setOpenStageMenuId={setOpenStageMenuId}
                   onQuickStageChange={onQuickStageChange}
-                  density={density}
                 />
               );
             })}

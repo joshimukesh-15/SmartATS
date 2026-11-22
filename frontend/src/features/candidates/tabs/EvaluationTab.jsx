@@ -1,7 +1,7 @@
 import { SlidersHorizontal, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
 import { ScoreBar } from '../../../components/ui/ScoreBar';
 
-export default function EvaluationTab({ candidate, breakdown }) {
+export default function EvaluationTab({ candidate, breakdown, compact = false }) {
   if (!candidate || !breakdown) return null;
 
   // Derive component weights, percentages, and points from candidate.components or breakdown
@@ -55,6 +55,65 @@ export default function EvaluationTab({ candidate, breakdown }) {
     pExp < 60 ? `Experience profile below target senior benchmark` : null,
     pText < 50 ? `Lower text semantic density against job description` : null,
   ].filter(Boolean);
+
+  if (compact) {
+    const pillars = [
+      ['Skills', wSkills, pSkills, ptsSkills, 'bg-primary'],
+      ['Text', wText, pText, ptsText, 'bg-champagne'],
+      ...(hasMultiPillar ? [
+        ['Experience', wExp, pExp, ptsExp, 'bg-ink-muted'],
+        ['Education', wEdu, pEdu, ptsEdu, 'bg-champagne/70'],
+      ] : []),
+    ];
+
+    return (
+      <div className="space-y-2 py-2 text-[12px] animate-fadeIn">
+        <div className="grid grid-cols-2 gap-2">
+          {pillars.map(([label, weight, percentage, points, color]) => (
+            <div key={label} className="rounded-lg border border-line bg-surface p-2">
+              <div className="flex items-center justify-between gap-2 text-ink-muted">
+                <span className="flex min-w-0 items-center gap-1.5 font-medium">
+                  <span className={`h-2 w-2 shrink-0 rounded-full ${color}`} />
+                  <span className="truncate">{label}</span>
+                  <span className="shrink-0">{Math.round(weight * 100)}%</span>
+                </span>
+                <span className="shrink-0 tabular-nums">{Number(percentage).toFixed(0)}%</span>
+              </div>
+              <div className="mt-0.5 font-semibold tabular-nums text-ink">{Number(points).toFixed(1)} pts</div>
+            </div>
+          ))}
+        </div>
+        {(derivedStrengths.length > 0 || derivedGaps.length > 0) && (
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-lg bg-surface-alt/50 px-2.5 py-2">
+              <div className="flex items-center gap-1 font-semibold text-ink">
+                <TrendingUp className="h-3.5 w-3.5 text-champagne" /> Strengths
+              </div>
+              <p className="mt-1 line-clamp-2 text-ink-muted">
+                {derivedStrengths.slice(0, 1).join(' · ') || 'No notable strengths detected'}
+                {derivedStrengths.length > 1 ? ` +${derivedStrengths.length - 1} more` : ''}
+              </p>
+            </div>
+            <div className="rounded-lg bg-surface-alt/50 px-2.5 py-2">
+              <div className="flex items-center gap-1 font-semibold text-ink">
+                <AlertCircle className="h-3.5 w-3.5 text-ink-subtle" /> Gaps
+              </div>
+              <p className="mt-1 line-clamp-2 text-ink-muted">
+                {derivedGaps.slice(0, 1).join(' · ') || 'No critical gaps identified'}
+                {derivedGaps.length > 1 ? ` +${derivedGaps.length - 1} more` : ''}
+              </p>
+            </div>
+          </div>
+        )}
+        {(candidate.score_explanation || breakdown.formulaSummary) && (
+          <details className="rounded-lg border border-line px-2.5 py-2 text-ink-muted">
+            <summary className="cursor-pointer font-medium text-ink">Scoring explanation</summary>
+            <p className="mt-1 whitespace-pre-line leading-relaxed">{candidate.score_explanation || breakdown.formulaSummary}</p>
+          </details>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 animate-fadeIn">

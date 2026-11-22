@@ -10,14 +10,11 @@ export default function LeaderboardFilters({
   setStageFilter,
   rawCandidates = [],
   activeJobId,
-  selectedCandidate,
-  density = 'comfortable',
-  onDensityChange,
 }) {
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 rounded-[14px] bg-surface border border-line shadow-xs">
+    <div className="grid grid-cols-1 gap-3 rounded-[14px] border border-line bg-surface p-3 shadow-xs sm:p-4 xl:shrink-0 xl:grid-cols-[minmax(240px,280px)_minmax(0,1fr)_auto] xl:items-center xl:gap-4 xl:p-3">
       {/* Left: Search input */}
-      <div className="w-full lg:w-72">
+      <div className="w-full min-w-0">
         <Input
           placeholder="Search candidates or skills..."
           leftIcon={<Search className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />}
@@ -27,8 +24,8 @@ export default function LeaderboardFilters({
       </div>
 
       {/* Center: Stage Filter Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
-        <span className="text-[13px] text-ink-muted font-medium mr-1 shrink-0">Stage:</span>
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5 xl:gap-1">
+        <span className="mr-1 shrink-0 text-[12px] font-medium text-ink-muted">Stage</span>
         {['All', ...STAGES].map((stg) => {
           const isSelected =
             stageFilter === stg || (stageFilter === 'Interview' && stg === 'Interviewing');
@@ -47,14 +44,14 @@ export default function LeaderboardFilters({
               key={stg}
               type="button"
               onClick={() => setStageFilter(stg)}
-              className={`px-3 py-1.5 rounded-[8px] text-[13px] border transition-colors cursor-pointer shrink-0 ${
+              className={`shrink-0 rounded-[8px] border px-2.5 py-1.5 text-[12px] transition-colors cursor-pointer xl:px-2.5 ${
                 isSelected
                   ? 'bg-primary text-on-primary border-primary font-medium'
                   : 'bg-surface border-line text-ink-muted hover:text-ink hover:bg-surface-alt'
               }`}
             >
               <span>{stg}</span>
-              <span className="ml-1.5 tabular-nums text-[13px] opacity-75">
+              <span className="ml-1 tabular-nums opacity-75">
                 ({count})
               </span>
             </button>
@@ -62,44 +59,11 @@ export default function LeaderboardFilters({
         })}
       </div>
 
-      {/* Right: Density toggle & Navigation */}
-      <div className="flex items-center gap-2.5 text-[13px] text-ink-muted shrink-0 flex-wrap">
-        {/* Row density toggle */}
-        <div className="flex items-center rounded-[8px] border border-line bg-surface-alt/60 p-0.5 select-none">
-          <button
-            type="button"
-            onClick={() => onDensityChange?.('comfortable')}
-            className={`px-2.5 py-1 rounded-[6px] text-[13px] font-medium transition-colors cursor-pointer ${
-              density === 'comfortable'
-                ? 'bg-surface text-ink shadow-xs font-semibold'
-                : 'text-ink-muted hover:text-ink'
-            }`}
-            title="Comfortable row density (64px)"
-          >
-            Comfortable
-          </button>
-          <button
-            type="button"
-            onClick={() => onDensityChange?.('compact')}
-            className={`px-2.5 py-1 rounded-[6px] text-[13px] font-medium transition-colors cursor-pointer ${
-              density === 'compact'
-                ? 'bg-surface text-ink shadow-xs font-semibold'
-                : 'text-ink-muted hover:text-ink'
-            }`}
-            title="Compact row density (48px)"
-          >
-            Compact
-          </button>
-        </div>
-
-        {/* Review Page Link */}
+      {/* Right: Primary review action */}
+      <div className="flex items-center xl:justify-end">
         <Link
-          to={
-            selectedCandidate
-              ? `/studio/review?jobId=${activeJobId}&candidateId=${selectedCandidate.application_id}`
-              : `/studio/review?jobId=${activeJobId}`
-          }
-          className="px-3 py-1.5 rounded-[8px] border border-line bg-surface hover:bg-surface-alt text-[13px] font-medium text-ink transition-colors flex items-center gap-1.5"
+          to={`/studio/candidates?jobId=${encodeURIComponent(activeJobId || '')}`}
+          className="inline-flex items-center gap-1.5 rounded-[8px] border border-line bg-surface px-3 py-2 text-[13px] font-medium text-ink transition-colors hover:bg-surface-alt"
         >
           <UserCheck className="w-4 h-4 text-champagne" strokeWidth={1.75} />
           <span>Review</span>

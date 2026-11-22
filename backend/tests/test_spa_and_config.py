@@ -1,4 +1,5 @@
 import os
+import secrets
 import pytest
 from unittest.mock import patch
 from fastapi import HTTPException
@@ -205,7 +206,7 @@ def test_production_rejects_default_recruiter_email(default_email):
     with pytest.raises((ValueError, ValidationError)) as exc_info:
         Settings(
             ENVIRONMENT="production",
-            SECRET_KEY="a" * 32,
+            SECRET_KEY=secrets.token_hex(32),
             DEFAULT_RECRUITER_EMAIL=default_email,
             DEFAULT_RECRUITER_PASSWORD="SecureProductionPass123!",
             ALLOWED_ORIGINS=["https://app.company.com"]
@@ -233,7 +234,7 @@ def test_production_rejects_default_and_insecure_passwords(weak_password):
     with pytest.raises((ValueError, ValidationError)) as exc_info:
         Settings(
             ENVIRONMENT="production",
-            SECRET_KEY="a" * 32,
+            SECRET_KEY=secrets.token_hex(32),
             DEFAULT_RECRUITER_EMAIL="prod.recruiter@company.com",
             DEFAULT_RECRUITER_PASSWORD=weak_password,
             ALLOWED_ORIGINS=["https://app.company.com"]
@@ -246,7 +247,7 @@ def test_production_rejects_wildcard_cors():
     with pytest.raises((ValueError, ValidationError)) as exc_info:
         Settings(
             ENVIRONMENT="production",
-            SECRET_KEY="a" * 32,
+            SECRET_KEY=secrets.token_hex(32),
             DEFAULT_RECRUITER_EMAIL="prod.recruiter@company.com",
             DEFAULT_RECRUITER_PASSWORD="SecureProductionPass123!",
             ALLOWED_ORIGINS=["*"]
@@ -254,15 +255,42 @@ def test_production_rejects_wildcard_cors():
     assert "wildcard" in str(exc_info.value).lower() or "allowed_origins" in str(exc_info.value).lower()
 
 
+@pytest.mark.parametrize("template_key", [
+    "REPLACE_WITH_OUTPUT_OF_openssl_rand_-hex_32",
+    "a" * 64,
+])
+def test_production_rejects_template_or_low_variety_secret_keys(template_key):
+    with pytest.raises((ValueError, ValidationError)):
+        Settings(
+            ENVIRONMENT="production",
+            SECRET_KEY=template_key,
+            DEFAULT_RECRUITER_EMAIL="prod.recruiter@company.com",
+            DEFAULT_RECRUITER_PASSWORD="SecureProductionPass123!",
+            ALLOWED_ORIGINS=["https://app.company.com"]
+        )
+
+
+def test_production_rejects_unedited_docker_template_values():
+    with pytest.raises((ValueError, ValidationError)):
+        Settings(
+            ENVIRONMENT="production",
+            SECRET_KEY=secrets.token_hex(32),
+            DEFAULT_RECRUITER_EMAIL="REPLACE_WITH_YOUR_RECRUITER_EMAIL",
+            DEFAULT_RECRUITER_PASSWORD="REPLACE_WITH_A_LONG_RANDOM_PASSWORD",
+            DATABASE_URL="postgresql://smartats:REPLACE_WITH_A_RANDOM_DATABASE_PASSWORD@smartats-db:5432/smartats",
+            ALLOWED_ORIGINS=["https://app.company.com"]
+        )
+
+
 def test_production_succeeds_with_valid_configuration():
     """
     Production configuration must succeed when:
-    - SECRET_KEY has >= 32 characters and is not insecure.
+    - SECRET_KEY has >= 32 varied characters and is not insecure.
     - DEFAULT_RECRUITER_EMAIL is non-default.
-    - DEFAULT_RECRUITER_PASSWORD is non-default, >= 8 characters, and not insecure.
+    - DEFAULT_RECRUITER_PASSWORD is non-default, >= 12 characters, and not insecure.
     - ALLOWED_ORIGINS contains explicit domain origins.
     """
-    valid_key = "SuperSecretSecureKeyWithAtLeast32Chars12345!"
+    valid_key = secrets.token_hex(32)
     valid_email = "lead.recruiter@enterprisecorp.com"
     valid_password = "Comp!exPr0duct10nP@ssw0rd#2026"
     valid_origins = ["https://smartats.enterprisecorp.com", "https://ats.enterprisecorp.com"]

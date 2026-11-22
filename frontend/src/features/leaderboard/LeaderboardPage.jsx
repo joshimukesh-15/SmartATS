@@ -1,16 +1,10 @@
 import { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useJobs, useRankings } from '../../hooks';
-import { Button, EmptyState, Skeleton, Drawer, StatusBadge } from '../../components/ui';
-import { computeBreakdown, sortCandidates } from '../../lib/score';
+import { Button, EmptyState, Skeleton, StatusBadge } from '../../components/ui';
+import { sortCandidates } from '../../lib/score';
 
-import {
-  CandidateDetail,
-  useCandidateSelection,
-  useCandidateKeyboard,
-  useStageWorkflow,
-  STAGES,
-} from '../candidates';
+import { useCandidateSelection, useStageWorkflow, STAGES } from '../candidates';
 
 import { useScoringWeights } from './hooks/useScoringWeights';
 import LeaderboardHeader from './LeaderboardHeader';
@@ -55,27 +49,7 @@ export default function LeaderboardPage() {
   const [sortBy, setSortBy] = useState('score');
   const [sortOrder, setSortOrder] = useState('desc');
 
-  // Row density state with localStorage persistence
-  const [density, setDensity] = useState(() => {
-    try {
-      return localStorage.getItem('smartats_leaderboard_density') || 'comfortable';
-    } catch {
-      return 'comfortable';
-    }
-  });
-
-  const handleDensityChange = (newDensity) => {
-    setDensity(newDensity);
-    try {
-      localStorage.setItem('smartats_leaderboard_density', newDensity);
-    } catch {}
-  };
-
-  // Dossier UI state
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [dossierTab, setDossierTab] = useState('evaluation');
   const [openStageMenuId, setOpenStageMenuId] = useState(null);
-  const [showAuditTrail, setShowAuditTrail] = useState(false);
 
   const tableContainerRef = useRef(null);
 
@@ -110,28 +84,15 @@ export default function LeaderboardPage() {
 
   // Selection & keyboard hooks from candidates feature
   const {
-    safeSelectedIndex,
-    selectedCandidate,
-    setSelectedIndex,
     selectedForCompare,
     handleToggleCompare,
     handleInitiateCompare,
     clearCompare,
-  } = useCandidateSelection(candidates, { activeJobId });
-
-  useCandidateKeyboard({
-    candidatesCount: candidates.length,
-    setSelectedIndex,
-    onEscape: () => setIsDrawerOpen(false),
-  });
-
-  const selectedBreakdown = selectedCandidate
-    ? computeBreakdown(selectedCandidate, activeJob)
-    : null;
+  } = useCandidateSelection(candidates, { activeJobId, defaultToFirst: false });
 
   // Workflow hook for stage mutations and notes from candidates feature
-  const stageWorkflow = useStageWorkflow(activeJobId, selectedCandidate);
-  const { handleQuickStageChange, setShowTransitionPrompt } = stageWorkflow;
+  const stageWorkflow = useStageWorkflow(activeJobId, null);
+  const { handleQuickStageChange } = stageWorkflow;
 
   // Re-scoring detection across active job, rankings response, and candidates
   const isJobReScoring = useMemo(() => {
@@ -154,29 +115,17 @@ export default function LeaderboardPage() {
   const handleJobChange = (newJobId) => {
     navigate(`/studio/leaderboard/${newJobId}`);
     clearCompare();
-    setSelectedIndex(0);
-    setShowTransitionPrompt(false);
   };
 
-  const renderDetailPanel = () => (
-    <CandidateDetail
-      candidate={selectedCandidate}
-      breakdown={selectedBreakdown}
-      activeJob={activeJob}
-      safeSelectedIndex={safeSelectedIndex}
-      selectedForCompare={selectedForCompare}
-      onToggleCompare={handleToggleCompare}
-      stageWorkflow={stageWorkflow}
-      onOpenWeightsTuner={() => setIsWeightsOpen(true)}
-      dossierTab={dossierTab}
-      setDossierTab={setDossierTab}
-      showAuditTrail={showAuditTrail}
-      setShowAuditTrail={setShowAuditTrail}
-    />
-  );
+  const openCandidateWorkspace = (index) => {
+    const candidate = candidates[index];
+    const candidateId = candidate?.application_id ?? candidate?.id ?? candidate?.candidate_id;
+    if (!candidateId) return;
+    navigate(`/studio/candidates?jobId=${encodeURIComponent(activeJobId)}&candidate=${encodeURIComponent(candidateId)}`);
+  };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="flex min-h-0 flex-col gap-3 xl:h-full xl:gap-3 animate-fadeIn">
       {/* Top Header & Job Switcher */}
       <LeaderboardHeader
         jobs={jobs}
@@ -192,7 +141,7 @@ export default function LeaderboardPage() {
       {isJobReScoring && (
         <div
           data-testid="rescoring-banner"
-          className="flex items-center gap-3 px-4 py-3 rounded-[10px] bg-champagne-soft border border-champagne/40 text-ink text-[14px] animate-fadeIn"
+          className="flex shrink-0 items-center gap-3 px-4 py-2 rounded-[10px] bg-champagne-soft border border-champagne/40 text-ink text-[13px] animate-fadeIn"
         >
           <span className="inline-block w-2.5 h-2.5 rounded-full bg-champagne animate-pulse shrink-0" />
           <div className="flex-1 min-w-0">
@@ -213,20 +162,18 @@ export default function LeaderboardPage() {
         setStageFilter={setStageFilter}
         rawCandidates={rawCandidates}
         activeJobId={activeJobId}
-        selectedCandidate={selectedCandidate}
-        density={density}
-        onDensityChange={handleDensityChange}
       />
 
       {/* Master-Detail Layout */}
       {jobsLoading || rankingsLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-3 xl:flex-1 xl:min-h-0">
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
         </div>
       ) : candidates.length === 0 ? (
+        <div className="xl:flex xl:flex-1 xl:min-h-0 xl:items-center xl:justify-center">
         <EmptyState
           title={
             search || stageFilter !== 'All'
@@ -245,25 +192,20 @@ export default function LeaderboardPage() {
             )
           }
         />
+        </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-7 xl:col-span-7 space-y-4">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1">
             <LeaderboardTable
               candidates={candidates}
-              safeSelectedIndex={safeSelectedIndex}
               selectedForCompare={selectedForCompare}
               activeJob={activeJob}
-              onSelectCandidate={(idx) => {
-                setSelectedIndex(idx);
-                setShowTransitionPrompt(false);
-                setIsDrawerOpen(true);
-              }}
+              onSelectCandidate={openCandidateWorkspace}
               onToggleCompare={handleToggleCompare}
               openStageMenuId={openStageMenuId}
               setOpenStageMenuId={setOpenStageMenuId}
               onQuickStageChange={handleQuickStageChange}
               tableContainerRef={tableContainerRef}
-              density={density}
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={(key, order) => {
@@ -273,26 +215,8 @@ export default function LeaderboardPage() {
             />
           </div>
 
-          {/* Desktop Sticky Candidate Detail Panel */}
-          <div className="hidden lg:block lg:col-span-5 xl:col-span-5">
-            {selectedCandidate && selectedBreakdown && renderDetailPanel()}
-          </div>
         </div>
       )}
-
-      {/* Candidate Dossier Slide-Over Drawer for Mobile / Compact Screens */}
-      <Drawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        title={
-          selectedCandidate
-            ? `${selectedCandidate.candidate_name || 'Candidate'}`
-            : 'Candidate Dossier'
-        }
-        maxWidth="max-w-2xl"
-      >
-        {selectedCandidate && selectedBreakdown && renderDetailPanel()}
-      </Drawer>
 
       {/* Floating Multi-Select Action Bar */}
       <SelectionBar

@@ -1,8 +1,12 @@
+import logging
+from pathlib import Path
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Query
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.database.database import get_db
-from app.database.models import Job, Application
+from app.database.models import Job, Application, Candidate
+from app.core.config import settings
 from app.schemas.job import (
     JobCreate,
     JobUpdate,
@@ -18,6 +22,7 @@ from app.ml.vectorizer import vectorizer_cache
 from app.api.deps import get_current_recruiter
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/quality-check/", response_model=JobQualityCheckResponse)
@@ -65,12 +70,25 @@ def create_job(
 
 
 @router.get("/", response_model=List[JobResponse])
-def list_jobs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def list_jobs(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db)
+):
     """Retrieves all job openings with application counts."""
     jobs = db.query(Job).order_by(Job.created_at.desc()).offset(skip).limit(limit).all()
+    job_ids = [job.job_id for job in jobs]
+    count_by_job = {}
+    if job_ids:
+        count_by_job = dict(
+            db.query(Application.job_id, func.count(Application.application_id))
+            .filter(Application.job_id.in_(job_ids))
+            .group_by(Application.job_id)
+            .all()
+        )
     results = []
     for j in jobs:
-        count = db.query(Application).filter(Application.job_id == j.job_id).count()
+        count = count_by_job.get(j.job_id, 0)
         j_resp = JobResponse.model_validate(j)
         j_resp.application_count = count
         j_resp.applications_count = count
@@ -223,6 +241,40 @@ def delete_job(
     job = db.query(Job).filter(Job.job_id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job opening not found.")
-    db.delete(job)
-    db.commit()
+    applications = list(job.applications)
+    resume_paths = [application.resume_path for application in applications if application.resume_path]
+    candidate_ids = {application.candidate_id for application in applications}
+
+    try:
+        db.delete(job)
+        db.flush()
+
+        # Keep shared candidate profiles used by other openings, but remove PII
+        # for candidates whose final application was deleted with this job.
+        if candidate_ids:
+            remaining_candidate_ids = {
+                row[0]
+                for row in db.query(Application.candidate_id)
+                .filter(Application.candidate_id.in_(candidate_ids))
+                .distinct()
+                .all()
+            }
+            orphaned_ids = candidate_ids - remaining_candidate_ids
+            if orphaned_ids:
+                db.query(Candidate).filter(Candidate.candidate_id.in_(orphaned_ids)).delete(synchronize_session=False)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    upload_root = Path(settings.UPLOAD_DIR).resolve()
+    for resume_path in resume_paths:
+        try:
+            stored_file = Path(resume_path).resolve()
+            if stored_file.is_relative_to(upload_root) and stored_file.is_file():
+                stored_file.unlink()
+            elif stored_file.exists():
+                logger.warning("Skipped resume cleanup outside upload directory: %s", stored_file)
+        except OSError:
+            logger.exception("Could not remove stored resume for deleted job %s", job_id)
     return None

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useJobs, useUploadResumes } from '../../hooks';
 import { Select, Button, Panel, toast } from '../../components/ui';
@@ -9,14 +9,23 @@ import UploadStepHeader from './UploadStepHeader';
 
 export default function UploadPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { data: jobs = [], isLoading: jobsLoading } = useJobs();
   const [selectedJobId, setSelectedJobId] = useState('');
   const [fileList, setFileList] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [fileStatuses, setFileStatuses] = useState({});
 
-  // Set default job once loaded
-  const currentJobId = selectedJobId || (jobs.length > 0 ? String(jobs[0].job_id) : '');
+  const requestedJobId = searchParams.get('jobId');
+
+  // Respect job-specific links. A stale id falls back to the first opening.
+  const currentJobId = jobs.some((job) => String(job.job_id) === selectedJobId)
+    ? selectedJobId
+    : jobs.some((job) => String(job.job_id) === requestedJobId)
+      ? requestedJobId
+      : jobs.length > 0
+        ? String(jobs[0].job_id)
+        : '';
   const uploadMutation = useUploadResumes(currentJobId);
 
   // Derive active step in 3-step workflow

@@ -10,6 +10,7 @@ const StudioLayout = lazy(() => import('./StudioLayout'));
 const OverviewPage = lazy(() => import('../features/overview/OverviewPage'));
 const JobsPage = lazy(() => import('../features/jobs/JobsPage'));
 const UploadPage = lazy(() => import('../features/upload/UploadPage'));
+const CandidateWorkspace = lazy(() => import('../features/candidates/CandidateWorkspace'));
 const LeaderboardPage = lazy(() => import('../features/leaderboard/LeaderboardPage'));
 const PipelinePage = lazy(() => import('../features/pipeline/PipelinePage'));
 const ComparePage = lazy(() => import('../features/compare/ComparePage'));
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
       {
         path: 'upload',
         element: wrap(<UploadPage />),
+      },
+      {
+        path: 'candidates',
+        element: wrap(<CandidateWorkspace />),
       },
       {
         path: 'leaderboard',

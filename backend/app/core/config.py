@@ -95,13 +95,21 @@ class Settings(BaseSettings):
             ""
         }
         if is_prod:
-            if not self.SECRET_KEY or self.SECRET_KEY.strip() in insecure_keys or len(self.SECRET_KEY.strip()) < 32:
+            normalized_key = self.SECRET_KEY.strip().lower()
+            if (
+                not normalized_key
+                or normalized_key in insecure_keys
+                or normalized_key.startswith(("replace_with", "your_", "example"))
+                or len(normalized_key) < 32
+                or len(set(normalized_key)) < 8
+            ):
                 raise ValueError(
-                    "Production environment requires a strong, explicit SECRET_KEY (at least 32 characters). Default or insecure secret keys are prohibited."
+                    "Production environment requires a strong, explicit SECRET_KEY (at least 32 characters, with varied characters). Replace template values before deployment."
                 )
             if (
                 not self.DEFAULT_RECRUITER_EMAIL
                 or self.DEFAULT_RECRUITER_EMAIL.strip().lower() == "recruiter@smartats.com"
+                or self.DEFAULT_RECRUITER_EMAIL.strip().lower().startswith("replace_with")
             ):
                 raise ValueError(
                     "Default recruiter email ('recruiter@smartats.com') is prohibited in production. Configure a dedicated, non-default recruiter email."
@@ -109,14 +117,19 @@ class Settings(BaseSettings):
             if (
                 not self.DEFAULT_RECRUITER_PASSWORD
                 or self.DEFAULT_RECRUITER_PASSWORD.strip().lower() in insecure_passwords
-                or len(self.DEFAULT_RECRUITER_PASSWORD.strip()) < 8
+                or self.DEFAULT_RECRUITER_PASSWORD.strip().lower().startswith("replace_with")
+                or len(self.DEFAULT_RECRUITER_PASSWORD.strip()) < 12
             ):
                 raise ValueError(
-                    "Production environment requires a strong, non-default DEFAULT_RECRUITER_PASSWORD (at least 8 characters, non-default). Default password ('recruiter123') and insecure passwords are prohibited."
+                    "Production environment requires a strong, non-default DEFAULT_RECRUITER_PASSWORD (at least 12 characters). Replace template values before deployment."
                 )
             if any(origin == "*" for origin in self.ALLOWED_ORIGINS):
                 raise ValueError(
                     "Wildcard '*' in ALLOWED_ORIGINS is prohibited in production when credentials are enabled. Specify explicit domain origins."
+                )
+            if "replace_with" in self.DATABASE_URL.lower():
+                raise ValueError(
+                    "Production environment cannot use a template DATABASE_URL. Set a unique database password and connection string."
                 )
         return self
 

@@ -30,6 +30,7 @@ export default function CandidateDetail({
   dossierTab: propDossierTab,
   setDossierTab: propSetDossierTab,
   className = '',
+  compact = false,
   // Direct prop fallbacks for maximum compatibility
   onStageButtonClick,
   onConfirmStageUpdate,
@@ -122,18 +123,18 @@ export default function CandidateDetail({
     <div
       aria-live="polite"
       aria-atomic="true"
-      className={`rounded-[14px] border border-line bg-surface p-5 sm:p-6 shadow-sm space-y-5 animate-fadeIn ${className}`}
+      className={`rounded-[14px] border border-line bg-surface shadow-sm animate-fadeIn ${compact ? 'h-full min-h-0 overflow-hidden p-4 flex flex-col gap-3' : 'p-5 sm:p-6 space-y-5'} ${className}`}
     >
       {/* 1. Header with Avatar, Name, Rank Badge, Experience, Seniority & Contact Pills */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-line">
-        <div className="flex items-start gap-3.5 min-w-0">
-          <Avatar name={candidate.candidate_name || 'Candidate'} size="lg" />
+      <div className={`flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-line ${compact ? 'shrink-0 gap-3 pb-3' : 'pb-4'}`}>
+        <div className={`flex items-start min-w-0 ${compact ? 'gap-3' : 'gap-3.5'}`}>
+          <Avatar name={candidate.candidate_name || 'Candidate'} size={compact ? 'md' : 'lg'} />
           <div className="space-y-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2 py-0.5 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold tabular-nums">
+            <div className={`flex items-center gap-2 min-w-0 ${compact ? '' : 'flex-wrap'}`}>
+              <span className={`px-2 py-0.5 rounded-[6px] bg-primary text-on-primary font-semibold tabular-nums shrink-0 ${compact ? 'text-[11px]' : 'text-[13px]'}`}>
                 Rank #{candidate.rank || safeSelectedIndex + 1}
               </span>
-              <h2 className="text-[22px] font-semibold text-ink tracking-[-0.02em] leading-[1.25] truncate">
+              <h2 className={`font-semibold text-ink tracking-[-0.02em] leading-[1.25] truncate ${compact ? 'text-[18px]' : 'text-[22px]'}`}>
                 {candidate.candidate_name || 'Candidate'}
               </h2>
               {(candidate.processing_status === 'Re-scoring' ||
@@ -143,7 +144,7 @@ export default function CandidateDetail({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-ink-muted">
+            <div className={`flex flex-wrap items-center gap-x-2.5 gap-y-1 text-ink-muted ${compact ? 'text-[12px]' : 'text-[13px]'}`}>
               {candidate.experience_years !== undefined && (
                 <span className="inline-flex items-center gap-1 font-medium text-ink">
                   <Briefcase className="w-4 h-4 text-ink-subtle shrink-0" strokeWidth={1.75} />
@@ -164,7 +165,7 @@ export default function CandidateDetail({
                 </>
               )}
 
-              {candidate.candidate_email && (
+              {!compact && candidate.candidate_email && (
                 <>
                   <span className="text-ink-subtle">·</span>
                   <span className="inline-flex items-center gap-1 text-ink-muted truncate">
@@ -174,7 +175,7 @@ export default function CandidateDetail({
                 </>
               )}
 
-              {candidate.candidate_phone && (
+              {!compact && candidate.candidate_phone && (
                 <>
                   <span className="text-ink-subtle">·</span>
                   <span className="inline-flex items-center gap-1 text-ink-muted">
@@ -195,7 +196,7 @@ export default function CandidateDetail({
             onClick={onOpenWeightsTuner}
             leftIcon={<SlidersHorizontal className="w-3.5 h-3.5 text-champagne" strokeWidth={1.75} />}
             className="text-[12px] shrink-0"
-          >
+            >
             Tune Weights
           </Button>
         )}
@@ -203,10 +204,10 @@ export default function CandidateDetail({
 
       {/* Resume Document Quick Actions (Authenticated Blob Fetch) */}
       {candidate.application_id && (
-        <div className="flex items-center justify-between px-3.5 py-2 rounded-[10px] bg-surface-alt/40 border border-line text-[13px]">
+        <div className={`flex items-center justify-between px-3.5 rounded-[10px] bg-surface-alt/40 border border-line text-[13px] ${compact ? 'shrink-0 py-1.5' : 'py-2'}`}>
           <span className="flex items-center gap-2 text-ink-muted">
             <FileText className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
-            <span className="font-medium text-ink">Resume Document</span>
+            <span className="font-medium text-ink">{compact ? 'Resume' : 'Resume Document'}</span>
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -235,10 +236,10 @@ export default function CandidateDetail({
       )}
 
       {/* 2. 96px Animated SVG Score Ring Beside Score Bar & Point-Math Lines */}
-      <div className="p-4 rounded-[12px] bg-surface-alt/40 border border-line flex flex-col sm:flex-row items-center gap-5">
+      <div className={`rounded-[12px] bg-surface-alt/40 border border-line flex items-center ${compact ? 'shrink-0 gap-3 p-3' : 'flex-col sm:flex-row gap-5 p-4'}`}>
         {/* 96px Animated Score Ring */}
-        <div className="relative w-24 h-24 shrink-0 flex flex-col items-center justify-center">
-          <svg width="96" height="96" viewBox="0 0 96 96" className="-rotate-90">
+        <div className={`relative shrink-0 flex flex-col items-center justify-center ${compact ? 'w-16 h-16' : 'w-24 h-24'}`}>
+          <svg width="96" height="96" viewBox="0 0 96 96" className={`-rotate-90 ${compact ? 'w-16 h-16' : ''}`}>
             {/* Background Track Circle */}
             <circle
               cx="48"
@@ -263,21 +264,21 @@ export default function CandidateDetail({
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="text-[17px] font-semibold text-ink tabular-nums leading-none">
+            <span className={`font-semibold text-ink tabular-nums leading-none ${compact ? 'text-[14px]' : 'text-[17px]'}`}>
               {displayScore.toFixed(1)}%
             </span>
-            <span className="text-[13px] text-ink-muted uppercase tracking-wider mt-0.5 font-medium">
+            <span className={`text-ink-muted uppercase tracking-wider mt-0.5 font-medium ${compact ? 'text-[9px]' : 'text-[13px]'}`}>
               Score
             </span>
           </div>
         </div>
 
         {/* Beside: Score Bar and Point-Math Lines */}
-        <div className="flex-1 w-full space-y-2.5 text-left">
+        <div className={`flex-1 min-w-0 w-full text-left ${compact ? 'space-y-1.5' : 'space-y-2.5'}`}>
           <div className="space-y-1">
             <div className="text-[13px] font-medium text-ink flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span>{hasExperienceOrEducation ? 'Multi-Pillar Point Breakdown' : 'Dual-Track Point Breakdown'}</span>
+                <span className={compact ? 'truncate' : ''}>{compact ? 'Score breakdown' : hasExperienceOrEducation ? 'Multi-Pillar Point Breakdown' : 'Dual-Track Point Breakdown'}</span>
                 <span className={`px-2 py-0.5 rounded-[4px] border text-[11px] font-semibold uppercase tracking-wider ${recommendation.badge}`}>
                   {recommendation.label}
                 </span>
@@ -298,7 +299,21 @@ export default function CandidateDetail({
           </div>
 
           {/* Point-Math Lines: 4 lines when experience/education exist (or hasMultiPillar), 2 otherwise */}
-          <div data-testid="point-math-lines" className="space-y-1 text-[13px] tabular-nums">
+          {compact ? (
+            <div className="grid grid-cols-4 gap-1 text-[10px] leading-tight">
+              {[
+                ['Skills', breakdown.skillsCoveredPoints],
+                ['Text', breakdown.textMatchPoints],
+                ['Experience', breakdown.experiencePoints],
+                ['Education', breakdown.educationPoints],
+              ].map(([label, points]) => (
+                <div key={label} className="min-w-0 rounded-md bg-surface/80 px-1.5 py-1">
+                  <div className="truncate text-ink-muted">{label}</div>
+                  <div className="font-semibold tabular-nums text-ink">{Number(points || 0).toFixed(1)} pts</div>
+                </div>
+              ))}
+            </div>
+          ) : <div data-testid="point-math-lines" className="space-y-1 text-[13px] tabular-nums">
             <div data-testid="math-line-skills" className="flex items-center justify-between text-ink">
               <span className="flex items-center gap-1.5 text-ink-muted">
                 <span className="w-2 h-2 rounded-full bg-primary" />
@@ -340,13 +355,14 @@ export default function CandidateDetail({
                 </div>
               </>
             )}
-          </div>
+          </div>}
         </div>
       </div>
 
       {/* 3. Embedded Pipeline Stage Control */}
       <PipelineStageControl
         candidate={candidate}
+        compact={compact}
         stageWorkflow={stageWorkflow}
         onStageButtonClick={onStageButtonClick}
         onConfirmStageUpdate={onConfirmStageUpdate}
@@ -360,39 +376,39 @@ export default function CandidateDetail({
       />
 
       {/* 4. Horizontal Navigation Tabs Shell */}
-      <div className="flex items-center gap-1 border-b border-line">
+      <div className={`flex items-center gap-1 border-b border-line ${compact ? 'shrink-0' : ''}`}>
         <button
           type="button"
           onClick={() => setDossierTab('evaluation')}
-          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
+          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${compact ? 'flex-1 whitespace-nowrap px-2 text-[12px]' : ''} ${
             isEvaluationTab
               ? 'border-primary text-ink font-semibold'
               : 'border-transparent text-ink-muted hover:text-ink'
           }`}
         >
-          Evaluation & Math
+          {compact ? 'Evaluation' : 'Evaluation & Math'}
         </button>
         <button
           type="button"
           onClick={() => setDossierTab('skills')}
-          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${
+          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer ${compact ? 'flex-1 whitespace-nowrap px-2 text-[12px]' : ''} ${
             isSkillsTab
               ? 'border-primary text-ink font-semibold'
               : 'border-transparent text-ink-muted hover:text-ink'
           }`}
         >
-          Required Skills ({activeJob?.required_skills?.length || 0})
+          {compact ? `Skills (${activeJob?.required_skills?.length || 0})` : `Required Skills (${activeJob?.required_skills?.length || 0})`}
         </button>
         <button
           type="button"
           onClick={() => setDossierTab('activity')}
-          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+          className={`py-2 px-3 text-[13px] font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${compact ? 'flex-1 whitespace-nowrap justify-center px-2 text-[12px]' : ''} ${
             isActivityTab
               ? 'border-primary text-ink font-semibold'
               : 'border-transparent text-ink-muted hover:text-ink'
           }`}
         >
-          <span>Notes & Activity</span>
+          <span>{compact ? 'Activity' : 'Notes & Activity'}</span>
           <span className="px-1.5 py-0.2 rounded-full bg-surface-alt border border-line text-[11px] font-semibold tabular-nums text-ink-muted">
             {notesList.length + statusHistoryList.length}
           </span>
@@ -400,15 +416,15 @@ export default function CandidateDetail({
       </div>
 
       {/* 5. Tab Panels */}
-      <div className={isEvaluationTab ? 'block' : 'hidden'}>
-        <EvaluationTab candidate={candidate} breakdown={breakdown} />
+      <div className={`${isEvaluationTab ? 'block' : 'hidden'} ${compact ? 'min-h-0 flex-1 overflow-y-auto' : ''}`}>
+        <EvaluationTab candidate={candidate} breakdown={breakdown} compact={compact} />
       </div>
 
-      <div className={isSkillsTab ? 'block' : 'hidden'}>
+      <div className={`${isSkillsTab ? 'block' : 'hidden'} ${compact ? 'min-h-0 flex-1 overflow-y-auto' : ''}`}>
         <SkillsTab candidate={candidate} activeJob={activeJob} />
       </div>
 
-      <div className={isActivityTab ? 'block' : 'hidden'}>
+      <div className={`${isActivityTab ? 'block' : 'hidden'} ${compact ? 'min-h-0 flex-1 overflow-y-auto' : ''}`}>
         <ActivityTab
           candidate={candidate}
           stageWorkflow={stageWorkflow}
@@ -424,7 +440,7 @@ export default function CandidateDetail({
       </div>
 
       {/* 6. Compare Footer */}
-      <div className="pt-3 border-t border-line flex items-center justify-between gap-3">
+      <div className={`border-t border-line flex items-center justify-between gap-3 ${compact ? 'shrink-0 pt-2' : 'pt-3'}`}>
         {onToggleCompare && (
           <Button
             variant={

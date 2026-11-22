@@ -5,7 +5,6 @@ import { STAGES, STAGE_CONFIG } from '../candidates';
 export default function CandidateRow({
   candidate,
   idx,
-  isSelected,
   isCompared,
   breakdown,
   onSelectCandidate,
@@ -13,7 +12,6 @@ export default function CandidateRow({
   openStageMenuId,
   setOpenStageMenuId,
   onQuickStageChange,
-  density = 'comfortable',
 }) {
   const stageKey = candidate.review_stage || 'New';
   const stageConf = STAGE_CONFIG[stageKey] || STAGE_CONFIG.New;
@@ -22,19 +20,16 @@ export default function CandidateRow({
   const visibleSkills = matchedSkills.slice(0, 3);
   const overflowSkills = matchedSkills.slice(3);
 
-  const isCompact = density === 'compact';
-  const cellPadding = isCompact ? 'py-2 px-3' : 'py-3.5 px-4';
+  const cellPadding = 'py-3 px-3';
 
   return (
     <tr
       onClick={() => onSelectCandidate(idx)}
-      className={`transition-colors cursor-pointer select-none ${
-        isSelected ? 'bg-surface-alt font-medium' : 'hover:bg-surface-alt/50'
-      }`}
+      className="cursor-pointer select-none transition-colors hover:bg-surface-alt/50"
     >
       {/* Checkbox for compare */}
       <td
-        className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-center`}
+        className="hidden px-2 py-3 text-center sm:table-cell"
         onClick={(e) => {
           e.stopPropagation();
           onToggleCompare(candidate.application_id);
@@ -49,7 +44,7 @@ export default function CandidateRow({
       </td>
 
       {/* Rank */}
-      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-center`}>
+      <td className="hidden px-2 py-3 text-center sm:table-cell">
         <span
           className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums ${
             idx === 0 ? 'bg-primary text-on-primary' : 'bg-surface-alt text-ink'
@@ -139,7 +134,7 @@ export default function CandidateRow({
       </td>
 
       {/* Interactive Stage Badge Dropdown */}
-      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'}`} onClick={(e) => e.stopPropagation()}>
+      <td className="px-2 py-3" onClick={(e) => e.stopPropagation()}>
         <div className="relative inline-block text-left">
           <button
             type="button"
@@ -190,12 +185,12 @@ export default function CandidateRow({
       </td>
 
       {/* Skills Covered % */}
-      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell`}>
+      <td className="hidden px-2 py-3 text-right tabular-nums text-ink-muted text-[13px] 2xl:table-cell">
         {breakdown.skillsCoveredPercent.toFixed(1)}%
       </td>
 
       {/* Text Match % */}
-      <td className={`px-3 ${isCompact ? 'py-2' : 'py-3.5'} text-right tabular-nums text-ink-muted text-[13px] hidden sm:table-cell`}>
+      <td className="hidden px-2 py-3 text-right tabular-nums text-ink-muted text-[13px] 2xl:table-cell">
         {breakdown.textMatchPercent.toFixed(1)}%
       </td>
 

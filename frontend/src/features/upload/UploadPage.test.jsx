@@ -14,6 +14,11 @@ vi.mock('../../hooks', () => ({
         title: 'Senior Python Engineer',
         required_skills: ['Python', 'FastAPI'],
       },
+      {
+        job_id: 2,
+        title: 'Product Designer',
+        required_skills: ['Figma'],
+      },
     ],
     isLoading: false,
   }),
@@ -28,9 +33,9 @@ describe('UploadPage Feature', () => {
     vi.clearAllMocks();
   });
 
-  const renderComponent = () =>
+  const renderComponent = (initialEntry = '/') =>
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <UploadPage />
       </MemoryRouter>
     );
@@ -42,6 +47,14 @@ describe('UploadPage Feature', () => {
     expect(
       screen.getByText(/Drag and drop candidate files here/i)
     ).toBeInTheDocument();
+  });
+
+  it('selects the job specified by the upload link', async () => {
+    renderComponent('/studio/upload?jobId=2');
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox')).toHaveValue('2');
+    });
   });
 
   it('stages uploaded files and displays ready state', () => {
