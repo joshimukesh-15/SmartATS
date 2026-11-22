@@ -20,6 +20,11 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 describe('App Router Smoke Test', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
   it('renders landing page at root route', async () => {
     const memoryRouter = createMemoryRouter(router.routes, {
       initialEntries: ['/'],
