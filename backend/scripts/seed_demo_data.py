@@ -1,19 +1,26 @@
 import os
 import sys
 import json
+from datetime import datetime, timezone
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from app.database.database import SessionLocal, Base, engine
-from app.database.models import Job, Candidate, Application, MatchResult
+from app.database.models import (
+    Job,
+    Candidate,
+    Application,
+    ApplicationStatusHistory,
+    ApplicationNote,
+)
 from app.services.duplicate import calculate_file_hash
 from app.services.processor import process_resume_application
 
 
 def seed_database():
-    print("Seeding database with demo data...")
+    print("Seeding database with realistic demo data...")
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
@@ -44,6 +51,8 @@ def seed_database():
     test_resumes_dir = os.path.join(PROJECT_ROOT, "data", "test_resumes")
     candidates_data = data["candidates"]
 
+    created_apps = []
+
     for idx, c_info in enumerate(candidates_data):
         safe_name = c_info["name"].replace(" ", "_").lower()
         pdf_file = os.path.join(test_resumes_dir, f"{safe_name}_resume.pdf")
@@ -68,13 +77,11 @@ def seed_database():
             db.commit()
             db.refresh(cand)
 
-        # Distribute candidates to jobs
-        # Map to relevant jobs based on relevance score >= 1
+        # Distribute candidates to jobs based on relevance score >= 1
         for j_orig_id, rel_score in c_info["job_relevance"].items():
             if rel_score >= 1 and int(j_orig_id) in job_map:
                 real_job_id = job_map[int(j_orig_id)]
                 
-                # Check if app already exists
                 existing_app = db.query(Application).filter(
                     Application.job_id == real_job_id,
                     Application.candidate_id == cand.candidate_id
@@ -86,18 +93,94 @@ def seed_database():
                         candidate_id=cand.candidate_id,
                         resume_path=file_path,
                         file_hash=file_hash,
-                        processing_status="PENDING"
+                        processing_status="PENDING",
+                        review_stage="New"
                     )
                     db.add(app)
                     db.commit()
                     db.refresh(app)
                     
-                    # Process
+                    # Process scoring
                     process_resume_application(app.application_id)
+                    db.refresh(app)
+                    created_apps.append(app)
                     print(f"Processed Application #{app.application_id} for {cand.name} on Job #{real_job_id}")
 
+    # 3. Distribute applications across realistic hiring stages with audit history
+    stage_assignments = [
+        ("Hired", [
+            ("New", "Reviewing", "Screening profile against requirements"),
+            ("Reviewing", "Interviewing", "Passed technical screen, scheduled panel interview"),
+            ("Interviewing", "Offer", "Executive panel approved offer terms"),
+            ("Offer", "Hired", "Candidate signed and accepted written offer"),
+        ]),
+        ("Offer", [
+            ("New", "Reviewing", "Recruiter screening complete"),
+            ("Reviewing", "Interviewing", "Technical evaluation 90%+ fit"),
+            ("Interviewing", "Offer", "Formal offer extended to candidate"),
+        ]),
+        ("Interviewing", [
+            ("New", "Reviewing", "Qualified profile"),
+            ("Reviewing", "Interviewing", "System design interview scheduled"),
+        ]),
+        ("Interviewing", [
+            ("New", "Reviewing", "Strong portfolio and resume alignment"),
+            ("Reviewing", "Interviewing", "Phone screen passed, advancing to live interview"),
+        ]),
+        ("Reviewing", [
+            ("New", "Reviewing", "Initial hiring manager review in progress"),
+        ]),
+        ("Reviewing", [
+            ("New", "Reviewing", "Evaluating transferable engineering skills"),
+        ]),
+        ("Rejected", [
+            ("New", "Reviewing", "Initial screening"),
+            ("Reviewing", "Rejected", "Candidate accepted an offer at another company"),
+        ]),
+    ]
+
+    for i, (target_stage, audit_steps) in enumerate(stage_assignments):
+        if i < len(created_apps):
+            app = created_apps[i]
+            app.review_stage = target_stage
+            db.add(app)
+            
+            for from_s, to_s, note_text in audit_steps:
+                hist = ApplicationStatusHistory(
+                    application_id=app.application_id,
+                    from_stage=from_s,
+                    to_stage=to_s,
+                    note=note_text,
+                    changed_by="Sarah Recruiter",
+                    created_at=datetime.now(timezone.utc)
+                )
+                db.add(hist)
+                
+                note = ApplicationNote(
+                    application_id=app.application_id,
+                    content=note_text,
+                    author="Sarah Recruiter",
+                    created_at=datetime.now(timezone.utc)
+                )
+                db.add(note)
+
+    # 4. Add 2 realistic duplicate upload events blocked by SHA-256 hash checks
+    if created_apps:
+        target_app = created_apps[0]
+        for _ in range(2):
+            dup_hist = ApplicationStatusHistory(
+                application_id=target_app.application_id,
+                from_stage=target_app.review_stage,
+                to_stage=target_app.review_stage,
+                note="Duplicate resume upload rejected: identical SHA-256 file hash detected.",
+                changed_by="System Guard",
+                created_at=datetime.now(timezone.utc)
+            )
+            db.add(dup_hist)
+
+    db.commit()
     db.close()
-    print("Database seeding completed successfully!")
+    print("Database seeding completed successfully with realistic demo data!")
 
 
 if __name__ == "__main__":
