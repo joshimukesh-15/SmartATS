@@ -79,8 +79,18 @@ export default function HeroSection({ onEnterApp }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column (5 cols): Headline, Sentence, CTAs, No Account Note */}
           <div className="lg:col-span-5 space-y-6 relative">
-            {/* Dot Grid Background behind headline */}
+            {/* Dot Grid and Faded Backdrop behind headline */}
             <div className="absolute -top-12 -left-10 w-96 h-96 dot-grid-bg pointer-events-none opacity-60 dark:opacity-40" />
+            <div className="absolute -top-16 -left-12 w-[460px] h-[360px] pointer-events-none opacity-20 dark:opacity-10 dark:brightness-[0.75] overflow-hidden rounded-[20px]">
+              <img
+                src="/images/hero-backdrop.webp"
+                alt=""
+                width="1400"
+                height="900"
+                loading="eager"
+                className="w-full h-full object-cover"
+              />
+            </div>
 
             <div className="relative space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-surface-alt/70 border border-line text-[13px] text-ink-muted font-medium select-none">
