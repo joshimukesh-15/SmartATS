@@ -37,7 +37,7 @@ export default function PipelineFunnel({ pipelineStages, defaultJobId }) {
                   : `/studio/candidates?stage=${item.stage}`
               )
             }
-            className={`p-4 rounded-[10px] bg-surface-alt/40 border border-line border-l-4 ${item.borderTone} hover:bg-surface-alt transition-colors cursor-pointer space-y-1.5`}
+            className={`p-4 rounded-[10px] bg-surface-alt/40 border border-line border-l-4 ${item.borderTone} hover:bg-surface hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 cursor-pointer space-y-1.5`}
           >
             <div className="flex items-center justify-between text-[13px] font-medium">
               <span className="font-semibold text-ink">{item.stage}</span>

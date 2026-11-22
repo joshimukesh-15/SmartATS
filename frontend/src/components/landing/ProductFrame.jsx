@@ -9,21 +9,21 @@ export default function ProductFrame({
 }) {
   return (
     <div
-      className={`rounded-[14px] border border-line bg-surface shadow-md overflow-hidden transition-all duration-300 ${className}`}
+      className={`rounded-[16px] border border-line bg-surface shadow-xl overflow-hidden transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5 ${className}`}
     >
       {/* Browser Chrome Header */}
-      <div className="px-4 py-2.5 bg-surface-alt border-b border-line flex items-center justify-between gap-4 select-none">
+      <div className="px-4 py-3 bg-surface-alt/70 backdrop-blur-xs border-b border-line flex items-center justify-between gap-4 select-none">
         {/* Window controls (three dots) */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="w-2.5 h-2.5 rounded-full bg-line" />
-          <span className="w-2.5 h-2.5 rounded-full bg-line" />
-          <span className="w-2.5 h-2.5 rounded-full bg-line" />
+          <span className="w-2.5 h-2.5 rounded-full bg-rose-400/80 border border-rose-500/30" />
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80 border border-amber-500/30" />
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80 border border-emerald-500/30" />
         </div>
 
         {/* Address Bar */}
-        <div className="flex-1 max-w-md mx-auto">
-          <div className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-[6px] bg-surface border border-line text-[13px] text-ink-muted tabular-nums">
-            <Lock className="w-3.5 h-3.5 text-champagne shrink-0" strokeWidth={1.75} />
+        <div className="flex-1 max-w-sm mx-auto">
+          <div className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-[6px] bg-surface border border-line text-[12px] font-medium text-ink-muted tabular-nums shadow-xs">
+            <Lock className="w-3 h-3 text-champagne shrink-0" strokeWidth={2} />
             <span className="truncate">{url}</span>
           </div>
         </div>
