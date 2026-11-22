@@ -61,6 +61,16 @@ export default function PipelineStepper({
             onChange={(event) => workflow.setTransitionNote(event.target.value)}
             placeholder="Optional note"
             aria-label="Transition note"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (e.isComposing || e.keyCode === 229) return;
+                e.preventDefault();
+                workflow.handleConfirmStageUpdate();
+              } else if (e.key === 'Escape') {
+                e.preventDefault();
+                workflow.handleCancelTransition();
+              }
+            }}
             className="min-w-[200px] flex-1 rounded-[10px] border border-line bg-surface px-3 py-2 text-[13px] text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
           />
           <Button variant="secondary" size="sm" id="cx" onClick={workflow.handleCancelTransition}>
