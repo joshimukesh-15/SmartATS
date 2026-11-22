@@ -143,6 +143,9 @@ All numeric scores, percentages, and dates use `tabular-nums` for vertical align
 | **Secondary / Meta** | 13px | Medium (500) | Normal | `text-[13px] leading-[1.5] text-ink-muted` |
 | **Score Figures** | 13px–24px | Bold (700) | Normal | `tabular-nums font-semibold` |
 
+### Architectural Rules
+> **Code Sharing Standard**: Shared code lives in `features/<name>/` or `components/ui/`, and is never copied across features. Views and components share hooks, types, and UI primitives from a single authoritative source.
+
 ---
 
 ## 4. Benchmark & Evaluation Metrics
