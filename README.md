@@ -164,24 +164,26 @@ These measurements evaluate the current extractor over the full labeled set; the
 | **Skill extraction precision** | **97.7%** | Canonical taxonomy token overlap |
 | **Skill extraction recall** | **100.0%** | Ground-truth coverage across labeled profiles |
 | **Skill extraction F1-score** | **98.8%** | Harmonic mean of precision and recall |
-| **Average extraction latency** | **3.28 ms / resume** | Mean wall-clock time per document |
+| **Average extraction latency** | **3.38 ms / resume** | One run over 8 resumes; wall-clock time varies by machine and run |
 
 ### Ranking Fit Comparison (3 jobs, 8 candidates)
 
-The single-document fit is the baseline that fits TF-IDF on one resume at a time. The corpus fit builds a per-job TF-IDF vocabulary from that job's candidate resumes. Both use the same small labeled dataset; these results are not production-scale estimates.
+Single-document fit is the recorded baseline that fits a vectorizer for one job/resume comparison. In the corpus evaluation, each job description is fitted with the full benchmark resume set. Both modes are evaluated against the same labeled set of 3 jobs and 8 candidates; these results are not production-scale estimates.
 
-| Algorithm configuration | TF-IDF fit mode | Evaluation set | Precision@1 | Precision@3 | Recall@3 | NDCG@3 | Average latency |
+| Algorithm configuration | Fit mode | Evaluation dataset | Precision@1 | Precision@3 | Recall@3 | NDCG@3 | Average latency |
 |---|---|---|---:|---:|---:|---:|---:|
-| **Keyword only** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 3.27 ms |
-| **Keyword only** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **2.36 ms** |
-| **TF-IDF only** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 0.89 | 0.76 | 0.974 | 2.74 ms |
-| **TF-IDF only** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 0.89 | 0.76 | 0.974 | **1.83 ms** |
-| **Hybrid (70% keyword / 30% text)** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.81 ms |
-| **Hybrid (70% keyword / 30% text)** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **1.82 ms** |
-| **Hybrid (60% keyword / 40% text)** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.71 ms |
-| **Hybrid (60% keyword / 40% text)** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **1.94 ms** |
-| **Hybrid (50% keyword / 50% text)** | Single-document fit (baseline) | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.86 ms |
-| **Hybrid (50% keyword / 50% text)** | Per-job corpus fit | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **1.82 ms** |
+| **Keyword only** | Single-document baseline | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 3.27 ms |
+| **Keyword only** | Per-job corpus | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **2.21 ms** |
+| **TF-IDF only** | Single-document baseline | 3 jobs, 8 candidates | 1.00 | 0.89 | 0.76 | 0.974 | 2.74 ms |
+| **TF-IDF only** | Per-job corpus | 3 jobs, 8 candidates | 1.00 | 0.89 | 0.76 | 0.974 | **2.09 ms** |
+| **Hybrid (70% keyword / 30% text)** | Single-document baseline | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.81 ms |
+| **Hybrid (70% keyword / 30% text)** | Per-job corpus | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **2.11 ms** |
+| **Hybrid (60% keyword / 40% text)** | Single-document baseline | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.71 ms |
+| **Hybrid (60% keyword / 40% text)** | Per-job corpus | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **2.32 ms** |
+| **Hybrid (50% keyword / 50% text)** | Single-document baseline | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | 2.86 ms |
+| **Hybrid (50% keyword / 50% text)** | Per-job corpus | 3 jobs, 8 candidates | 1.00 | 1.00 | 0.87 | 1.000 | **2.41 ms** |
+
+The checked-in evaluation script and CSV report corpus-fit results. Single-document scores and latencies are recorded baseline results; latency varies between runs and machines.
 
 *Full evaluation outputs are exported to [`backend/reports/evaluation_report.csv`](backend/reports/evaluation_report.csv).*
 

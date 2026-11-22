@@ -1,23 +1,23 @@
 @import 'tailwindcss';
 
 :root {
-  --canvas: #f7f6f3;
+  --canvas: #f2f3f7;
   --surface: #ffffff;
-  --surface-alt: #f0eeea;
-  --line: #e3e0da;
-  --ink: #14141a;
-  --ink-muted: #62626b;
-  --ink-subtle: #6c6c77;
-  --primary: #14141a;
+  --surface-alt: #dedee6;
+  --line: #c3c3c3;
+  --ink: #11141c;
+  --ink-muted: #4e5768;
+  --ink-subtle: #7c8594;
+  --primary: #181d26;
   --on-primary: #ffffff;
-  --champagne: #926f18;
-  --champagne-soft: #f4ecd8;
+  --champagne: #5a6678;
+  --champagne-soft: #dedee6;
   --danger: #b42318;
 
-  --shadow-xs: 0 1px 2px rgba(20, 20, 26, 0.04);
-  --shadow-sm: 0 1px 2px rgba(20, 20, 26, 0.05), 0 4px 12px -2px rgba(20, 20, 26, 0.06);
-  --shadow-md: 0 2px 4px rgba(20, 20, 26, 0.04), 0 12px 32px -8px rgba(20, 20, 26, 0.12);
-  --shadow-lg: 0 24px 64px -16px rgba(20, 20, 26, 0.28);
+  --shadow-xs: 0 1px 2px rgba(17, 20, 28, 0.04);
+  --shadow-sm: 0 1px 3px rgba(17, 20, 28, 0.05), 0 4px 14px -2px rgba(124, 133, 148, 0.10);
+  --shadow-md: 0 2px 5px rgba(17, 20, 28, 0.04), 0 12px 32px -8px rgba(124, 133, 148, 0.16);
+  --shadow-lg: 0 24px 64px -16px rgba(17, 20, 28, 0.22);
 
   /* Motion Tokens */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -28,23 +28,23 @@
 }
 
 .dark {
-  --canvas: #0e0e12;
-  --surface: #17171c;
-  --surface-alt: #1f1f26;
-  --line: #2a2a32;
-  --ink: #f4f3f0;
-  --ink-muted: #a1a1aa;
-  --ink-subtle: #9898a4;
-  --primary: #f4f3f0;
-  --on-primary: #0e0e12;
-  --champagne: #d4b15a;
-  --champagne-soft: #2a2412;
-  --danger: #b42318;
+  --canvas: #0b0d12;
+  --surface: #131720;
+  --surface-alt: #1a202c;
+  --line: #262c39;
+  --ink: #f0f1f7;
+  --ink-muted: #9ba4b5;
+  --ink-subtle: #7c8594;
+  --primary: #dedee6;
+  --on-primary: #0b0d12;
+  --champagne: #9aa7ba;
+  --champagne-soft: #19202c;
+  --danger: #e05248;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  --shadow-lg: 0 24px 64px -16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(222, 222, 230, 0.06);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(222, 222, 230, 0.06);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(222, 222, 230, 0.06);
+  --shadow-lg: 0 24px 64px -16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(222, 222, 230, 0.06);
 }
 
 @theme {
@@ -60,6 +60,12 @@
   --color-champagne: var(--champagne);
   --color-champagne-soft: var(--champagne-soft);
   --color-danger: var(--danger);
+
+  /* User Signature MNC Palette */
+  --color-slate-mist: #dedee6;
+  --color-platinum: #c3c3c3;
+  --color-slate-steel: #7c8594;
+  --color-slate-dark: #181d26;
 
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);

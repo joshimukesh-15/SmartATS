@@ -65,7 +65,7 @@ export default function HeroSection({ onEnterApp }) {
 
   return (
     <section className="relative isolate overflow-visible border-b border-line bg-canvas pb-20 pt-32 sm:pb-28 sm:pt-40">
-      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[500px] w-full max-w-7xl bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(146,111,24,0.12),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(212,177,90,0.08),transparent_70%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[500px] w-full max-w-7xl bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(124,133,148,0.18),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(222,222,230,0.08),transparent_70%)]" />
       <img
         src="/images/hero-backdrop.webp"
         alt=""
