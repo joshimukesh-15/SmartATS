@@ -26,7 +26,7 @@ export default function JobQualityDialog({ job, onClose }) {
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 rounded-[10px] bg-surface-alt border border-line">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-champagne" strokeWidth={1.75} />
+                <ShieldCheck className="w-5 h-5 text-primary" strokeWidth={1.75} />
                 <span className="font-semibold text-ink text-[15px]">
                   Quality Grade: {inspectedQuality.grade}
                 </span>
@@ -45,7 +45,7 @@ export default function JobQualityDialog({ job, onClose }) {
                       key={sIdx}
                       className="p-3 rounded-[8px] bg-surface border border-line flex items-start gap-2 text-[13px] text-ink-muted"
                     >
-                      <AlertTriangle className="w-4 h-4 text-champagne shrink-0 mt-0.5" strokeWidth={1.75} />
+                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" strokeWidth={1.75} />
                       <span>{sug}</span>
                     </div>
                   ))}

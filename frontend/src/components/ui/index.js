@@ -20,3 +20,4 @@ export * from './ThemeToggle';
 export * from './Avatar';
 export * from './Kbd';
 export * from './StatusBadge';
+export * from './StudioPageHeader';

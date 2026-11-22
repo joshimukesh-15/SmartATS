@@ -21,7 +21,7 @@ export default function ScoreCard({
           <span className="text-[14px] text-ink-muted">out of 100 points</span>
         </div>
 
-        <div className="my-5 flex h-3 overflow-hidden rounded-full bg-surface-alt">
+        <div className="my-5 flex h-3 overflow-hidden rounded-[6px] bg-surface-alt">
           {parts.map((p) => (
             <i
               key={p.name}
@@ -46,14 +46,14 @@ export default function ScoreCard({
               className="grid grid-cols-[minmax(0,1.4fr)_55px_65px_70px] lg:grid-cols-[1.4fr_70px_90px_1.6fr_80px] items-center gap-3 border-t border-line py-3.5 text-[14px]"
             >
               <div className="flex min-w-0 items-center font-semibold text-ink">
-                <span className={`mr-2.5 inline-block h-2.5 w-2.5 shrink-0 rounded-full ${p.dotClass}`} />
+                <span className={`mr-2.5 inline-block h-2.5 w-2.5 shrink-0 rounded-[2px] ${p.dotClass}`} />
                 <span className="truncate">{p.name}</span>
               </div>
               <span className="tabular-nums text-ink-muted">{p.weight}%</span>
               <span className="tabular-nums text-ink-muted">{p.match.toFixed(1)}%</span>
-              <div className="hidden h-1.5 overflow-hidden rounded-full bg-surface-alt lg:block">
+              <div className="hidden h-1.5 overflow-hidden rounded-[4px] bg-surface-alt lg:block">
                 <div
-                  className={`h-full rounded-full transition-[width] duration-500 ${p.barClass}`}
+                  className={`h-full rounded-[4px] transition-[width] duration-500 ${p.barClass}`}
                   style={{ width: `${Math.min(Math.max(p.match, 0), 100)}%` }}
                 />
               </div>
@@ -84,7 +84,7 @@ export default function ScoreCard({
               <ul className="space-y-2.5 text-[14px] text-ink">
                 {insights.strengths.map((str) => (
                   <li key={str} className="flex items-start gap-2.5">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-[2px] bg-primary" />
                     <span>{str}</span>
                   </li>
                 ))}
@@ -99,7 +99,7 @@ export default function ScoreCard({
               <ul className="space-y-2.5 text-[14px] text-ink">
                 {insights.gaps.map((gap) => (
                   <li key={gap} className="flex items-start gap-2.5">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full border-2 border-champagne" />
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-[2px] border-2 border-line bg-surface-alt" />
                     <span>{gap}</span>
                   </li>
                 ))}

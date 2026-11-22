@@ -11,6 +11,7 @@ import {
   Avatar,
   ScoreBar,
   ScoreValue,
+  StudioPageHeader,
 } from '../../components/ui';
 import ScoreHistogram from './ScoreHistogram';
 import PipelineFunnel from './PipelineFunnel';
@@ -147,14 +148,14 @@ export default function OverviewPage() {
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
-              Overview
-            </h1>
+      <StudioPageHeader
+        breadcrumb="Overview"
+        title="Overview"
+        description="Recruitment pipeline metrics, applicant review stages, and candidate fit benchmarks."
+        actions={
+          <>
             {lastUpdatedText && (
-              <span className="text-[12px] text-ink-muted bg-surface-alt px-2.5 py-1 rounded-[6px] border border-line">
+              <span className="text-[13px] text-ink-muted bg-surface-alt px-2.5 py-1 rounded-[6px] border border-line">
                 {lastUpdatedText}
               </span>
             )}
@@ -167,30 +168,25 @@ export default function OverviewPage() {
             >
               <RefreshCw className={`w-3.5 h-3.5 ${analyticsFetching ? 'animate-spin' : ''}`} />
             </button>
-          </div>
-          <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
-            Recruitment pipeline metrics, applicant review stages, and candidate fit benchmarks.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon={<UploadCloud className="w-4 h-4" strokeWidth={1.75} />}
-            onClick={() => navigate('/studio/upload')}
-          >
-            Upload resumes
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
-            onClick={() => navigate('/studio/jobs')}
-          >
-            Manage jobs
-          </Button>
-        </div>
-      </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<UploadCloud className="w-4 h-4" strokeWidth={1.75} />}
+              onClick={() => navigate('/studio/upload')}
+            >
+              Upload resumes
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
+              onClick={() => navigate('/studio/jobs')}
+            >
+              Manage jobs
+            </Button>
+          </>
+        }
+      />
 
       {/* 1. Stat Strip (single-panel with dividers) */}
       <StatStrip items={statItems} />

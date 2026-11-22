@@ -30,7 +30,7 @@ export default function SkillsTab({ candidate, activeJob }) {
       <div className="p-4 rounded-[12px] bg-surface-alt/50 border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-0.5">
           <div className="text-[13px] font-semibold text-ink flex items-center gap-1.5">
-            <Layers className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+            <Layers className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
             <span>Required Skill Verification</span>
           </div>
           <div className="text-[13px] text-ink-muted">
@@ -43,13 +43,13 @@ export default function SkillsTab({ candidate, activeJob }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-32 bg-surface rounded-full h-2 border border-line overflow-hidden hidden sm:block">
+          <div className="w-32 bg-surface rounded-[4px] h-2 border border-line overflow-hidden hidden sm:block">
             <div
-              className="bg-primary h-full rounded-full transition-all duration-300"
+              className="bg-primary h-full rounded-[4px] transition-all duration-300"
               style={{ width: `${Math.min(coveragePercent, 100)}%` }}
             />
           </div>
-          <span className="px-2.5 py-1 rounded-[6px] bg-primary/10 border border-primary/20 text-primary font-bold text-[13px] tabular-nums shrink-0">
+          <span className="px-2.5 py-1 rounded-[8px] bg-primary/10 border border-primary/20 text-primary font-bold text-[13px] tabular-nums shrink-0">
             {coveragePercent}% Verified
           </span>
         </div>
@@ -83,20 +83,20 @@ export default function SkillsTab({ candidate, activeJob }) {
 
                   <div>
                     {isFound ? (
-                      <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-ink bg-champagne-soft px-2.5 py-0.5 rounded-[6px]">
-                        <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+                      <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-ink bg-surface-alt px-2.5 py-0.5 rounded-[8px] border border-line">
+                        <Check className="w-4 h-4 text-primary" strokeWidth={1.75} />
                         Found in resume
                       </span>
                     ) : equivSource ? (
                       <span
-                        className="inline-flex items-center gap-1.5 text-[13px] font-medium text-ink bg-champagne-soft/70 px-2.5 py-0.5 rounded-[6px] border border-champagne/30"
+                        className="inline-flex items-center gap-1.5 text-[13px] font-medium text-ink bg-surface-alt px-2.5 py-0.5 rounded-[8px] border border-line"
                         title="Recognized as equivalent skill family with 75% credit"
                       >
-                        <CheckCircle2 className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+                        <CheckCircle2 className="w-4 h-4 text-primary" strokeWidth={1.75} />
                         Via {equivSource} (75%)
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 text-[13px] text-ink-muted bg-surface-alt px-2.5 py-0.5 rounded-[6px] border border-dashed border-line font-medium">
+                      <span className="inline-flex items-center gap-1.5 text-[13px] text-ink-muted bg-surface-alt px-2.5 py-0.5 rounded-[8px] border border-dashed border-line font-medium">
                         <Minus className="w-4 h-4 text-ink-subtle" strokeWidth={1.75} />
                         Missing
                       </span>
@@ -113,12 +113,12 @@ export default function SkillsTab({ candidate, activeJob }) {
       {preferredMatchedSkills.length > 0 && (
         <div className="pt-3 border-t border-line space-y-2">
           <div className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
-            <Sparkles className="w-3.5 h-3.5 text-champagne" strokeWidth={1.75} />
+            <Sparkles className="w-3.5 h-3.5 text-primary" strokeWidth={1.75} />
             <span>Preferred & Bonus Skills Found ({preferredMatchedSkills.length})</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {preferredMatchedSkills.map((s) => (
-              <Badge key={s} variant="champagne" className="text-[12px] font-medium">
+              <Badge key={s} variant="outline" className="text-[13px] font-medium bg-surface-alt text-ink rounded-[8px] border-line">
                 {s}
               </Badge>
             ))}
@@ -129,17 +129,17 @@ export default function SkillsTab({ candidate, activeJob }) {
       {/* 4. Other Candidate Skills / Keyword Matches */}
       {otherSkills.length > 0 && (
         <div className="pt-3 border-t border-line space-y-2">
-          <span className="text-[13px] font-semibold text-ink-muted uppercase tracking-wider block">
+          <span className="text-[13px] font-semibold text-ink-muted block">
             Additional Extracted Skills ({otherSkills.length})
           </span>
           <div className="flex flex-wrap gap-1.5">
             {otherSkills.slice(0, 20).map((s) => (
-              <Badge key={s} variant="outline" className="text-[12px] text-ink-muted">
+              <Badge key={s} variant="outline" className="text-[13px] text-ink-muted rounded-[8px]">
                 {s}
               </Badge>
             ))}
             {otherSkills.length > 20 && (
-              <span className="text-[12px] text-ink-muted self-center">
+              <span className="text-[13px] text-ink-muted self-center">
                 +{otherSkills.length - 20} more
               </span>
             )}

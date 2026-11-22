@@ -47,7 +47,7 @@ export default function UploadFileRow({
               </Badge>
             ) : isDuplicate ? (
               <Badge variant="default" className="gap-1 border-line">
-                <Clock className="w-3.5 h-3.5 text-champagne" strokeWidth={1.75} />
+                <Clock className="w-3.5 h-3.5 text-ink-muted" strokeWidth={1.75} />
                 <span>Duplicate</span>
               </Badge>
             ) : isRejected ? (
@@ -83,8 +83,8 @@ export default function UploadFileRow({
 
       {/* Progress Bar (during upload & parsing) */}
       {isUploading && (
-        <div className="h-1.5 w-full bg-surface-alt rounded-full overflow-hidden">
-          <div className="h-full bg-primary rounded-full animate-pulse w-full transition-all duration-300" />
+        <div className="h-1.5 w-full bg-surface-alt rounded-[4px] overflow-hidden">
+          <div className="h-full bg-primary rounded-[4px] animate-pulse w-full transition-all duration-300" />
         </div>
       )}
 

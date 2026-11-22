@@ -80,7 +80,7 @@ export default function PipelineStageControl({
       <div className={`space-y-2 ${className}`}>
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-ink-muted">Recruitment stage</p>
+            <p className="text-[13px] font-medium text-ink-muted">Recruitment stage</p>
             <p className="truncate text-[13px] font-semibold text-ink">{currentStage}</p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -133,7 +133,7 @@ export default function PipelineStageControl({
       <div className="flex items-center justify-between text-[13px]">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-ink">Recruitment Stage</span>
-          <span className="text-[12px] text-ink-muted">
+          <span className="text-[13px] text-ink-muted">
             Current: <strong className="text-ink font-semibold">{currentStage}</strong>
           </span>
         </div>
@@ -154,7 +154,7 @@ export default function PipelineStageControl({
               type="button"
               onClick={() => handleStageClick('Rejected')}
               disabled={isUpdating}
-              className="px-2.5 py-1 rounded-[6px] border border-line bg-surface hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-600 text-[12px] text-ink-muted transition-colors cursor-pointer font-medium disabled:opacity-50"
+              className="px-2.5 py-1 rounded-[8px] border border-line bg-surface hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-600 text-[13px] text-ink-muted transition-colors cursor-pointer font-medium disabled:opacity-50"
             >
               Mark Rejected
             </button>
@@ -183,9 +183,9 @@ export default function PipelineStageControl({
                     : 'text-ink-muted hover:text-ink hover:bg-surface/60'
               }`}
             >
-              <div className="text-[12px] sm:text-[13px] leading-tight flex items-center justify-center gap-1">
+              <div className="text-[13px] leading-tight flex items-center justify-center gap-1">
                 {isCompleted && (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-champagne shrink-0" strokeWidth={2} />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" strokeWidth={2} />
                 )}
                 <span className="truncate">{s}</span>
               </div>

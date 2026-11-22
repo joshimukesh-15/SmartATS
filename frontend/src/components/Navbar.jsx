@@ -85,7 +85,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
           <div className="space-y-6">
             {NAV_GROUPS.map((group) => (
               <div key={group.title} className="space-y-1.5">
-                <div className="px-3 text-[13px] font-semibold uppercase tracking-wider text-ink-subtle">
+                <div className="px-3 text-[13px] font-semibold text-ink-subtle">
                   {group.title}
                 </div>
                 <nav className="space-y-1">
@@ -179,7 +179,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
           <div className="space-y-5">
             {NAV_GROUPS.map((group) => (
               <div key={group.title} className="space-y-1">
-                <div className="px-3 pb-1 text-[13px] font-semibold uppercase tracking-wider text-ink-subtle">
+                <div className="px-3 pb-1 text-[13px] font-semibold text-ink-subtle">
                   {group.title}
                 </div>
                 <nav className="space-y-0.5">

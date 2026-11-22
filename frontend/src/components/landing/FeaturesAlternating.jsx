@@ -52,7 +52,7 @@ export default function FeaturesAlternating() {
             <article key={feature.eyebrow} className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <div className={`space-y-5 text-left ${reversed ? 'lg:order-2' : ''}`}>
                 <div className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-muted">
-                  <Icon aria-hidden="true" className="h-4 w-4 text-champagne" strokeWidth={1.75} />
+                  <Icon aria-hidden="true" className="h-4 w-4 text-ink-muted" strokeWidth={1.75} />
                   <span>{feature.eyebrow}</span>
                 </div>
                 <h2 className="max-w-xl text-[30px] font-semibold leading-[1.15] tracking-[-0.03em] text-ink sm:text-[34px]">
@@ -63,7 +63,7 @@ export default function FeaturesAlternating() {
                 </p>
                 <Link
                   to={feature.link}
-                  className="group inline-flex items-center gap-2 pt-1 text-[14px] font-medium text-ink transition-colors hover:text-champagne"
+                  className="group inline-flex items-center gap-2 pt-1 text-[14px] font-medium text-ink transition-colors hover:text-primary"
                 >
                   <span>{feature.linkText}</span>
                   <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.75} />

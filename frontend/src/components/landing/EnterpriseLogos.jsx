@@ -54,7 +54,7 @@ export default function EnterpriseLogos() {
   return (
     <div className="border-y border-line/60 bg-surface/40 py-8 backdrop-blur-xs select-none">
       <div className="mx-auto max-w-[1200px] px-6 sm:px-8 lg:px-12">
-        <p className="text-center text-[12px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
+        <p className="text-center text-[13px] font-medium text-ink-muted">
           Powering talent intelligence at high-growth engineering teams
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-ink">

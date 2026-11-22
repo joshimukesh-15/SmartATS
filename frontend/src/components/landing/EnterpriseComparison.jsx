@@ -63,9 +63,9 @@ export default function EnterpriseComparison() {
     <section className="py-20 lg:py-28 bg-canvas border-t border-line">
       <div className="mx-auto max-w-[1200px] px-6 sm:px-8 lg:px-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-champagne-soft/70 border border-champagne/40 text-[12px] font-semibold text-champagne select-none">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-surface-alt border border-line text-[13px] font-semibold text-ink-muted select-none">
             <Scale className="w-3.5 h-3.5" />
-            <span>ARCHITECTURAL COMPARISON</span>
+            <span>Architectural Comparison</span>
           </div>
           <h2 className="text-[32px] sm:text-[40px] font-semibold tracking-[-0.035em] text-ink leading-tight">
             Why Enterprise Talent Leaders Choose SmartATS
@@ -85,7 +85,7 @@ export default function EnterpriseComparison() {
                   <th className="py-4 px-6 w-1/4 text-ink-muted">Blackbox Generative LLMs</th>
                   <th className="py-4 px-6 w-1/4 bg-primary text-on-primary">
                     <div className="flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-champagne" />
+                      <Sparkles className="w-4 h-4 text-on-primary" />
                       <span>SmartATS Enterprise</span>
                     </div>
                   </th>
@@ -109,7 +109,7 @@ export default function EnterpriseComparison() {
                     </td>
                     <td className="py-4 px-6 bg-surface-alt/40 font-medium text-ink">
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                        <div className="w-5 h-5 rounded-[6px] bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                           <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </div>
                         <span>{row.smartats}</span>

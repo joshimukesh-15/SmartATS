@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, List, Table as TableIcon, Kanban, GitCompare, X } from 'lucide-react';
-import { Button, EmptyState, Input, Select, Skeleton } from '../../components/ui';
+import { Button, EmptyState, Input, Select, Skeleton, StudioPageHeader } from '../../components/ui';
 import { useJobs, useRankings } from '../../hooks';
 import { computeBreakdown, sortCandidates } from '../../lib/score';
 import { STAGES, normalizeStage, useCandidateSelection, useStageWorkflow } from './index';
@@ -99,39 +99,40 @@ export default function CandidateWorkspace({ initialView, initialCompare }) {
   return (
     <div className="mx-auto w-full max-w-[1360px] px-4 py-7 pb-36 sm:pb-40 sm:px-8">
       {/* Top Header & Navigation Segmented Control */}
-      <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-[30px] font-semibold tracking-[-0.03em] text-ink">Candidates</h1>
-          <p className="mt-1 text-[15px] text-ink-muted">Review profiles, compare evidence, and move candidates through your hiring process.</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex rounded-[10px] border border-line bg-surface p-1 shadow-xs" role="tablist" aria-label="View mode">
-            {viewModes.map(({ id, label, icon: Icon }, idx) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                aria-selected={activeView === id}
-                tabIndex={activeView === id ? 0 : -1}
-                onKeyDown={(e) => handleViewKeyDown(e, idx)}
-                onClick={() => updateParams({ view: id })}
-                className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-primary ${
-                  activeView === id ? 'bg-primary text-on-primary shadow-xs' : 'text-ink-muted hover:text-ink hover:bg-surface-alt'
-                }`}
-              >
-                <Icon className="h-4 w-4" strokeWidth={1.75} />
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
-          <div className="w-56 max-w-full">
-            <Select aria-label="Choose a job" value={activeJobId} onChange={(e) => updateParams({ job: e.target.value, jobId: e.target.value, candidate: null })}>
-              {!jobs.length && <option value="">No job selected</option>}
-              {jobs.map((job) => <option key={job.job_id} value={job.job_id}>{job.title}</option>)}
-            </Select>
-          </div>
-        </div>
-      </div>
+      <StudioPageHeader
+        breadcrumb="Candidates"
+        title="Candidates"
+        description="Review profiles, compare evidence, and move candidates through your hiring process."
+        actions={
+          <>
+            <div className="flex rounded-[10px] border border-line bg-surface p-1 shadow-xs" role="tablist" aria-label="View mode">
+              {viewModes.map(({ id, label, icon: Icon }, idx) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeView === id}
+                  tabIndex={activeView === id ? 0 : -1}
+                  onKeyDown={(e) => handleViewKeyDown(e, idx)}
+                  onClick={() => updateParams({ view: id })}
+                  className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-primary ${
+                    activeView === id ? 'bg-primary text-on-primary shadow-xs' : 'text-ink-muted hover:text-ink hover:bg-surface-alt'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" strokeWidth={1.75} />
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+            <div className="w-56 max-w-full">
+              <Select aria-label="Choose a job" value={activeJobId} onChange={(e) => updateParams({ job: e.target.value, jobId: e.target.value, candidate: null })}>
+                {!jobs.length && <option value="">No job selected</option>}
+                {jobs.map((job) => <option key={job.job_id} value={job.job_id}>{job.title}</option>)}
+              </Select>
+            </div>
+          </>
+        }
+      />
 
       {/* Shared Filter Bar */}
       <div className="mb-6 flex flex-wrap items-center gap-3">

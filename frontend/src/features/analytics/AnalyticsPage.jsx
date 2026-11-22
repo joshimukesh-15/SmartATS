@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useJobs, useJobAnalytics } from '../../hooks';
-import { Select, Panel, StatStrip, useStatStripConfig, EmptyState, Skeleton, Button } from '../../components/ui';
+import { Select, Panel, StatStrip, useStatStripConfig, EmptyState, Skeleton, Button, StudioPageHeader } from '../../components/ui';
 import { STAGES } from '../candidates/constants';
 
 export default function AnalyticsPage() {
@@ -77,28 +77,24 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8 animate-fadeIn max-w-5xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-line">
-        <div>
-          <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
-            Skill Gap Analytics
-          </h1>
-          <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
-            Aggregate competency frequency, talent pool coverage, and missing qualification trends.
-          </p>
-        </div>
-
-        {jobs.length > 0 && (
-          <div className="w-56">
-            <Select value={activeJobId} onChange={(e) => handleJobChange(e.target.value)}>
-              {jobs.map((job) => (
-                <option key={job.job_id} value={job.job_id}>
-                  {job.title}
-                </option>
-              ))}
-            </Select>
-          </div>
-        )}
-      </div>
+      <StudioPageHeader
+        breadcrumb="Analytics"
+        title="Skill Gap Analytics"
+        description="Aggregate competency frequency, talent pool coverage, and missing qualification trends."
+        actions={
+          jobs.length > 0 && (
+            <div className="w-56">
+              <Select aria-label="Select job opening" value={activeJobId} onChange={(e) => handleJobChange(e.target.value)}>
+                {jobs.map((job) => (
+                  <option key={job.job_id} value={job.job_id}>
+                    {job.title}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          )
+        }
+      />
 
       {/* 1. Stat Strip */}
       <StatStrip items={statItems} />
@@ -155,14 +151,14 @@ export default function AnalyticsPage() {
                             {count} ({pct.toFixed(0)}%)
                           </span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-surface-alt overflow-hidden">
+                        <div className="h-2 w-full rounded-[4px] bg-surface-alt overflow-hidden">
                           <div
                             style={{ width: `${pct}%` }}
-                            className={`h-full rounded-full transition-all duration-500 ${
+                            className={`h-full rounded-[4px] transition-all duration-500 ${
                               bucket === '80-100%'
                                 ? 'bg-primary'
                                 : bucket === '60-79%'
-                                ? 'bg-champagne'
+                                ? 'bg-slate-steel'
                                 : 'bg-line'
                             }`}
                           />
@@ -239,10 +235,10 @@ export default function AnalyticsPage() {
                         </span>
                       </div>
                       {/* Horizontal bar in primary */}
-                      <div className="h-2.5 w-full rounded-full bg-surface-alt overflow-hidden">
+                      <div className="h-2.5 w-full rounded-[4px] bg-surface-alt overflow-hidden">
                         <div
                           style={{ width: `${item.percent}%` }}
-                          className="h-full bg-primary transition-all duration-500 rounded-full"
+                          className="h-full bg-primary transition-all duration-500 rounded-[4px]"
                         />
                       </div>
                     </div>
@@ -251,7 +247,7 @@ export default function AnalyticsPage() {
               )}
             </Panel>
 
-            {/* Missing Skills Frequency (Missing in Champagne-Soft with Champagne Border) */}
+            {/* Missing Skills Frequency (Tonal Graphite Scale) */}
             <Panel className="p-5 sm:p-6 space-y-6">
               <div className="space-y-1">
                 <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Common skill gaps</h2>
@@ -275,15 +271,15 @@ export default function AnalyticsPage() {
                     <div key={idx} className="space-y-1.5">
                       <div className="flex items-center justify-between text-[13px]">
                         <span className="font-medium text-ink">{item.skill}</span>
-                        <span className="text-champagne font-semibold tabular-nums text-right">
+                        <span className="text-ink font-semibold tabular-nums text-right">
                           Missing in {item.missingCount} {item.missingCount === 1 ? 'resume' : 'resumes'} ({item.percent.toFixed(0)}%)
                         </span>
                       </div>
-                      {/* Horizontal bar in champagne-soft with champagne border */}
-                      <div className="h-2.5 w-full rounded-full bg-surface-alt overflow-hidden">
+                      {/* Horizontal bar in tonal graphite scale */}
+                      <div className="h-2.5 w-full rounded-[4px] bg-surface-alt overflow-hidden">
                         <div
                           style={{ width: `${item.percent}%` }}
-                          className="h-full bg-champagne-soft border border-champagne transition-all duration-500 rounded-full"
+                          className="h-full bg-slate-steel transition-all duration-500 rounded-[4px]"
                         />
                       </div>
                     </div>

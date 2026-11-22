@@ -1,4 +1,4 @@
-import { Shield, Lock, FileCode, CheckCircle2 } from 'lucide-react';
+import { Shield, Lock, CheckCircle2 } from 'lucide-react';
 
 export default function FooterSection({ onEnterApp }) {
   return (
@@ -13,19 +13,19 @@ export default function FooterSection({ onEnterApp }) {
                 S
               </span>
               <span className="text-[18px] font-bold tracking-tight text-ink">SmartATS</span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-champagne bg-champagne-soft/70 px-2 py-0.5 rounded-[4px] border border-champagne/30">
+              <span className="text-[13px] font-medium text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[8px] border border-line">
                 Enterprise
               </span>
             </div>
             <p className="text-[14px] text-ink-muted leading-relaxed max-w-sm">
               The deterministic recruitment intelligence platform. Providing mathematically explainable, auditable candidate rankings for global enterprise hiring teams.
             </p>
-            <div className="flex items-center gap-3 pt-2 text-[12px] text-ink-muted">
-              <span className="inline-flex items-center gap-1.5 bg-surface-alt px-2.5 py-1 rounded-[6px] border border-line">
-                <Shield className="w-3.5 h-3.5 text-champagne" />
+            <div className="flex items-center gap-3 pt-2 text-[13px] text-ink-muted">
+              <span className="inline-flex items-center gap-1.5 bg-surface-alt px-2.5 py-1 rounded-[8px] border border-line">
+                <Shield className="w-3.5 h-3.5 text-ink-muted" />
                 <span>EEOC Defensible</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 bg-surface-alt px-2.5 py-1 rounded-[6px] border border-line">
+              <span className="inline-flex items-center gap-1.5 bg-surface-alt px-2.5 py-1 rounded-[8px] border border-line">
                 <Lock className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Zero Model Training</span>
               </span>
@@ -34,7 +34,7 @@ export default function FooterSection({ onEnterApp }) {
 
           {/* Column 1: Platform */}
           <div className="space-y-3">
-            <h4 className="text-[13px] font-semibold uppercase tracking-wider text-ink">Platform</h4>
+            <h4 className="text-[13px] font-semibold text-ink">Platform</h4>
             <ul className="space-y-2 text-[14px] text-ink-muted">
               <li>
                 <button type="button" onClick={onEnterApp} className="hover:text-ink transition-colors cursor-pointer text-left">
@@ -49,7 +49,7 @@ export default function FooterSection({ onEnterApp }) {
 
           {/* Column 2: Governance */}
           <div className="space-y-3">
-            <h4 className="text-[13px] font-semibold uppercase tracking-wider text-ink">Governance</h4>
+            <h4 className="text-[13px] font-semibold text-ink">Governance</h4>
             <ul className="space-y-2 text-[14px] text-ink-muted">
               <li><a href="#security" className="hover:text-ink transition-colors">Enterprise Security</a></li>
               <li><a href="#comparison" className="hover:text-ink transition-colors">Bias-Audit Defensibility</a></li>
@@ -60,7 +60,7 @@ export default function FooterSection({ onEnterApp }) {
 
           {/* Column 3: Resources */}
           <div className="space-y-3">
-            <h4 className="text-[13px] font-semibold uppercase tracking-wider text-ink">Developers</h4>
+            <h4 className="text-[13px] font-semibold text-ink">Developers</h4>
             <ul className="space-y-2 text-[14px] text-ink-muted">
               <li>
                 <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" className="hover:text-ink transition-colors">

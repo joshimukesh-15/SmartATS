@@ -95,8 +95,8 @@ export default function ProfilePanel({
       weight: Math.round((breakdown.weightEducation || 0.15) * 100),
       match: Number(breakdown.educationPercent || 0),
       points: Number(breakdown.educationPoints || 0),
-      dotClass: 'bg-champagne/60',
-      barClass: 'bg-champagne/60',
+      dotClass: 'bg-platinum dark:bg-ink-subtle/50',
+      barClass: 'bg-platinum dark:bg-ink-subtle/50',
     },
   ];
 
@@ -185,7 +185,7 @@ export default function ProfilePanel({
                       className="flex items-center justify-between gap-3 border-b border-line/40 py-2 last:border-0"
                     >
                       <span className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-primary" />
+                        <span className="h-2 w-2 rounded-[2px] bg-primary" />
                         {skill}
                       </span>
                       {matched ? (

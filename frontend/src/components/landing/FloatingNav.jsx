@@ -33,7 +33,7 @@ export default function FloatingNav({ onEnterApp }) {
             S
           </span>
           <span className="text-[18px] font-bold text-ink tracking-tight">SmartATS</span>
-          <span className="hidden sm:inline-flex items-center text-[10px] font-semibold uppercase tracking-wider text-champagne bg-champagne-soft/70 px-2 py-0.5 rounded-[4px] border border-champagne/30">
+          <span className="hidden sm:inline-flex items-center text-[13px] font-medium text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[8px] border border-line">
             Enterprise
           </span>
         </div>

@@ -30,7 +30,7 @@ export function ScoreBar({
   return (
     <div className={`w-full space-y-1 ${className}`}>
       <div
-        className={`w-full ${height} rounded-full bg-surface-alt overflow-hidden flex`}
+        className={`w-full ${height} rounded-[4px] bg-surface-alt overflow-hidden flex`}
         role="progressbar"
         aria-valuenow={Math.round(total)}
         aria-valuemin="0"
@@ -62,7 +62,7 @@ export function ScoreBar({
             <div
               data-testid="score-bar-education"
               style={{ width: `${eduWidth}%` }}
-              className="bg-champagne/40 h-full transition-all duration-500 ease-out"
+              className="bg-platinum dark:bg-ink-subtle/50 h-full transition-all duration-500 ease-out"
               title={`Education: ${eduWidth.toFixed(1)} pts`}
             />
           </>
@@ -71,21 +71,21 @@ export function ScoreBar({
       {showLabel && (
         <div className="flex items-center justify-between text-[13px] text-ink-muted tabular-nums flex-wrap gap-x-2">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-primary" />
+            <span className="w-2 h-2 rounded-[2px] bg-primary" />
             Skills: {skillsPoints.toFixed(1)}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-champagne" />
+            <span className="w-2 h-2 rounded-[2px] bg-champagne" />
             Text: {textMatchPoints.toFixed(1)}
           </span>
           {isMulti && (
             <>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-ink-muted" />
+                <span className="w-2 h-2 rounded-[2px] bg-ink-muted" />
                 Exp: {experiencePoints.toFixed(1)}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-champagne/40" />
+                <span className="w-2 h-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50" />
                 Edu: {educationPoints.toFixed(1)}
               </span>
             </>

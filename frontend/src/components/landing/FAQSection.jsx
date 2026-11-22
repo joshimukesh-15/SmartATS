@@ -45,7 +45,7 @@ export default function FAQSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column (Sticky Heading) */}
           <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-4 text-left">
-            <div className="text-[13px] font-medium text-ink-muted uppercase tracking-wider">
+            <div className="text-[13px] font-medium text-ink-muted">
               Common questions
             </div>
             <h2 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
@@ -68,12 +68,12 @@ export default function FAQSection() {
                       type="button"
                       onClick={() => toggle(idx)}
                       aria-expanded={isOpen}
-                      className="w-full py-5 flex items-center justify-between gap-4 text-left font-medium text-[16px] text-ink hover:text-champagne transition-colors cursor-pointer select-none"
+                      className="w-full py-5 flex items-center justify-between gap-4 text-left font-medium text-[16px] text-ink hover:text-primary transition-colors cursor-pointer select-none"
                     >
                       <span className="leading-snug">{faq.q}</span>
                       <ChevronDown
                         className={`w-4 h-4 text-ink-muted shrink-0 transition-transform duration-250 ease-out ${
-                          isOpen ? 'rotate-180 text-champagne' : ''
+                          isOpen ? 'rotate-180 text-primary' : ''
                         }`}
                         strokeWidth={1.75}
                       />

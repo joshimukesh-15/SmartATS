@@ -1,6 +1,6 @@
 const VARIANTS = {
   default: 'bg-surface-alt text-ink border border-line',
-  matched: 'bg-champagne-soft text-ink border border-champagne/30',
+  matched: 'bg-surface-alt text-ink border border-line font-medium',
   missing: 'bg-surface text-ink-muted border border-dashed border-line',
   primary: 'bg-primary text-on-primary border border-primary',
   outline: 'bg-transparent text-ink border border-line',

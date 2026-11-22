@@ -14,10 +14,10 @@ function getDeterministicTint(name = '') {
     hash = (hash << 5) - hash + name.charCodeAt(i);
     hash |= 0;
   }
-  // Deterministic subtle ink vs subtle champagne tint
+  // Deterministic subtle surface-alt vs surface tint
   return Math.abs(hash) % 2 === 0
     ? 'bg-surface-alt text-ink border-line'
-    : 'bg-champagne-soft text-ink border-champagne/30';
+    : 'bg-surface text-ink border-line/80';
 }
 
 export function Avatar({
@@ -38,11 +38,9 @@ export function Avatar({
   }[size] || 'w-8 h-8 text-[13px]';
 
   const tintClass =
-    tint === 'champagne'
-      ? 'bg-champagne-soft text-ink border-champagne/30'
-      : tint === 'ink'
-        ? 'bg-surface-alt text-ink border-line'
-        : getDeterministicTint(name);
+    tint === 'ink'
+      ? 'bg-surface-alt text-ink border-line'
+      : getDeterministicTint(name);
 
   const initials = getInitials(name);
 

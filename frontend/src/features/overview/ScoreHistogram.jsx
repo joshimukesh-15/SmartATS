@@ -8,7 +8,7 @@ export default function ScoreHistogram({ histogramBuckets, totalEvaluated, maxBu
           <h2 className="text-[17px] font-semibold text-ink leading-[1.35]">Score Distribution</h2>
           <p className="text-[13px] text-ink-muted mt-0.5">6-tier candidate fit histogram</p>
         </div>
-        <span className="text-[13px] font-semibold text-ink tabular-nums bg-surface-alt px-2 py-0.5 rounded-[6px] border border-line">
+        <span className="text-[13px] font-semibold text-ink tabular-nums bg-surface-alt px-2 py-0.5 rounded-[8px] border border-line">
           {totalEvaluated} {totalEvaluated === 1 ? 'evaluation' : 'evaluations'}
         </span>
       </div>
@@ -60,15 +60,15 @@ export default function ScoreHistogram({ histogramBuckets, totalEvaluated, maxBu
 
           <div className="flex items-center justify-between text-[13px] text-ink-muted pt-1">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="w-2 h-2 rounded-[2px] bg-primary" />
               <span>80%–100% Fit</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-slate-steel" />
+              <span className="w-2 h-2 rounded-[2px] bg-slate-steel" />
               <span>60%–79% Moderate</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-platinum dark:bg-ink-subtle/50" />
+              <span className="w-2 h-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50" />
               <span>&lt;60% Review</span>
             </span>
           </div>

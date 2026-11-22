@@ -7,7 +7,7 @@ import { computeBreakdown } from '../../../lib/score';
 
 const STAGE_DOT_MAP = {
   New: 'bg-ink-muted',
-  Reviewing: 'bg-champagne',
+  Reviewing: 'bg-slate-steel',
   Interviewing: 'bg-primary',
   Offer: 'bg-purple-500',
   Hired: 'bg-emerald-500',
@@ -99,10 +99,10 @@ export default function BoardView({
                 {/* Column Header */}
                 <div className="mb-3 flex items-center justify-between border-b border-line/60 pb-2.5">
                   <div className="flex items-center gap-2">
-                    <span className={`h-2 w-2 rounded-full ${dotColor}`} />
+                    <span className={`h-2 w-2 rounded-[2px] ${dotColor}`} />
                     <span className="text-[14px] font-semibold text-ink">{stage}</span>
                   </div>
-                  <span className="rounded-[6px] bg-surface-alt px-2 py-0.5 text-[12px] font-semibold tabular-nums text-ink-muted">
+                  <span className="rounded-[8px] bg-surface-alt px-2 py-0.5 text-[13px] font-semibold tabular-nums text-ink-muted">
                     {stageList.length}
                   </span>
                 </div>
@@ -110,7 +110,7 @@ export default function BoardView({
                 {/* Cards List */}
                 <div className="flex-1 space-y-2.5 overflow-y-auto min-h-[140px]">
                   {stageList.length === 0 ? (
-                    <div className="flex h-24 items-center justify-center rounded-[10px] border border-dashed border-line/60 text-center text-[12px] text-ink-subtle">
+                    <div className="flex h-24 items-center justify-center rounded-[10px] border border-dashed border-line/60 text-center text-[13px] text-ink-subtle">
                       No candidates
                     </div>
                   ) : (
@@ -140,7 +140,7 @@ export default function BoardView({
                               <div className="truncate text-[14px] font-semibold text-ink group-hover:text-primary">
                                 {cleanName}
                               </div>
-                              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px] text-ink-muted">
+                              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[13px] text-ink-muted">
                                 <span className="font-semibold tabular-nums text-ink">
                                   {matchPercent}% match
                                 </span>
@@ -165,13 +165,13 @@ export default function BoardView({
                               {cand.matched_skills.slice(0, 2).map((sk) => (
                                 <span
                                   key={sk}
-                                  className="rounded-[4px] border border-line bg-surface-alt px-1.5 py-0.5 text-[11px] text-ink-muted"
+                                  className="rounded-[6px] border border-line bg-surface-alt px-1.5 py-0.5 text-[13px] text-ink-muted"
                                 >
                                   {sk}
                                 </span>
                               ))}
                               {cand.matched_skills.length > 2 && (
-                                <span className="text-[11px] text-ink-subtle">
+                                <span className="text-[13px] text-ink-subtle">
                                   +{cand.matched_skills.length - 2}
                                 </span>
                               )}

@@ -68,7 +68,7 @@ export default function TableView({
           <span>{label}</span>
           <ChevronDown
             className={`w-4 h-4 transition-transform duration-200 ${
-              isActive ? (sortOrder === 'asc' ? 'rotate-180 text-champagne' : 'rotate-0 text-champagne') : 'opacity-0 group-hover:opacity-40'
+              isActive ? (sortOrder === 'asc' ? 'rotate-180 text-primary' : 'rotate-0 text-primary') : 'opacity-0 group-hover:opacity-40'
             }`}
             strokeWidth={1.75}
           />
@@ -90,8 +90,8 @@ export default function TableView({
       </div>
 
       {isJobReScoring && (
-        <div data-testid="rescoring-banner" className="flex shrink-0 items-center gap-3 px-4 py-2 rounded-[10px] bg-champagne-soft border border-champagne/40 text-ink text-[13px] animate-fadeIn">
-          <span className="inline-block w-2.5 h-2.5 rounded-full bg-champagne animate-pulse shrink-0" />
+        <div data-testid="rescoring-banner" className="flex shrink-0 items-center gap-3 px-4 py-2 rounded-[10px] bg-surface-alt border border-line text-ink text-[13px] animate-fadeIn">
+          <span className="inline-block w-2.5 h-2.5 rounded-[2px] bg-primary animate-pulse shrink-0" />
           <div className="flex-1 min-w-0">
             <span className="font-semibold text-ink">Re-scoring in progress</span>
             <span className="text-ink-muted ml-2">Corpus vectorizers and candidate scores are being recalculated in the background.</span>
@@ -156,7 +156,7 @@ export default function TableView({
                             {visibleSkills.map((sk, sIdx) => <span key={sIdx} className="px-1.5 py-0.5 rounded-[4px] bg-surface text-ink text-[13px] border border-line">{sk}</span>)}
                             {overflowSkills.length > 0 && <Tooltip content={overflowSkills.join(', ')}><span className="px-1.5 py-0.5 rounded-[4px] bg-surface-alt text-ink-muted text-[13px] border border-line cursor-help">+{overflowSkills.length}</span></Tooltip>}
                             {cand.equivalent_skills && Object.keys(cand.equivalent_skills).length > 0 && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] text-[13px] bg-champagne-soft text-ink font-medium border border-champagne/30">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[6px] text-[13px] bg-surface-alt text-ink font-medium border border-line">
                                 <span className="tabular-nums">+{Object.keys(cand.equivalent_skills).length} equiv skill</span>
                               </span>
                             )}
@@ -171,7 +171,7 @@ export default function TableView({
                         type="button"
                         aria-label={`Change stage for candidate ${idx + 1}`}
                         onClick={() => setOpenStageMenuId(openStageMenuId === cand.application_id ? null : cand.application_id)}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-[6px] text-[13px] font-medium transition-colors cursor-pointer border ${stageConf.badge}`}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-[8px] text-[13px] font-medium transition-colors cursor-pointer border ${stageConf.badge}`}
                       >
                         <span aria-hidden="true">{stageKey}</span>
                         <ChevronDown className="w-4 h-4 opacity-60 ml-0.5" strokeWidth={1.75} />

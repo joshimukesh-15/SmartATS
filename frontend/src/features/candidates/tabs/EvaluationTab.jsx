@@ -82,7 +82,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
         <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
           <div className="flex items-center justify-between text-ink-muted">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span className="h-2 w-2 rounded-[2px] bg-primary" />
               Skills Coverage ({Math.round(wSkills * 100)}%)
             </span>
             <span className="tabular-nums text-[13px]">
@@ -97,7 +97,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
         <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
           <div className="flex items-center justify-between text-ink-muted">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="h-2 w-2 rounded-full bg-champagne" />
+              <span className="h-2 w-2 rounded-[2px] bg-champagne" />
               Semantic Text ({Math.round(wText * 100)}%)
             </span>
             <span className="tabular-nums text-[13px]">
@@ -113,7 +113,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
           <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="h-2 w-2 rounded-full bg-ink-muted" />
+                <span className="h-2 w-2 rounded-[2px] bg-ink-muted" />
                 Experience Fit ({Math.round(wExp * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -130,7 +130,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
           <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="h-2 w-2 rounded-full bg-champagne/70 border border-champagne" />
+                <span className="h-2 w-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50" />
                 Education ({Math.round(wEdu * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -155,7 +155,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
         <div data-testid="eval-tab-point-math-lines" className="space-y-1.5 text-[13px] tabular-nums">
           <div className="flex items-center justify-between text-ink">
             <span className="flex items-center gap-1.5 text-ink-muted">
-              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span className="h-2 w-2 rounded-[2px] bg-primary" />
               <span>Skills ({(wSkills * 100).toFixed(0)}%)</span>
             </span>
             <span className="font-medium">
@@ -165,7 +165,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
 
           <div className="flex items-center justify-between text-ink">
             <span className="flex items-center gap-1.5 text-ink-muted">
-              <span className="h-2 w-2 rounded-full bg-champagne" />
+              <span className="h-2 w-2 rounded-[2px] bg-champagne" />
               <span>Text ({(wText * 100).toFixed(0)}%)</span>
             </span>
             <span className="font-medium">
@@ -177,7 +177,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
             <>
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="h-2 w-2 rounded-full bg-ink-muted" />
+                  <span className="h-2 w-2 rounded-[2px] bg-ink-muted" />
                   <span>Experience ({(wExp * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">
@@ -187,7 +187,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
 
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="h-2 w-2 rounded-full bg-champagne/40" />
+                  <span className="h-2 w-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50" />
                   <span>Education ({(wEdu * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">
@@ -205,13 +205,13 @@ export default function EvaluationTab({ candidate, breakdown }) {
           {derivedStrengths.length > 0 && (
             <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-2">
               <div className="flex items-center gap-1.5 font-semibold text-ink">
-                <TrendingUp className="h-4 w-4 text-champagne shrink-0" strokeWidth={1.75} />
+                <TrendingUp className="h-4 w-4 text-primary shrink-0" strokeWidth={1.75} />
                 <span>Profile Strengths</span>
               </div>
               <ul className="space-y-1.5 text-ink-muted text-[13px]">
                 {derivedStrengths.map((str, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-champagne shrink-0 mt-0.5" strokeWidth={1.75} />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" strokeWidth={1.75} />
                     <span>{str}</span>
                   </li>
                 ))}
@@ -228,7 +228,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
               <ul className="space-y-1.5 text-ink-muted text-[13px]">
                 {derivedGaps.map((gap, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
-                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-ink-subtle shrink-0" />
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-[1px] bg-ink-subtle shrink-0" />
                     <span>{gap}</span>
                   </li>
                 ))}
@@ -242,7 +242,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
       {(candidate.score_explanation || breakdown.formulaSummary) && (
         <div className="rounded-[12px] border border-line bg-surface-alt/40 p-4 space-y-1.5 text-[13px]">
           <div className="flex items-center gap-1.5 font-semibold text-ink">
-            <SlidersHorizontal className="h-4 w-4 text-champagne" strokeWidth={1.75} />
+            <SlidersHorizontal className="h-4 w-4 text-ink-muted" strokeWidth={1.75} />
             <span>Formula Explanation & Audit</span>
           </div>
           <p className="leading-relaxed whitespace-pre-line text-[13px] text-ink-muted">

@@ -22,8 +22,8 @@ export default function ProductFrame({
 
         {/* Address Bar */}
         <div className="flex-1 max-w-sm mx-auto">
-          <div className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-[6px] bg-surface border border-line text-[12px] font-medium text-ink-muted tabular-nums shadow-xs">
-            <Lock className="w-3 h-3 text-champagne shrink-0" strokeWidth={2} />
+          <div className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-[8px] bg-surface border border-line text-[13px] font-medium text-ink-muted tabular-nums shadow-xs">
+            <Lock className="w-3 h-3 text-ink-muted shrink-0" strokeWidth={2} />
             <span className="truncate">{url}</span>
           </div>
         </div>

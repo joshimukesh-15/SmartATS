@@ -130,7 +130,7 @@ export default function CompareMatrixTable({
                   <td className="sticky left-0 bg-surface z-10 px-5 py-3 font-medium text-[13px] border-r border-line">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-ink">{skill}</span>
-                      <span className="text-[13px] text-ink-subtle uppercase font-medium">
+                      <span className="text-[13px] text-ink-subtle font-medium">
                         {isRequired ? 'Req' : 'Opt'}
                       </span>
                     </div>
@@ -152,19 +152,19 @@ export default function CompareMatrixTable({
                         }`}
                       >
                         {hasSkill ? (
-                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-champagne-soft text-ink">
-                            <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-[6px] bg-primary/10 text-primary">
+                            <Check className="w-4 h-4 text-primary" strokeWidth={1.75} />
                           </span>
                         ) : equiv ? (
                           <span
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-champagne-soft/70 text-ink text-[13px] font-medium border border-champagne/30"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] bg-surface-alt text-ink text-[13px] font-medium border border-line"
                             title="Equivalent skill match with 75% credit"
                           >
-                            <Check className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+                            <Check className="w-4 h-4 text-primary" strokeWidth={1.75} />
                             <span>via {equiv}</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-surface-alt text-ink-subtle">
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-[6px] bg-surface-alt text-ink-subtle">
                             <Minus className="w-4 h-4" strokeWidth={1.75} />
                           </span>
                         )}

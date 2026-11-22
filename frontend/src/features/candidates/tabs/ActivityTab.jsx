@@ -53,7 +53,7 @@ export default function ActivityTab({
       {/* 1. Add Note Form */}
       <form onSubmit={handleSubmit} className="space-y-2 p-3.5 rounded-[12px] bg-surface-alt/40 border border-line">
         <div className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
-          <MessageSquare className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+          <MessageSquare className="w-4 h-4 text-primary" strokeWidth={1.75} />
           <span>Add Recruiter Note</span>
         </div>
         <textarea
@@ -96,7 +96,7 @@ export default function ActivityTab({
               >
                 <div className="flex items-center justify-between text-[13px] text-ink-muted">
                   <span className="font-semibold text-ink">{n.author || 'Recruiter'}</span>
-                  <span className="tabular-nums text-ink-subtle text-[12px]">
+                  <span className="tabular-nums text-ink-subtle text-[13px]">
                     {n.created_at
                       ? new Date(n.created_at).toLocaleDateString(undefined, {
                           month: 'short',
@@ -125,7 +125,7 @@ export default function ActivityTab({
           className="flex items-center justify-between w-full text-[13px] font-semibold text-ink hover:text-primary transition-colors cursor-pointer py-1.5 px-1"
         >
           <div className="flex items-center gap-2">
-            <History className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+            <History className="w-4 h-4 text-ink-muted" strokeWidth={1.75} />
             <span>Stage History Audit ({statusHistoryList.length})</span>
           </div>
           <span className="text-[13px] text-ink-muted font-normal hover:underline">
@@ -134,7 +134,7 @@ export default function ActivityTab({
         </button>
 
         {showAudit && (
-          <div className="space-y-2.5 pt-2.5 pl-3 border-l-2 border-champagne/40 ml-2 animate-fadeIn">
+          <div className="space-y-2.5 pt-2.5 pl-3 border-l-2 border-line ml-2 animate-fadeIn">
             {statusHistoryList.length === 0 ? (
               <p className="text-[13px] text-ink-muted italic py-1">
                 No stage transitions recorded yet.
@@ -146,7 +146,7 @@ export default function ActivityTab({
                     <span className="font-medium text-ink">
                       {h.from_stage ? `${h.from_stage} → ${h.to_stage}` : `Initial: ${h.to_stage}`}
                     </span>
-                    <span className="text-ink-subtle text-[12px] tabular-nums">
+                    <span className="text-ink-subtle text-[13px] tabular-nums">
                       {h.created_at
                         ? new Date(h.created_at).toLocaleDateString(undefined, {
                             month: 'short',
@@ -157,7 +157,7 @@ export default function ActivityTab({
                         : '—'}
                     </span>
                   </div>
-                  <div className="text-ink-muted text-[12px]">
+                  <div className="text-ink-muted text-[13px]">
                     by {h.changed_by || 'System'}
                     {h.note && (
                       <span className="italic text-ink"> — "{h.note}"</span>

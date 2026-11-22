@@ -146,7 +146,7 @@ export default function CreateJobDialog({ isOpen, onClose }) {
             <div className="p-3.5 rounded-[10px] bg-surface-alt/60 border border-line space-y-2">
               <div className="flex items-center justify-between text-[13px]">
                 <div className="flex items-center gap-1.5 font-semibold text-ink">
-                  <CheckCircle2 className="w-4 h-4 text-champagne" strokeWidth={1.75} />
+                  <CheckCircle2 className="w-4 h-4 text-primary" strokeWidth={1.75} />
                   <span>JD Quality Grade: {draftQuality.grade}</span>
                 </div>
                 <span className="font-semibold text-ink tabular-nums">
@@ -157,7 +157,7 @@ export default function CreateJobDialog({ isOpen, onClose }) {
                 <div className="text-[13px] text-ink-muted space-y-1">
                   {draftQuality.suggestions.slice(0, 2).map((s, idx) => (
                     <div key={idx} className="flex items-start gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5 text-champagne shrink-0 mt-0.5" strokeWidth={1.75} />
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" strokeWidth={1.75} />
                       <span>{s}</span>
                     </div>
                   ))}
@@ -169,7 +169,7 @@ export default function CreateJobDialog({ isOpen, onClose }) {
               type="button"
               variant="outline"
               size="sm"
-              leftIcon={<Sparkles className="w-4 h-4 text-champagne" strokeWidth={1.75} />}
+              leftIcon={<Sparkles className="w-4 h-4 text-primary" strokeWidth={1.75} />}
               loading={checkQualityMutation.isPending}
               onClick={handleRunDraftQualityCheck}
             >

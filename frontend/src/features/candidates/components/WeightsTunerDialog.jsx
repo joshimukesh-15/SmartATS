@@ -87,7 +87,7 @@ export default function WeightsTunerDialog({
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[13px]">
               <span className="font-medium text-ink flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+                <span className="w-2.5 h-2.5 rounded-[2px] bg-primary" />
                 Required Skills Coverage
               </span>
               <span className="font-semibold tabular-nums text-ink">
@@ -114,7 +114,7 @@ export default function WeightsTunerDialog({
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[13px]">
               <span className="font-medium text-ink flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-champagne" />
+                <span className="w-2.5 h-2.5 rounded-[2px] bg-champagne" />
                 Text Semantic Similarity
               </span>
               <span className="font-semibold tabular-nums text-ink">
@@ -141,7 +141,7 @@ export default function WeightsTunerDialog({
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[13px]">
               <span className="font-medium text-ink flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-ink-muted" />
+                <span className="w-2.5 h-2.5 rounded-[2px] bg-ink-muted" />
                 Experience & Seniority Fit
               </span>
               <span className="font-semibold tabular-nums text-ink">
@@ -168,7 +168,7 @@ export default function WeightsTunerDialog({
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[13px]">
               <span className="font-medium text-ink flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-champagne/40 border border-champagne" />
+                <span className="w-2.5 h-2.5 rounded-[2px] bg-platinum dark:bg-ink-subtle/50" />
                 Education Level
               </span>
               <span className="font-semibold tabular-nums text-ink">

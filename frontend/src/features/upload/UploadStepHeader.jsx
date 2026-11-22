@@ -29,12 +29,12 @@ export default function UploadStepHeader({ activeStep }) {
                 isActive
                   ? 'bg-primary text-on-primary'
                   : isComplete
-                    ? 'bg-champagne-soft text-ink'
+                    ? 'bg-primary/10 text-primary'
                     : 'bg-surface-alt text-ink-subtle'
               }`}
             >
               {isComplete ? (
-                <CheckCircle2 className="w-3.5 h-3.5 text-champagne" strokeWidth={1.75} />
+                <CheckCircle2 className="w-3.5 h-3.5 text-primary" strokeWidth={1.75} />
               ) : (
                 `0${step.id}`
               )}

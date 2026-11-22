@@ -30,7 +30,7 @@ export default function WorkflowSimple() {
     <section id="workflow" className="py-[72px] lg:py-[128px] bg-canvas border-t border-line">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="mb-12 max-w-3xl space-y-3 text-left lg:mb-16">
-          <div className="text-[12px] font-semibold uppercase tracking-[0.14em] text-champagne">
+          <div className="text-[13px] font-medium text-ink-muted">
             A thoughtful review process
           </div>
           <h2 className="text-[30px] font-semibold leading-[1.15] tracking-[-0.03em] text-ink sm:text-[34px]">
@@ -50,7 +50,7 @@ export default function WorkflowSimple() {
             {steps.map((step, idx) => (
               <div key={idx} className="space-y-4">
                 <div className="inline-block bg-canvas pr-4">
-                  <div className="text-[56px] font-semibold text-champagne tracking-tight leading-none tabular-nums select-none">
+                  <div className="text-[56px] font-semibold text-ink-muted/40 tracking-tight leading-none tabular-nums select-none">
                     {step.num}
                   </div>
                 </div>

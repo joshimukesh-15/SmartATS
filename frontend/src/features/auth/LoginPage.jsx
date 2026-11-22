@@ -65,7 +65,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-canvas text-ink flex flex-col justify-center items-center px-4 py-12 selection:bg-primary selection:text-on-primary font-sans relative">
       {/* Background Subtle Gradient Highlight */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
-        <div className="w-[600px] h-[600px] rounded-full bg-champagne-soft/30 blur-3xl -top-40 opacity-50 dark:opacity-20" />
+        <div className="w-[600px] h-[600px] rounded-full bg-primary/5 blur-3xl -top-40 opacity-50 dark:opacity-20" />
       </div>
 
       <div className="w-full max-w-[420px] relative z-10 space-y-6">
@@ -172,7 +172,7 @@ export default function LoginPage() {
               onClick={handleFillDemoCredentials}
               className="text-[13px] text-ink-muted hover:text-ink transition-colors inline-flex items-center gap-1.5 py-1 px-2.5 rounded-[8px] hover:bg-surface-alt cursor-pointer"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-champagne" strokeWidth={1.75} />
+              <ShieldCheck className="w-3.5 h-3.5 text-primary" strokeWidth={1.75} />
               <span>Use default recruiter credentials</span>
             </button>
           </div>

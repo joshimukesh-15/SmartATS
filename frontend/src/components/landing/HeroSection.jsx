@@ -83,8 +83,8 @@ export default function HeroSection({ onEnterApp }) {
             <div className="absolute -top-12 -left-10 w-96 h-96 dot-grid-bg pointer-events-none opacity-60 dark:opacity-40" />
 
             <div className="relative space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-alt/70 border border-line text-[13px] text-ink-muted font-medium select-none">
-                <span className="w-1.5 h-1.5 rounded-full bg-champagne" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-surface-alt/70 border border-line text-[13px] text-ink-muted font-medium select-none">
+                <span className="w-1.5 h-1.5 rounded-[2px] bg-ink-muted" />
                 <span>Deterministic 4-Pillar Scoring ({Math.round(weights.skills * 100)}/{Math.round(weights.text * 100)}/{Math.round(weights.experience * 100)}/{Math.round(weights.education * 100)})</span>
               </div>
 
@@ -112,7 +112,7 @@ export default function HeroSection({ onEnterApp }) {
 
               {/* No account needed note */}
               <div className="text-[13px] text-ink-subtle flex items-center gap-2 pt-1 select-none">
-                <span className="w-1.5 h-1.5 rounded-full bg-champagne" />
+                <span className="w-1.5 h-1.5 rounded-[2px] bg-ink-muted" />
                 <span>No account needed. Runs locally.</span>
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function HeroSection({ onEnterApp }) {
                     <span className="text-[13px] font-medium text-ink">
                       Toggle required job competencies:
                     </span>
-                    <span className="text-[13px] font-medium text-champagne bg-champagne-soft/60 px-2 py-0.5 rounded-[6px]">
+                    <span className="text-[13px] font-medium text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[8px] border border-line">
                       Live demo
                     </span>
                   </div>
@@ -196,11 +196,11 @@ export default function HeroSection({ onEnterApp }) {
                                     key={s}
                                     className={`inline-flex items-center gap-0.5 text-[13px] px-1.5 py-0.2 rounded-[4px] font-medium ${
                                       activeSkills.includes(s)
-                                        ? 'bg-champagne-soft text-ink'
+                                        ? 'bg-surface-alt text-ink'
                                         : 'bg-surface text-ink-muted border border-line/60'
                                     }`}
                                   >
-                                    <Check className="w-3 h-3 text-champagne shrink-0" strokeWidth={1.75} />
+                                    <Check className="w-3 h-3 text-primary shrink-0" strokeWidth={1.75} />
                                     <span>{s}</span>
                                   </span>
                                 ))}
@@ -225,31 +225,31 @@ export default function HeroSection({ onEnterApp }) {
 
                         {/* Live Formula Breakdown Line Under Top Candidate (4 Point-Math Components) */}
                         {isTop && (
-                          <div className="mt-2 pt-2 border-t border-line/70 space-y-1.5 text-[12px] sm:text-[13px] font-medium transition-all duration-350 ease-out">
+                          <div className="mt-2 pt-2 border-t border-line/70 space-y-1.5 text-[13px] font-medium transition-all duration-350 ease-out">
                             <div className="flex items-center justify-between gap-2 text-ink">
                               <div className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-champagne shrink-0" />
+                                <span className="w-1.5 h-1.5 rounded-[2px] bg-primary shrink-0" />
                                 <span className="text-ink-muted">Top Candidate Formula (4-Pillar):</span>
                               </div>
-                              <div className="text-champagne font-semibold tabular-nums shrink-0">
+                              <div className="text-primary font-semibold tabular-nums shrink-0">
                                 = {cand.final_score.toFixed(1)}% final score
                               </div>
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px] tabular-nums text-ink-muted">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[13px] tabular-nums text-ink-muted">
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                                <span className="w-2 h-2 rounded-[2px] bg-primary shrink-0" />
                                 <span>Skills ({Math.round(weights.skills * 100)}%): <strong className="text-ink font-semibold">{b.skillsCoveredPoints.toFixed(1)} pts</strong></span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-champagne shrink-0" />
+                                <span className="w-2 h-2 rounded-[2px] bg-champagne shrink-0" />
                                 <span>Text ({Math.round(weights.text * 100)}%): <strong className="text-ink font-semibold">{b.textMatchPoints.toFixed(1)} pts</strong></span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-ink-muted shrink-0" />
+                                <span className="w-2 h-2 rounded-[2px] bg-ink-muted shrink-0" />
                                 <span>Exp ({Math.round(weights.experience * 100)}%): <strong className="text-ink font-semibold">{b.experiencePoints.toFixed(1)} pts</strong></span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-champagne/40 shrink-0" />
+                                <span className="w-2 h-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50 shrink-0" />
                                 <span>Edu ({Math.round(weights.education * 100)}%): <strong className="text-ink font-semibold">{b.educationPoints.toFixed(1)} pts</strong></span>
                               </div>
                             </div>

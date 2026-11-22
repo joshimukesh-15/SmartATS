@@ -33,7 +33,7 @@ export default function ProofStrip() {
             </div>
           ))}
         </Panel>
-        <p className="mt-3 text-right text-[11px] text-ink-subtle">
+        <p className="mt-3 text-right text-[13px] text-ink-subtle">
           Internal benchmark · 8 labeled profiles across 3 job requisitions
         </p>
 
@@ -47,7 +47,7 @@ export default function ProofStrip() {
             className="h-44 w-full object-cover dark:brightness-[0.82] sm:h-full sm:min-h-48"
           />
           <div className="flex flex-col justify-center p-6 text-left sm:p-8">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-champagne">Privacy by design</p>
+            <p className="text-[13px] font-medium text-ink-muted">Privacy by design</p>
             <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.025em] text-ink">Your hiring data stays close.</h2>
             <p className="mt-2 max-w-2xl text-[14px] leading-[1.7] text-ink-muted">
               SmartATS runs locally, keeping resume review in your own workspace instead of sending candidate files to an external AI service.

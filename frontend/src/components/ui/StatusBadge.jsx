@@ -18,12 +18,12 @@ export function StatusBadge({ status, size = 'sm', className = '' }) {
 
   if (isReScoring) {
     label = 'Re-scoring';
-    badgeStyle = 'bg-champagne-soft text-ink border border-champagne/40';
+    badgeStyle = 'bg-champagne-soft text-ink border border-champagne/30';
     dotStyle = 'bg-champagne';
     showPulse = true;
   } else if (isProcessing) {
     label = 'Processing';
-    badgeStyle = 'bg-champagne-soft text-ink border border-champagne/40';
+    badgeStyle = 'bg-champagne-soft text-ink border border-champagne/30';
     dotStyle = 'bg-champagne';
     showPulse = true;
   } else if (isPending) {
@@ -44,12 +44,12 @@ export function StatusBadge({ status, size = 'sm', className = '' }) {
     dotStyle = 'bg-ink-subtle';
   }
 
-  const sizeClass = size === 'md' ? 'px-2.5 py-1 text-[13px]' : 'px-2 py-0.5 text-[12px]';
+  const sizeClass = size === 'md' ? 'px-2.5 py-1 text-[13px]' : 'px-2 py-0.5 text-[13px]';
 
   return (
     <span
       data-testid="status-badge"
-      className={`inline-flex items-center gap-1.5 rounded-[6px] font-medium select-none ${sizeClass} ${badgeStyle} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-[8px] font-medium select-none ${sizeClass} ${badgeStyle} ${className}`}
     >
       <span
         className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotStyle} ${showPulse ? 'animate-pulse' : ''}`}

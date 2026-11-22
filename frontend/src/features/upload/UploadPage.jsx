@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useJobs, useUploadResumes } from '../../hooks';
-import { Select, Button, Panel, toast } from '../../components/ui';
+import { Select, Button, Panel, toast, StudioPageHeader } from '../../components/ui';
 import UploadFileRow from './UploadFileRow';
 import DropZone from './DropZone';
 import UploadStepHeader from './UploadStepHeader';
@@ -178,15 +178,11 @@ export default function UploadPage() {
   return (
     <div className="space-y-8 animate-fadeIn max-w-4xl">
       {/* Header */}
-      <div className="pb-8 border-b border-line">
-        <h1 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
-          Upload Resumes
-        </h1>
-        <p className="text-[15px] leading-[1.6] text-ink-muted mt-2">
-          Ingest applicant documents in PDF or DOCX format for background parsing, screening, and
-          duplicate prevention.
-        </p>
-      </div>
+      <StudioPageHeader
+        breadcrumb="Upload"
+        title="Upload Resumes"
+        description="Ingest applicant documents in PDF or DOCX format for background parsing, screening, and duplicate prevention."
+      />
 
       {/* 3-Step Header with Active Step Indicator */}
       <UploadStepHeader activeStep={activeStep} />
