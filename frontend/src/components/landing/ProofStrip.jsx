@@ -29,7 +29,7 @@ export default function ProofStrip() {
                 <div className="text-[48px] font-semibold text-ink leading-none tabular-nums tracking-[-0.03em]">
                   {m.stat}
                 </div>
-                <span className={`w-2 h-2 rounded-[2px] ${idx === 0 ? 'bg-ice-cyan' : idx === 1 ? 'bg-amber-gold' : 'bg-cadet-steel'}`} aria-hidden="true" />
+                <span className={`w-2 h-2 rounded-[2px] ${idx === 0 ? 'bg-ice-blue' : idx === 1 ? 'bg-amber-gold' : 'bg-cadet-steel'}`} aria-hidden="true" />
               </div>
               <div className="text-[15px] font-semibold text-ink pt-1">{m.label}</div>
               <div className="text-[13px] leading-[1.5] text-ink-muted">{m.caption}</div>

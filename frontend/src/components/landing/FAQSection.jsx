@@ -40,7 +40,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="py-[72px] lg:py-[128px] bg-canvas border-t border-line">
+    <section id="faq" className="py-[72px] lg:py-[128px] bg-canvas border-t border-line scroll-mt-16">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column (Sticky Heading) */}

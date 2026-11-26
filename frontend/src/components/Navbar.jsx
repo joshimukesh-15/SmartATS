@@ -59,7 +59,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
       {/* Mobile Top Bar */}
       <div className="md:hidden flex items-center justify-between px-5 py-3.5 bg-surface border-b border-line sticky top-0 z-30">
         <NavLink to="/studio" className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-[6px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-ice-cyan dark:to-cadet-steel text-white dark:text-obsidian-navy font-semibold text-[14px] flex items-center justify-center shadow-xs ring-1 ring-inset ring-white/20">
+          <span className="w-6 h-6 rounded-[6px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-white dark:to-slate-200 text-white dark:text-obsidian-navy font-semibold text-[14px] flex items-center justify-center shadow-xs ring-1 ring-inset ring-white/20">
             S
           </span>
           <span className="text-[17px] font-semibold text-ink tracking-tight">SmartATS</span>
@@ -167,7 +167,7 @@ export default function Navbar({ activeTab: _activeTab, setActiveTab: _setActive
           {/* Logo / Brand Header */}
           <div className="px-2 pt-1 pb-1">
             <NavLink to="/studio" className="flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-ice-cyan dark:to-cadet-steel text-white dark:text-obsidian-navy font-semibold text-[15px] flex items-center justify-center select-none shadow-xs ring-1 ring-inset ring-white/20">
+              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-white dark:to-slate-200 text-white dark:text-obsidian-navy font-semibold text-[15px] flex items-center justify-center select-none shadow-xs ring-1 ring-inset ring-white/20">
                 S
               </span>
               <div className="flex flex-col">

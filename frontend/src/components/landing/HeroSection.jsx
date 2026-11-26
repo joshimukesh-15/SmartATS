@@ -65,8 +65,8 @@ export default function HeroSection({ onEnterApp }) {
 
   return (
     <section className="relative isolate overflow-visible border-b border-line bg-canvas pb-20 pt-32 sm:pb-28 sm:pt-40 ambient-mesh">
-      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[520px] w-full max-w-7xl bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(91,192,222,0.16),transparent_70%)] dark:bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(91,192,222,0.2),transparent_70%)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[360px] w-[600px] bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(217,119,6,0.08),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(217,119,6,0.14),transparent_70%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[520px] w-full max-w-7xl bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(91,192,222,0.12),transparent_70%)] dark:bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(91,192,222,0.14),transparent_70%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[340px] w-[520px] bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(217,119,6,0.06),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(217,119,6,0.1),transparent_70%)]" />
       <img
         src="/images/hero-backdrop.webp"
         alt=""
@@ -95,7 +95,7 @@ export default function HeroSection({ onEnterApp }) {
 
             <div className="relative space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-surface/85 backdrop-blur-xs border border-line text-[13px] text-ink-muted font-medium select-none shadow-xs">
-                <span className="w-2 h-2 rounded-[2px] bg-ice-cyan" />
+                <span className="w-2 h-2 rounded-[2px] bg-ice-blue" />
                 <span>Deterministic 4-Pillar Scoring ({Math.round(weights.skills * 100)}/{Math.round(weights.text * 100)}/{Math.round(weights.experience * 100)}/{Math.round(weights.education * 100)})</span>
               </div>
 
@@ -176,7 +176,7 @@ export default function HeroSection({ onEnterApp }) {
                         key={cand.id}
                         className={`p-3.5 rounded-[10px] border transition-all duration-350 ease-out space-y-2 ${
                           isTop
-                            ? 'bg-surface-alt/75 border-amber-gold/30 dark:border-amber-gold/40 shadow-xs'
+                            ? 'bg-surface-alt/75 border-amber-gold/30 dark:border-amber-gold/35 shadow-xs'
                             : 'bg-surface-alt/30 border-line/60 hover:bg-surface-alt/50'
                         }`}
                       >
@@ -246,22 +246,22 @@ export default function HeroSection({ onEnterApp }) {
                                 = {cand.final_score.toFixed(1)}% final score
                               </div>
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[13px] tabular-nums text-ink-muted">
-                              <div className="flex items-center gap-1.5">
+                            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-[13px] tabular-nums text-ink-muted">
+                              <div className="flex items-center gap-1.5 whitespace-nowrap">
                                 <span className="w-2 h-2 rounded-[2px] bg-primary shrink-0" />
-                                <span>Skills ({Math.round(weights.skills * 100)}%): <strong className="text-ink font-semibold">{b.skillsCoveredPoints.toFixed(1)} pts</strong></span>
+                                <span>Skills ({Math.round(weights.skills * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.skillsCoveredPoints.toFixed(1)} pts</strong></span>
                               </div>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 whitespace-nowrap">
                                 <span className="w-2 h-2 rounded-[2px] bg-champagne shrink-0" />
-                                <span>Text ({Math.round(weights.text * 100)}%): <strong className="text-ink font-semibold">{b.textMatchPoints.toFixed(1)} pts</strong></span>
+                                <span>Text ({Math.round(weights.text * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.textMatchPoints.toFixed(1)} pts</strong></span>
                               </div>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 whitespace-nowrap">
                                 <span className="w-2 h-2 rounded-[2px] bg-slate-steel shrink-0" />
-                                <span>Exp ({Math.round(weights.experience * 100)}%): <strong className="text-ink font-semibold">{b.experiencePoints.toFixed(1)} pts</strong></span>
+                                <span>Exp ({Math.round(weights.experience * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.experiencePoints.toFixed(1)} pts</strong></span>
                               </div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/55 shrink-0" />
-                                <span>Edu ({Math.round(weights.education * 100)}%): <strong className="text-ink font-semibold">{b.educationPoints.toFixed(1)} pts</strong></span>
+                              <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60 shrink-0" />
+                                <span>Edu ({Math.round(weights.education * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.educationPoints.toFixed(1)} pts</strong></span>
                               </div>
                             </div>
                           </div>

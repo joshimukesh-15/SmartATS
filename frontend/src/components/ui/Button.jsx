@@ -2,13 +2,13 @@ import { forwardRef } from 'react';
 
 const VARIANTS = {
   primary:
-    'bg-primary text-on-primary border border-primary shadow-[0_1px_2px_rgba(11,19,43,0.12),inset_0_1px_0_rgba(255,255,255,0.16)] hover:bg-primary-hover dark:hover:shadow-[0_4px_18px_rgba(91,192,222,0.28)] active:opacity-95',
+    'bg-primary text-on-primary border border-primary shadow-[0_1px_2px_rgba(11,19,43,0.14),inset_0_1px_0_rgba(255,255,255,0.12)] hover:bg-primary-hover dark:hover:shadow-[0_4px_18px_rgba(248,250,252,0.15)] active:opacity-95',
   secondary:
-    'bg-surface hover:bg-surface-alt active:bg-surface border border-line hover:border-cadet-steel/45 dark:hover:border-ice-cyan/40 text-ink shadow-xs',
+    'bg-surface hover:bg-surface-alt active:bg-surface border border-line hover:border-ice-blue/50 text-ink shadow-xs',
   ghost: 'bg-transparent hover:bg-surface-alt active:bg-surface text-ink border border-transparent',
   danger: 'bg-danger text-white hover:opacity-90 active:opacity-95 border border-danger shadow-xs',
   outline:
-    'bg-transparent hover:bg-surface-alt active:bg-surface border border-line hover:border-cadet-steel/45 text-ink',
+    'bg-transparent hover:bg-surface-alt active:bg-surface border border-line hover:border-cadet-steel/50 text-ink',
 };
 
 const SIZES = {

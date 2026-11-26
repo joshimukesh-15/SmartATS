@@ -29,7 +29,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-canvas text-ink overflow-x-hidden selection:bg-primary selection:text-on-primary">
+    <div className="relative min-h-screen bg-canvas text-ink overflow-x-clip selection:bg-primary selection:text-on-primary">
       {/* 1. Floating Enterprise Navigation */}
       <FloatingNav onEnterApp={handleLaunchApp} />
 
@@ -43,34 +43,26 @@ export default function LandingPage() {
       <ProofStrip />
 
       {/* 5. Signature Explainable 4-Pillar Scoring Formula */}
-      <div id="scoring">
-        <ScoringFormulaSection />
-      </div>
+      <ScoringFormulaSection />
 
       {/* 6. Three-Way Enterprise Architecture Comparison */}
-      <div id="comparison">
+      <div id="comparison" className="scroll-mt-16">
         <EnterpriseComparison />
       </div>
 
       {/* 7. Enterprise Security, Privacy & Bias-Audit Governance */}
-      <div id="security">
+      <div id="security" className="scroll-mt-16">
         <EnterpriseSecurity />
       </div>
 
       {/* 8. Core Product Modules */}
-      <div id="features">
-        <FeaturesAlternating />
-      </div>
+      <FeaturesAlternating />
 
       {/* 9. Three-Step Workflow */}
-      <div id="workflow">
-        <WorkflowSimple />
-      </div>
+      <WorkflowSimple />
 
       {/* 10. Enterprise FAQ */}
-      <div id="faq">
-        <FAQSection />
-      </div>
+      <FAQSection />
 
       {/* 11. High-Impact Call to Action */}
       <CTASection onEnterApp={handleLaunchApp} />

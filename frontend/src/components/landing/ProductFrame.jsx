@@ -9,7 +9,7 @@ export default function ProductFrame({
 }) {
   return (
     <div
-      className={`rounded-[16px] border border-line bg-surface shadow-[0_24px_60px_-15px_rgba(11,19,43,0.18)] dark:shadow-[0_24px_60px_-15px_rgba(4,8,20,0.75)] overflow-hidden transition-all duration-300 ring-1 ring-cadet-steel/15 dark:ring-ice-cyan/15 ${className}`}
+      className={`rounded-[16px] border border-line bg-surface shadow-[0_24px_60px_-15px_rgba(11,19,43,0.18)] dark:shadow-[0_24px_60px_-15px_rgba(4,8,20,0.75)] overflow-hidden transition-all duration-300 ring-1 ring-cadet-steel/15 dark:ring-white/10 ${className}`}
     >
       {/* Browser Chrome Header */}
       <div className="px-4 py-3 bg-surface-alt/70 backdrop-blur-xs border-b border-line flex items-center justify-between gap-4 select-none">

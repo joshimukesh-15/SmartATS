@@ -4,15 +4,15 @@ export default function CTASection({ onEnterApp }) {
   return (
     <section className="py-[72px] lg:py-[128px] bg-canvas border-t border-line">
       <div className="max-w-[1200px] mx-auto px-6">
-        {/* Signature Midnight Obsidian Showcase Block */}
-        <div className="relative isolate overflow-hidden rounded-[24px] border border-cadet-steel/40 obsidian-showcase p-8 text-left text-white sm:p-12 lg:p-16">
+        {/* Signature Dual-Navy Obsidian Showcase Block (#0B132B -> #1C2541 with blended subtle glow & neutral CTA) */}
+        <div className="relative isolate overflow-hidden rounded-[24px] border border-cadet-steel/45 obsidian-showcase p-8 text-left text-white sm:p-12 lg:p-16">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(91,192,222,0.22),transparent_70%)] blur-2xl"
+            className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(91,192,222,0.16),transparent_70%)] blur-2xl"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(217,119,6,0.22),transparent_70%)] blur-2xl"
+            className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(217,119,6,0.16),transparent_70%)] blur-2xl"
           />
           <img
             src="/images/cta-backdrop.webp"
@@ -20,12 +20,12 @@ export default function CTASection({ onEnterApp }) {
             width="2400"
             height="900"
             loading="lazy"
-            className="absolute inset-0 -z-10 h-full w-full object-cover opacity-25 mix-blend-luminosity"
+            className="absolute inset-0 -z-10 h-full w-full object-cover opacity-20 mix-blend-luminosity"
           />
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-obsidian-navy/40" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-obsidian-navy/45" />
 
           <div className="relative z-10 max-w-2xl space-y-6">
-            {/* Hairline Silk Cream & Amber rule above headline */}
+            {/* Warm Silk Cream & Amber Gold luxury highlight hairline above headline */}
             <div className="w-14 h-[2px] bg-gradient-to-r from-silk-cream to-amber-gold rounded-full" />
 
             {/* White headline */}
@@ -39,11 +39,11 @@ export default function CTASection({ onEnterApp }) {
             </p>
 
             <div className="pt-2">
-              {/* Silk Cream to White Luminous Button */}
+              {/* Crisp White Button on Obsidian Navy */}
               <button
                 type="button"
                 onClick={onEnterApp}
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-[10px] bg-silk-cream text-obsidian-navy font-semibold text-[15px] hover:bg-white active:scale-[0.98] transition-all shadow-[0_8px_24px_rgba(244,214,176,0.25)] cursor-pointer select-none"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-[10px] bg-white text-obsidian-navy font-semibold text-[15px] hover:bg-slate-100 active:scale-[0.98] transition-all shadow-md cursor-pointer select-none"
               >
                 <span>Open the studio</span>
                 <ArrowRight className="w-4 h-4" strokeWidth={1.75} />

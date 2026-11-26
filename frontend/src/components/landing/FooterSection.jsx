@@ -9,7 +9,7 @@ export default function FooterSection({ onEnterApp }) {
           {/* Brand Info (2 cols) */}
           <div className="col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-ice-cyan dark:to-cadet-steel text-white dark:text-obsidian-navy font-bold text-[14px] flex items-center justify-center select-none shadow-xs ring-1 ring-inset ring-white/20">
+              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-white dark:to-slate-200 text-white dark:text-obsidian-navy font-bold text-[14px] flex items-center justify-center select-none shadow-xs ring-1 ring-inset ring-white/20">
                 S
               </span>
               <span className="text-[18px] font-bold tracking-tight text-ink">SmartATS</span>

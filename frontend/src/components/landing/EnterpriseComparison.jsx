@@ -83,9 +83,9 @@ export default function EnterpriseComparison() {
                   <th className="py-4 px-6 w-1/4">Capability & Assurance</th>
                   <th className="py-4 px-6 w-1/4 text-ink-muted">Legacy Keyword ATS</th>
                   <th className="py-4 px-6 w-1/4 text-ink-muted">Blackbox Generative LLMs</th>
-                  <th className="py-4 px-6 w-1/4 bg-gradient-to-b from-slate-navy to-obsidian-navy text-white dark:from-ice-cyan dark:to-cadet-steel dark:text-obsidian-navy">
+                  <th className="py-4 px-6 w-1/4 bg-gradient-to-b from-slate-navy to-obsidian-navy text-white dark:from-white dark:to-slate-200 dark:text-obsidian-navy">
                     <div className="flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-silk-cream dark:text-obsidian-navy" />
+                      <Sparkles className="w-4 h-4 text-current" />
                       <span>SmartATS Enterprise</span>
                     </div>
                   </th>

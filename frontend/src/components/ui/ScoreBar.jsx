@@ -62,7 +62,7 @@ export function ScoreBar({
             <div
               data-testid="score-bar-education"
               style={{ width: `${eduWidth}%` }}
-              className="bg-silk-cream dark:bg-silk-cream/55 h-full transition-all duration-500 ease-out"
+              className="bg-silk-cream dark:bg-silk-cream/60 h-full transition-all duration-500 ease-out"
               title={`Education: ${eduWidth.toFixed(1)} pts`}
             />
           </>
@@ -85,7 +85,7 @@ export function ScoreBar({
                 Exp: {experiencePoints.toFixed(1)}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/55" />
+                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60" />
                 Edu: {educationPoints.toFixed(1)}
               </span>
             </>

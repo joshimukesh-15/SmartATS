@@ -42,7 +42,7 @@ const features = [
 
 export default function FeaturesAlternating() {
   return (
-    <section id="features" className="space-y-20 border-t border-line bg-canvas py-20 lg:space-y-28 lg:py-32">
+    <section id="features" className="space-y-20 border-t border-line bg-canvas py-20 lg:space-y-28 lg:py-32 scroll-mt-16">
       <div className="mx-auto max-w-[1200px] space-y-20 px-6 sm:px-8 lg:space-y-28 lg:px-12">
         {features.map((feature, index) => {
           const Icon = feature.icon;

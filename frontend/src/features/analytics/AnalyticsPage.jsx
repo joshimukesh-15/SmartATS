@@ -174,7 +174,7 @@ export default function AnalyticsPage() {
                                 ? 'bg-primary'
                                 : bucket === '60-79%'
                                 ? 'bg-slate-steel'
-                                : 'bg-silk-cream dark:bg-silk-cream/55'
+                                : 'bg-silk-cream dark:bg-silk-cream/60'
                             }`}
                           />
                         </div>

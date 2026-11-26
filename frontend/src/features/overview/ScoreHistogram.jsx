@@ -43,7 +43,7 @@ export default function ScoreHistogram({ histogramBuckets, totalEvaluated, maxBu
                           ? 'bg-primary'
                           : bucket.tone === 'mid'
                             ? 'bg-slate-steel'
-                            : 'bg-silk-cream dark:bg-silk-cream/55'
+                            : 'bg-silk-cream dark:bg-silk-cream/60'
                       }`}
                       title={`${bucket.label}: ${bucket.count} candidate(s)`}
                     />
@@ -68,7 +68,7 @@ export default function ScoreHistogram({ histogramBuckets, totalEvaluated, maxBu
               <span>60%–79% Moderate</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/55" />
+              <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60" />
               <span>&lt;60% Review</span>
             </span>
           </div>

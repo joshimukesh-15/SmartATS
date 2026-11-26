@@ -27,7 +27,7 @@ export default function CandidateListItem({
     <div
       className={`group relative flex h-14 min-h-[56px] max-h-[56px] w-full items-center gap-2.5 rounded-[10px] border px-3 transition-colors ${
         selected
-          ? 'border-primary/60 dark:border-ice-cyan/60 bg-surface-alt shadow-[inset_3px_0_0_0_var(--primary)]'
+          ? 'border-primary/60 bg-surface-alt shadow-[inset_3px_0_0_0_var(--primary)]'
           : 'border-line bg-surface hover:bg-surface-alt/70 hover:border-cadet-steel/40'
       }`}
     >
