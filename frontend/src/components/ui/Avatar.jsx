@@ -14,10 +14,12 @@ function getDeterministicTint(name = '') {
     hash = (hash << 5) - hash + name.charCodeAt(i);
     hash |= 0;
   }
-  // Deterministic subtle surface-alt vs surface tint
-  return Math.abs(hash) % 2 === 0
-    ? 'bg-surface-alt text-ink border-line'
-    : 'bg-surface text-ink border-line/80';
+  const paletteTints = [
+    'bg-slate-navy/8 text-obsidian-navy border-slate-navy/15 dark:bg-slate-navy dark:text-ink dark:border-cadet-steel/50',
+    'bg-ice-cyan/14 text-obsidian-navy border-ice-cyan/35 dark:bg-ice-cyan/15 dark:text-ice-cyan dark:border-ice-cyan/35',
+    'bg-silk-cream/40 text-obsidian-navy border-amber-gold/30 dark:bg-silk-cream/15 dark:text-silk-cream dark:border-amber-gold/35',
+  ];
+  return paletteTints[Math.abs(hash) % paletteTints.length];
 }
 
 export function Avatar({

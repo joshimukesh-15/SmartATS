@@ -7,9 +7,9 @@ import { computeBreakdown } from '../../../lib/score';
 
 const STAGE_DOT_MAP = {
   New: 'bg-ink-muted',
-  Reviewing: 'bg-slate-steel',
-  Interviewing: 'bg-primary',
-  Offer: 'bg-purple-500',
+  Reviewing: 'bg-cadet-steel',
+  Interviewing: 'bg-ice-cyan',
+  Offer: 'bg-amber-gold',
   Hired: 'bg-emerald-500',
   Rejected: 'bg-rose-500',
 };

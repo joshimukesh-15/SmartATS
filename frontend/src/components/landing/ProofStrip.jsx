@@ -22,11 +22,14 @@ export default function ProofStrip() {
   return (
     <section className="pt-20 sm:pt-24 pb-16 sm:pb-20 bg-canvas relative z-10">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12">
-        <Panel className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-line shadow-xs">
+        <Panel className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-line shadow-sm">
           {metrics.map((m, idx) => (
-            <div key={idx} className="p-8 space-y-2 text-left">
-              <div className="text-[48px] font-semibold text-ink leading-none tabular-nums tracking-[-0.03em]">
-                {m.stat}
+            <div key={idx} className="p-8 space-y-2 text-left transition-colors hover:bg-surface-alt/35">
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-[48px] font-semibold text-ink leading-none tabular-nums tracking-[-0.03em]">
+                  {m.stat}
+                </div>
+                <span className={`w-2 h-2 rounded-[2px] ${idx === 0 ? 'bg-ice-cyan' : idx === 1 ? 'bg-amber-gold' : 'bg-cadet-steel'}`} aria-hidden="true" />
               </div>
               <div className="text-[15px] font-semibold text-ink pt-1">{m.label}</div>
               <div className="text-[13px] leading-[1.5] text-ink-muted">{m.caption}</div>

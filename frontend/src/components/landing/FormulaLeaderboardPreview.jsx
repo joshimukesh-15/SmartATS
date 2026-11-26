@@ -17,10 +17,20 @@ export function FormulaLeaderboardPreview({ sampleRows }) {
             {sampleRows.map((row) => (
               <div
                 key={row.rank}
-                className="p-3.5 rounded-[10px] border border-line bg-surface-alt/40 flex items-center justify-between gap-4 transition-colors hover:bg-surface-alt/60"
+                className={`p-3.5 rounded-[10px] border flex items-center justify-between gap-4 transition-colors ${
+                  row.rank === 1
+                    ? 'border-amber-gold/30 bg-surface-alt/70 hover:bg-surface-alt'
+                    : 'border-line bg-surface-alt/35 hover:bg-surface-alt/60'
+                }`}
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-[6px] bg-primary text-on-primary text-[13px] font-semibold flex items-center justify-center shrink-0">
+                  <span
+                    className={`w-6 h-6 rounded-[6px] text-[13px] font-semibold flex items-center justify-center shrink-0 ${
+                      row.rank === 1
+                        ? 'rank-1-pill'
+                        : 'bg-surface border border-line text-ink-muted'
+                    }`}
+                  >
                     {row.rank}
                   </span>
                   <div>

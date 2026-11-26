@@ -64,24 +64,25 @@ export default function HeroSection({ onEnterApp }) {
   }, [activeSkills]);
 
   return (
-    <section className="relative isolate overflow-visible border-b border-line bg-canvas pb-20 pt-32 sm:pb-28 sm:pt-40">
-      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[500px] w-full max-w-7xl bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(124,133,148,0.18),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(222,222,230,0.08),transparent_70%)]" />
+    <section className="relative isolate overflow-visible border-b border-line bg-canvas pb-20 pt-32 sm:pb-28 sm:pt-40 ambient-mesh">
+      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[520px] w-full max-w-7xl bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(91,192,222,0.16),transparent_70%)] dark:bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(91,192,222,0.2),transparent_70%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[360px] w-[600px] bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(217,119,6,0.08),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(217,119,6,0.14),transparent_70%)]" />
       <img
         src="/images/hero-backdrop.webp"
         alt=""
         width="2400"
         height="1400"
         fetchPriority="high"
-        className="absolute inset-0 -z-10 h-full w-full object-cover object-center dark:brightness-[0.65]"
+        className="absolute inset-0 -z-10 h-full w-full object-cover object-center dark:brightness-[0.45] opacity-70 dark:opacity-50"
       />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-canvas via-canvas/90 to-canvas/45 dark:via-canvas/80 dark:to-canvas/60" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-canvas via-canvas/92 to-canvas/50 dark:via-canvas/85 dark:to-canvas/65" />
       <div className="relative z-10 mx-auto max-w-[1200px] px-6 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column (5 cols): Headline, Sentence, CTAs, No Account Note */}
           <div className="lg:col-span-5 space-y-6 relative">
             {/* Dot Grid and Faded Backdrop behind headline */}
-            <div className="absolute -top-12 -left-10 w-96 h-96 dot-grid-bg pointer-events-none opacity-60 dark:opacity-40" />
-            <div className="absolute -top-16 -left-12 w-[460px] h-[360px] pointer-events-none opacity-20 dark:opacity-10 dark:brightness-[0.75] overflow-hidden rounded-[20px]">
+            <div className="absolute -top-12 -left-10 w-96 h-96 dot-grid-bg pointer-events-none opacity-65 dark:opacity-45" />
+            <div className="absolute -top-16 -left-12 w-[460px] h-[360px] pointer-events-none opacity-15 dark:opacity-10 dark:brightness-[0.75] overflow-hidden rounded-[20px]">
               <img
                 src="/images/hero-backdrop.webp"
                 alt=""
@@ -93,8 +94,8 @@ export default function HeroSection({ onEnterApp }) {
             </div>
 
             <div className="relative space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-surface-alt/70 border border-line text-[13px] text-ink-muted font-medium select-none">
-                <span className="w-1.5 h-1.5 rounded-[2px] bg-ink-muted" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-surface/85 backdrop-blur-xs border border-line text-[13px] text-ink-muted font-medium select-none shadow-xs">
+                <span className="w-2 h-2 rounded-[2px] bg-ice-cyan" />
                 <span>Deterministic 4-Pillar Scoring ({Math.round(weights.skills * 100)}/{Math.round(weights.text * 100)}/{Math.round(weights.experience * 100)}/{Math.round(weights.education * 100)})</span>
               </div>
 
@@ -175,7 +176,7 @@ export default function HeroSection({ onEnterApp }) {
                         key={cand.id}
                         className={`p-3.5 rounded-[10px] border transition-all duration-350 ease-out space-y-2 ${
                           isTop
-                            ? 'bg-surface-alt/70 border-line shadow-xs'
+                            ? 'bg-surface-alt/75 border-amber-gold/30 dark:border-amber-gold/40 shadow-xs'
                             : 'bg-surface-alt/30 border-line/60 hover:bg-surface-alt/50'
                         }`}
                       >
@@ -185,7 +186,7 @@ export default function HeroSection({ onEnterApp }) {
                             <span
                               className={`w-6 h-6 rounded-[6px] font-semibold text-[13px] flex items-center justify-center shrink-0 ${
                                 isTop
-                                  ? 'bg-primary text-on-primary'
+                                  ? 'rank-1-pill'
                                   : 'bg-surface text-ink-muted border border-line'
                               }`}
                             >
@@ -255,11 +256,11 @@ export default function HeroSection({ onEnterApp }) {
                                 <span>Text ({Math.round(weights.text * 100)}%): <strong className="text-ink font-semibold">{b.textMatchPoints.toFixed(1)} pts</strong></span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-[2px] bg-ink-muted shrink-0" />
+                                <span className="w-2 h-2 rounded-[2px] bg-slate-steel shrink-0" />
                                 <span>Exp ({Math.round(weights.experience * 100)}%): <strong className="text-ink font-semibold">{b.experiencePoints.toFixed(1)} pts</strong></span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50 shrink-0" />
+                                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/55 shrink-0" />
                                 <span>Edu ({Math.round(weights.education * 100)}%): <strong className="text-ink font-semibold">{b.educationPoints.toFixed(1)} pts</strong></span>
                               </div>
                             </div>

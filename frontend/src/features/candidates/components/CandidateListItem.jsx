@@ -27,8 +27,8 @@ export default function CandidateListItem({
     <div
       className={`group relative flex h-14 min-h-[56px] max-h-[56px] w-full items-center gap-2.5 rounded-[10px] border px-3 transition-colors ${
         selected
-          ? 'border-primary bg-surface-alt shadow-[inset_3px_0_0_0_var(--color-primary)]'
-          : 'border-line bg-surface hover:bg-surface-alt/70'
+          ? 'border-primary/60 dark:border-ice-cyan/60 bg-surface-alt shadow-[inset_3px_0_0_0_var(--primary)]'
+          : 'border-line bg-surface hover:bg-surface-alt/70 hover:border-cadet-steel/40'
       }`}
     >
       <div
@@ -56,8 +56,12 @@ export default function CandidateListItem({
         </div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-[14px] font-semibold text-ink leading-tight">{cleanName}</div>
-          <div className="truncate text-[13px] text-ink-muted leading-tight">
-            {stage} · #{rank}
+          <div className="truncate text-[13px] text-ink-muted leading-tight flex items-center gap-1.5">
+            <span>{stage}</span>
+            <span>·</span>
+            <span className={Number(rank) === 1 ? 'font-semibold text-amber-gold dark:text-silk-cream' : ''}>
+              #{rank}
+            </span>
           </div>
         </div>
         <div className="ml-auto shrink-0 text-[14px] font-semibold tabular-nums text-ink">

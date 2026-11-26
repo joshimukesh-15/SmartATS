@@ -114,7 +114,7 @@ export default function StudioLayout() {
       {/* Main Studio View Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar with Breadcrumb, Search Input with <Kbd>, and Primary Action */}
-        <header className="h-14 border-b border-line bg-surface/80 backdrop-blur-xs px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20">
+        <header className="h-14 border-b border-line bg-surface/80 backdrop-blur-xl px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[13px] text-ink-muted select-none">
             <Link to="/studio" className="hover:text-ink transition-colors font-medium">

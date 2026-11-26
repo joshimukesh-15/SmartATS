@@ -126,7 +126,7 @@ export default function TableView({
                     className="rounded-[4px] border-line accent-primary cursor-pointer shrink-0"
                     aria-label={`Select ${cleanName} for compare`}
                   />
-                  <span className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums shrink-0 ${idx === 0 ? 'bg-primary text-on-primary' : 'bg-surface-alt text-ink'}`}>
+                  <span className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums shrink-0 ${Number(cand.rank || idx + 1) === 1 ? 'rank-1-pill' : 'bg-surface-alt text-ink border border-line/60'}`}>
                     {cand.rank || idx + 1}
                   </span>
                   <Avatar name={cleanName} size="sm" />
@@ -200,7 +200,7 @@ export default function TableView({
                     <input type="checkbox" checked={Boolean(isCompared)} onChange={() => {}} className="rounded-[4px] border-line accent-primary cursor-pointer" aria-label={`Select ${cleanName} for compare`} />
                   </td>
                   <td className="hidden px-2 py-3 text-center sm:table-cell">
-                    <span className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums ${idx === 0 ? 'bg-primary text-on-primary' : 'bg-surface-alt text-ink'}`}>
+                    <span className={`inline-flex items-center justify-center w-6 h-6 rounded-[6px] text-[13px] font-semibold tabular-nums ${Number(cand.rank || idx + 1) === 1 ? 'rank-1-pill' : 'bg-surface-alt text-ink border border-line/60'}`}>
                       {cand.rank || idx + 1}
                     </span>
                   </td>

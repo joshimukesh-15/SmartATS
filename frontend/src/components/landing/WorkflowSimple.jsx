@@ -43,14 +43,14 @@ export default function WorkflowSimple() {
 
         {/* 3 Numbered Steps with Connecting Rule */}
         <div className="relative">
-          {/* Subtle thin connecting horizontal rule across desktop steps */}
-          <div className="hidden md:block absolute top-[28px] left-4 right-4 h-[1px] bg-line pointer-events-none" />
+          {/* Subtle thin connecting hairline gradient rule across desktop steps */}
+          <div className="hidden md:block absolute top-[28px] left-4 right-4 h-[1px] hairline-divider pointer-events-none" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 relative text-left">
             {steps.map((step, idx) => (
               <div key={idx} className="space-y-4">
                 <div className="inline-block bg-canvas pr-4">
-                  <div className="text-[56px] font-semibold text-ink-muted/40 tracking-tight leading-none tabular-nums select-none">
+                  <div className="text-[56px] font-semibold text-cadet-steel/45 dark:text-ice-cyan/45 tracking-tight leading-none tabular-nums select-none">
                     {step.num}
                   </div>
                 </div>

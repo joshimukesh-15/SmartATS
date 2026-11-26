@@ -152,7 +152,7 @@ export default function ScoringFormulaSection() {
                   onBlur={() => setActiveTerm(null)}
                   className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
                     activeTerm === 'text'
-                      ? 'bg-champagne text-on-primary shadow-xs'
+                      ? 'bg-amber-gold text-white shadow-xs'
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
@@ -167,7 +167,7 @@ export default function ScoringFormulaSection() {
                   onBlur={() => setActiveTerm(null)}
                   className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
                     activeTerm === 'experience'
-                      ? 'bg-slate-steel text-on-primary shadow-xs'
+                      ? 'bg-slate-steel text-white shadow-xs'
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
@@ -182,7 +182,7 @@ export default function ScoringFormulaSection() {
                   onBlur={() => setActiveTerm(null)}
                   className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
                     activeTerm === 'education'
-                      ? 'bg-platinum text-ink shadow-xs'
+                      ? 'bg-silk-cream text-obsidian-navy shadow-xs ring-1 ring-amber-gold/40'
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
@@ -213,9 +213,9 @@ export default function ScoringFormulaSection() {
                   />
                   <div
                     style={{ width: inView ? `${demoEduPts}%` : '0%' }}
-                    className={`h-full rounded-r-[4px] bg-platinum dark:bg-ink-subtle/50 transition-all duration-1000 ease-out ${
+                    className={`h-full rounded-r-[4px] bg-silk-cream dark:bg-silk-cream/60 transition-all duration-1000 ease-out ${
                       activeTerm && activeTerm !== 'final' && activeTerm !== 'education' ? 'opacity-30' : 'opacity-100'
-                    } ${activeTerm === 'education' ? 'ring-2 ring-slate-steel ring-offset-1 z-10' : ''}`}
+                    } ${activeTerm === 'education' ? 'ring-2 ring-amber-gold ring-offset-1 z-10' : ''}`}
                   />
                 </div>
 

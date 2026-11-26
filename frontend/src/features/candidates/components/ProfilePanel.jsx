@@ -87,16 +87,16 @@ export default function ProfilePanel({
       weight: Math.round((breakdown.weightExperience || 0.25) * 100),
       match: Number(breakdown.experiencePercent || 0),
       points: Number(breakdown.experiencePoints || 0),
-      dotClass: 'bg-ink-muted',
-      barClass: 'bg-ink-muted',
+      dotClass: 'bg-slate-steel',
+      barClass: 'bg-slate-steel',
     },
     {
       name: 'Education',
       weight: Math.round((breakdown.weightEducation || 0.15) * 100),
       match: Number(breakdown.educationPercent || 0),
       points: Number(breakdown.educationPoints || 0),
-      dotClass: 'bg-platinum dark:bg-ink-subtle/50',
-      barClass: 'bg-platinum dark:bg-ink-subtle/50',
+      dotClass: 'bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60',
+      barClass: 'bg-silk-cream dark:bg-silk-cream/60',
     },
   ];
 

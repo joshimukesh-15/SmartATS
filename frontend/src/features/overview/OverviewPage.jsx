@@ -18,10 +18,10 @@ import PipelineFunnel from './PipelineFunnel';
 
 const CANONICAL_STAGE_META = [
   { stage: 'New', desc: 'Awaiting review', borderTone: 'border-l-line' },
-  { stage: 'Reviewing', desc: 'Screen in progress', borderTone: 'border-l-slate-steel' },
-  { stage: 'Interviewing', desc: 'Panel scheduled', borderTone: 'border-l-primary' },
-  { stage: 'Offer', desc: 'Offer extended', borderTone: 'border-l-[#5B638A]' },
-  { stage: 'Hired', desc: 'Offer accepted', borderTone: 'border-l-[#2E7259]' },
+  { stage: 'Reviewing', desc: 'Screen in progress', borderTone: 'border-l-cadet-steel' },
+  { stage: 'Interviewing', desc: 'Panel scheduled', borderTone: 'border-l-ice-cyan' },
+  { stage: 'Offer', desc: 'Offer extended', borderTone: 'border-l-silk-cream' },
+  { stage: 'Hired', desc: 'Offer accepted', borderTone: 'border-l-amber-gold' },
   { stage: 'Rejected', desc: 'Archived records', borderTone: 'border-l-line/60' },
 ];
 
@@ -248,7 +248,11 @@ export default function OverviewPage() {
 
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-semibold tabular-nums text-ink-muted">
+                          <span
+                            className={`inline-flex items-center justify-center px-1.5 py-0.2 rounded-[6px] text-[13px] font-semibold tabular-nums ${
+                              idx === 0 ? 'rank-1-pill' : 'text-ink-muted'
+                            }`}
+                          >
                             #{idx + 1}
                           </span>
                           <span className="text-[15px] font-semibold text-ink truncate leading-[1.4]">

@@ -34,7 +34,13 @@ export default function ProfileHeader({
           {experienceText} · {emailText}
         </div>
       </div>
-      <span className="rounded-[8px] border border-line bg-surface-alt px-2.5 py-0.5 text-[13px] font-semibold text-ink">
+      <span
+        className={`rounded-[8px] px-2.5 py-0.5 text-[13px] font-semibold ${
+          Number(rank) === 1
+            ? 'rank-1-pill'
+            : 'border border-line bg-surface-alt text-ink'
+        }`}
+      >
         Rank #{rank}
       </span>
       <StatusBadge status={currentStage} size="sm" />

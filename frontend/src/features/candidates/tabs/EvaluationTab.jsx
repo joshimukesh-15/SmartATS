@@ -113,7 +113,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
           <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="h-2 w-2 rounded-[2px] bg-ink-muted" />
+                <span className="h-2 w-2 rounded-[2px] bg-slate-steel" />
                 Experience Fit ({Math.round(wExp * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -130,7 +130,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
           <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="h-2 w-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50" />
+                <span className="h-2 w-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60" />
                 Education ({Math.round(wEdu * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -177,7 +177,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
             <>
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="h-2 w-2 rounded-[2px] bg-ink-muted" />
+                  <span className="h-2 w-2 rounded-[2px] bg-slate-steel" />
                   <span>Experience ({(wExp * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">
@@ -187,7 +187,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
 
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="h-2 w-2 rounded-[2px] bg-platinum dark:bg-ink-subtle/50" />
+                  <span className="h-2 w-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60" />
                   <span>Education ({(wEdu * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">
