@@ -2,13 +2,13 @@ import { forwardRef } from 'react';
 
 const VARIANTS = {
   primary:
-    'bg-primary text-on-primary border border-primary shadow-[0_1px_2px_rgba(11,19,43,0.14),inset_0_1px_0_rgba(255,255,255,0.12)] hover:bg-primary-hover dark:hover:shadow-[0_4px_18px_rgba(248,250,252,0.15)] active:opacity-95',
+    'bg-gradient-to-b from-amber-gold to-amber-deep text-white border border-amber-deep shadow-[0_2px_10px_rgba(217,119,6,0.28),inset_0_1px_0_rgba(244,214,176,0.45)] hover:from-primary-hover hover:to-amber-deep hover:shadow-[0_6px_20px_rgba(217,119,6,0.38)] active:opacity-95',
   secondary:
-    'bg-surface hover:bg-surface-alt active:bg-surface border border-line hover:border-ice-blue/50 text-ink shadow-xs',
-  ghost: 'bg-transparent hover:bg-surface-alt active:bg-surface text-ink border border-transparent',
+    'bg-surface hover:bg-silk-cream/45 dark:hover:bg-surface-alt active:bg-surface border border-line hover:border-amber-gold/50 text-ink shadow-xs',
+  ghost: 'bg-transparent hover:bg-silk-cream/35 dark:hover:bg-surface-alt active:bg-surface text-ink border border-transparent',
   danger: 'bg-danger text-white hover:opacity-90 active:opacity-95 border border-danger shadow-xs',
   outline:
-    'bg-transparent hover:bg-surface-alt active:bg-surface border border-line hover:border-cadet-steel/50 text-ink',
+    'bg-transparent hover:bg-silk-cream/35 dark:hover:bg-surface-alt active:bg-surface border border-line hover:border-amber-gold/50 text-ink',
 };
 
 const SIZES = {

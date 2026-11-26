@@ -15,9 +15,9 @@ function getDeterministicTint(name = '') {
     hash |= 0;
   }
   const paletteTints = [
-    'bg-surface-alt text-obsidian-navy border-line dark:bg-slate-navy dark:text-ink dark:border-cadet-steel/50',
-    'bg-ice-blue/12 text-obsidian-navy border-ice-blue/30 dark:bg-slate-navy/90 dark:text-ice-blue dark:border-ice-blue/35',
-    'bg-silk-cream/40 text-obsidian-navy border-amber-gold/30 dark:bg-silk-cream/14 dark:text-silk-cream dark:border-amber-gold/35',
+    'bg-silk-cream text-espresso-ink border-amber-gold/35 dark:bg-surface-alt dark:text-silk-cream dark:border-amber-gold/40',
+    'bg-amber-gold/15 text-amber-deep border-amber-gold/40 dark:bg-amber-gold/25 dark:text-silk-cream dark:border-amber-gold/45',
+    'bg-amber-gold text-white border-amber-deep dark:bg-amber-gold dark:text-white dark:border-silk-cream/30',
   ];
   return paletteTints[Math.abs(hash) % paletteTints.length];
 }

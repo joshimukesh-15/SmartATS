@@ -12,7 +12,7 @@ export default function ScoreCard({
       <div className="relative overflow-hidden rounded-[14px] border border-line bg-surface p-6 shadow-xs">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(91,192,222,0.12),transparent_70%)]"
+          className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(217,119,6,0.14),transparent_70%)]"
         />
         <h3 className="text-[17px] font-semibold text-ink">Score breakdown</h3>
         <p className="mt-1 mb-4 text-[14px] text-ink-muted">

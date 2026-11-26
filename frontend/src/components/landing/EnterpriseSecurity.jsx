@@ -58,7 +58,7 @@ export default function EnterpriseSecurity() {
               <Panel key={p.title} className="p-6 space-y-4 hover:shadow-md transition-shadow border border-line bg-surface flex flex-col justify-between">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-white dark:to-slate-200 text-white dark:text-obsidian-navy flex items-center justify-center shadow-xs ring-1 ring-inset ring-white/20">
+                    <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-amber-gold to-amber-deep text-white flex items-center justify-center shadow-xs ring-1 ring-inset ring-silk-cream/40">
                       <Icon className="w-5 h-5" strokeWidth={1.75} />
                     </div>
                     <span className="text-[13px] font-medium text-ink-muted bg-surface-alt px-2.5 py-1 rounded-[8px] border border-line">

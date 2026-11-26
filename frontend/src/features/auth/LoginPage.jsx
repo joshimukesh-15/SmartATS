@@ -63,10 +63,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col justify-center items-center px-4 py-12 selection:bg-primary selection:text-on-primary font-sans relative ambient-mesh">
-      {/* Background Subtle Dual-Temperature Highlight over Deep Midnight Canvas */}
+      {/* Background Warm Sunlight Glows over Warm Canvas */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
-        <div className="w-[520px] h-[520px] rounded-full bg-ice-blue/8 dark:bg-ice-blue/10 blur-3xl -translate-y-24 translate-x-24" />
-        <div className="w-[460px] h-[460px] rounded-full bg-amber-gold/6 dark:bg-amber-gold/8 blur-3xl translate-y-24 -translate-x-24" />
+        <div className="w-[520px] h-[520px] rounded-full bg-silk-cream/60 dark:bg-amber-gold/16 blur-3xl -translate-y-24 translate-x-24" />
+        <div className="w-[460px] h-[460px] rounded-full bg-amber-gold/16 dark:bg-silk-cream/10 blur-3xl translate-y-24 -translate-x-24" />
       </div>
 
       <div className="w-full max-w-[420px] relative z-10 space-y-6">
@@ -76,7 +76,7 @@ export default function LoginPage() {
             to="/"
             className="inline-flex items-center gap-2.5 group focus-visible:outline-2 focus-visible:outline-primary rounded-[8px]"
           >
-            <span className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-white dark:to-slate-200 text-white dark:text-obsidian-navy font-bold text-[18px] flex items-center justify-center shadow-sm ring-1 ring-inset ring-white/20 group-hover:scale-105 transition-transform">
+            <span className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-amber-gold to-amber-deep text-white font-bold text-[18px] flex items-center justify-center shadow-sm ring-1 ring-inset ring-silk-cream/45 group-hover:scale-105 transition-transform">
               S
             </span>
             <span className="text-[22px] font-bold text-ink tracking-tight">

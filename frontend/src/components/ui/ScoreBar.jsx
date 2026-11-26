@@ -36,18 +36,18 @@ export function ScoreBar({
         aria-valuemin="0"
         aria-valuemax="100"
       >
-        {/* Skills Covered Segment (Primary / Ink) */}
+        {/* Skills Covered Segment (Rich Amber Gold #D97706) */}
         <div
           data-testid="score-bar-skills"
           style={{ width: `${skillsWidth}%` }}
-          className="bg-primary h-full transition-all duration-500 ease-out"
+          className="bg-amber-gold h-full transition-all duration-500 ease-out"
           title={`Skills: ${skillsWidth.toFixed(1)} pts`}
         />
-        {/* Text Match Segment (Champagne) */}
+        {/* Text Match Segment (Warm Silk Cream / Honey Gold) */}
         <div
           data-testid="score-bar-text"
           style={{ width: `${textWidth}%` }}
-          className="bg-champagne h-full transition-all duration-500 ease-out"
+          className="bg-honey-gold dark:bg-silk-cream h-full transition-all duration-500 ease-out"
           title={`Text: ${textWidth.toFixed(1)} pts`}
         />
         {/* Experience & Education Segments (rendered when multi-pillar or experience/education points > 0) */}
@@ -56,13 +56,13 @@ export function ScoreBar({
             <div
               data-testid="score-bar-experience"
               style={{ width: `${expWidth}%` }}
-              className="bg-slate-steel h-full transition-all duration-500 ease-out"
+              className="bg-amber-bronze h-full transition-all duration-500 ease-out"
               title={`Experience: ${expWidth.toFixed(1)} pts`}
             />
             <div
               data-testid="score-bar-education"
               style={{ width: `${eduWidth}%` }}
-              className="bg-silk-cream dark:bg-silk-cream/60 h-full transition-all duration-500 ease-out"
+              className="bg-silk-cream dark:bg-silk-cream/55 h-full transition-all duration-500 ease-out"
               title={`Education: ${eduWidth.toFixed(1)} pts`}
             />
           </>
@@ -71,21 +71,21 @@ export function ScoreBar({
       {showLabel && (
         <div className="flex items-center justify-between text-[13px] text-ink-muted tabular-nums flex-wrap gap-x-2">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-[2px] bg-primary" />
+            <span className="w-2 h-2 rounded-[2px] bg-amber-gold" />
             Skills: {skillsPoints.toFixed(1)}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-[2px] bg-champagne" />
+            <span className="w-2 h-2 rounded-[2px] bg-honey-gold dark:bg-silk-cream" />
             Text: {textMatchPoints.toFixed(1)}
           </span>
           {isMulti && (
             <>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-[2px] bg-slate-steel" />
+                <span className="w-2 h-2 rounded-[2px] bg-amber-bronze" />
                 Exp: {experiencePoints.toFixed(1)}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60" />
+                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/40 dark:bg-silk-cream/55" />
                 Edu: {educationPoints.toFixed(1)}
               </span>
             </>

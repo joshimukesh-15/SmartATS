@@ -50,7 +50,7 @@ export default function WorkflowSimple() {
             {steps.map((step, idx) => (
               <div key={idx} className="space-y-4">
                 <div className="inline-block bg-canvas pr-4">
-                  <div className="text-[56px] font-semibold text-slate-navy/35 dark:text-ice-blue/40 tracking-tight leading-none tabular-nums select-none">
+                  <div className="text-[56px] font-semibold text-amber-gold/45 dark:text-silk-cream/45 tracking-tight leading-none tabular-nums select-none">
                     {step.num}
                   </div>
                 </div>

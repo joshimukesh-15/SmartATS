@@ -171,9 +171,9 @@ export default function AnalyticsPage() {
                             style={{ width: `${pct}%` }}
                             className={`h-full rounded-[4px] transition-all duration-500 ${
                               bucket === '80-100%'
-                                ? 'bg-primary'
+                                ? 'bg-amber-gold'
                                 : bucket === '60-79%'
-                                ? 'bg-slate-steel'
+                                ? 'bg-honey-gold dark:bg-amber-bronze'
                                 : 'bg-silk-cream dark:bg-silk-cream/60'
                             }`}
                           />

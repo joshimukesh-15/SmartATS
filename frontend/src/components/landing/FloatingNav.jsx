@@ -29,7 +29,7 @@ export default function FloatingNav({ onEnterApp }) {
       >
         {/* Wordmark Logo Left */}
         <div className="flex items-center gap-3 select-none">
-          <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-slate-navy to-obsidian-navy dark:from-white dark:to-slate-200 text-white dark:text-obsidian-navy font-bold text-[14px] flex items-center justify-center shadow-xs ring-1 ring-inset ring-white/20">
+          <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-amber-gold to-amber-deep text-white font-bold text-[14px] flex items-center justify-center shadow-xs ring-1 ring-inset ring-silk-cream/45">
             S
           </span>
           <span className="text-[18px] font-bold text-ink tracking-tight">SmartATS</span>

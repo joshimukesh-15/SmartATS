@@ -27,8 +27,8 @@ export default function CandidateListItem({
     <div
       className={`group relative flex h-14 min-h-[56px] max-h-[56px] w-full items-center gap-2.5 rounded-[10px] border px-3 transition-colors ${
         selected
-          ? 'border-primary/60 bg-surface-alt shadow-[inset_3px_0_0_0_var(--primary)]'
-          : 'border-line bg-surface hover:bg-surface-alt/70 hover:border-cadet-steel/40'
+          ? 'border-amber-gold/60 bg-silk-cream/35 dark:bg-surface-alt shadow-[inset_3px_0_0_0_var(--amber-gold)]'
+          : 'border-line bg-surface hover:bg-silk-cream/25 dark:hover:bg-surface-alt/70 hover:border-amber-gold/40'
       }`}
     >
       <div
@@ -59,7 +59,7 @@ export default function CandidateListItem({
           <div className="truncate text-[13px] text-ink-muted leading-tight flex items-center gap-1.5">
             <span>{stage}</span>
             <span>·</span>
-            <span className={Number(rank) === 1 ? 'font-semibold text-amber-gold dark:text-silk-cream' : ''}>
+            <span className={Number(rank) === 1 ? 'font-semibold text-amber-deep dark:text-silk-cream' : ''}>
               #{rank}
             </span>
           </div>

@@ -152,7 +152,7 @@ export default function ScoringFormulaSection() {
                   onBlur={() => setActiveTerm(null)}
                   className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
                     activeTerm === 'text'
-                      ? 'bg-amber-gold text-white shadow-xs'
+                      ? 'bg-honey-gold text-espresso-ink dark:bg-silk-cream dark:text-espresso-ink shadow-xs'
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
@@ -167,7 +167,7 @@ export default function ScoringFormulaSection() {
                   onBlur={() => setActiveTerm(null)}
                   className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
                     activeTerm === 'experience'
-                      ? 'bg-slate-steel text-white shadow-xs'
+                      ? 'bg-amber-bronze text-white shadow-xs'
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
@@ -182,7 +182,7 @@ export default function ScoringFormulaSection() {
                   onBlur={() => setActiveTerm(null)}
                   className={`px-2 py-1 rounded-[6px] transition-colors cursor-pointer ${
                     activeTerm === 'education'
-                      ? 'bg-silk-cream text-obsidian-navy shadow-xs ring-1 ring-amber-gold/40'
+                      ? 'bg-silk-cream text-espresso-ink shadow-xs ring-1 ring-amber-gold/45'
                       : 'hover:bg-surface-alt text-ink'
                   }`}
                 >
@@ -192,28 +192,28 @@ export default function ScoringFormulaSection() {
 
               {/* Interactive 4-Segment Bar */}
               <div className="space-y-1.5 pt-1">
-                <div className="h-3 w-full rounded-[6px] bg-surface-alt overflow-hidden flex p-0.5 border border-line">
+                <div className="h-3 w-full rounded-[6px] bg-surface-alt/50 dark:bg-surface-alt overflow-hidden flex p-0.5 border border-line">
                   <div
                     style={{ width: inView ? `${demoSkillsPts}%` : '0%' }}
-                    className={`h-full rounded-l-[4px] bg-primary transition-all duration-1000 ease-out ${
+                    className={`h-full rounded-l-[4px] bg-amber-gold transition-all duration-1000 ease-out ${
                       activeTerm && activeTerm !== 'final' && activeTerm !== 'skills' ? 'opacity-30' : 'opacity-100'
-                    } ${activeTerm === 'skills' ? 'ring-2 ring-primary ring-offset-1 z-10' : ''}`}
+                    } ${activeTerm === 'skills' ? 'ring-2 ring-amber-gold ring-offset-1 z-10' : ''}`}
                   />
                   <div
                     style={{ width: inView ? `${demoTextPts}%` : '0%' }}
-                    className={`h-full bg-champagne transition-all duration-1000 ease-out ${
+                    className={`h-full bg-honey-gold dark:bg-silk-cream transition-all duration-1000 ease-out ${
                       activeTerm && activeTerm !== 'final' && activeTerm !== 'text' ? 'opacity-30' : 'opacity-100'
-                    } ${activeTerm === 'text' ? 'ring-2 ring-champagne ring-offset-1 z-10' : ''}`}
+                    } ${activeTerm === 'text' ? 'ring-2 ring-honey-gold ring-offset-1 z-10' : ''}`}
                   />
                   <div
                     style={{ width: inView ? `${demoExpPts}%` : '0%' }}
-                    className={`h-full bg-slate-steel transition-all duration-1000 ease-out ${
+                    className={`h-full bg-amber-bronze transition-all duration-1000 ease-out ${
                       activeTerm && activeTerm !== 'final' && activeTerm !== 'experience' ? 'opacity-30' : 'opacity-100'
-                    } ${activeTerm === 'experience' ? 'ring-2 ring-slate-steel ring-offset-1 z-10' : ''}`}
+                    } ${activeTerm === 'experience' ? 'ring-2 ring-amber-bronze ring-offset-1 z-10' : ''}`}
                   />
                   <div
                     style={{ width: inView ? `${demoEduPts}%` : '0%' }}
-                    className={`h-full rounded-r-[4px] bg-silk-cream dark:bg-silk-cream/60 transition-all duration-1000 ease-out ${
+                    className={`h-full rounded-r-[4px] bg-silk-cream dark:bg-silk-cream/55 transition-all duration-1000 ease-out ${
                       activeTerm && activeTerm !== 'final' && activeTerm !== 'education' ? 'opacity-30' : 'opacity-100'
                     } ${activeTerm === 'education' ? 'ring-2 ring-amber-gold ring-offset-1 z-10' : ''}`}
                   />

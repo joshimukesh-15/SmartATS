@@ -28,13 +28,13 @@ export function PillarExplanationCards({ weights, activeTerm, setActiveTerm }) {
         onMouseLeave={() => setActiveTerm(null)}
         className={`p-3.5 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
           activeTerm === 'text'
-            ? 'border-champagne bg-surface shadow-sm ring-1 ring-champagne'
+            ? 'border-honey-gold bg-surface shadow-sm ring-1 ring-honey-gold'
             : 'border-line bg-surface hover:border-ink-subtle'
         }`}
       >
         <div className="flex items-center justify-between text-[14px] font-semibold text-ink">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-[2px] bg-champagne" />
+            <span className="w-2.5 h-2.5 rounded-[2px] bg-honey-gold dark:bg-silk-cream" />
             <span>Semantic text alignment</span>
           </div>
           <span className="tabular-nums text-ink-muted font-medium">{Math.round(weights.text * 100)}% weight</span>
@@ -50,13 +50,13 @@ export function PillarExplanationCards({ weights, activeTerm, setActiveTerm }) {
         onMouseLeave={() => setActiveTerm(null)}
         className={`p-3.5 rounded-[10px] border transition-all duration-200 cursor-pointer space-y-1 ${
           activeTerm === 'experience'
-            ? 'border-slate-steel bg-surface shadow-sm ring-1 ring-slate-steel'
+            ? 'border-amber-bronze bg-surface shadow-sm ring-1 ring-amber-bronze'
             : 'border-line bg-surface hover:border-ink-subtle'
         }`}
       >
         <div className="flex items-center justify-between text-[14px] font-semibold text-ink">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-[2px] bg-slate-steel" />
+            <span className="w-2.5 h-2.5 rounded-[2px] bg-amber-bronze" />
             <span>Experience fit</span>
           </div>
           <span className="tabular-nums text-ink-muted font-medium">{Math.round(weights.experience * 100)}% weight</span>
@@ -77,7 +77,7 @@ export function PillarExplanationCards({ weights, activeTerm, setActiveTerm }) {
       >
         <div className="flex items-center justify-between text-[14px] font-semibold text-ink">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-[2px] bg-silk-cream border border-amber-gold/30 dark:bg-silk-cream/60" />
+            <span className="w-2.5 h-2.5 rounded-[2px] bg-silk-cream border border-amber-gold/40 dark:bg-silk-cream/55" />
             <span>Education &amp; credentials</span>
           </div>
           <span className="tabular-nums text-ink-muted font-medium">{Math.round(weights.education * 100)}% weight</span>

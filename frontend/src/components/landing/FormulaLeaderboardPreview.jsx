@@ -19,8 +19,8 @@ export function FormulaLeaderboardPreview({ sampleRows }) {
                 key={row.rank}
                 className={`p-3.5 rounded-[10px] border grid grid-cols-[minmax(0,1fr)_112px] sm:grid-cols-[minmax(148px,1.15fr)_minmax(0,1.4fr)_112px] items-center gap-3 transition-colors ${
                   row.rank === 1
-                    ? 'border-amber-gold/30 dark:border-amber-gold/35 bg-surface-alt/70 hover:bg-surface-alt'
-                    : 'border-line bg-surface-alt/35 hover:bg-surface-alt/60'
+                    ? 'border-amber-gold/45 bg-silk-cream/35 dark:bg-surface-alt/80 hover:bg-silk-cream/55'
+                    : 'border-line bg-surface-alt/25 hover:bg-surface-alt/45'
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">

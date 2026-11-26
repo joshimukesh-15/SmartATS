@@ -2,34 +2,34 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Core Palette Tokens */
-  --obsidian-navy: #0b132b;
-  --slate-navy: #1c2541;
-  --cadet-steel: #3a506b;
-  --ice-blue: #5bc0de;
+  /* Core Full Silk Cream & Amber Gold Palette */
   --silk-cream: #f4d6b0;
   --amber-gold: #d97706;
+  --amber-deep: #b45309;
+  --honey-gold: #e69d45;
+  --amber-bronze: #8c5214;
 
-  /* Light Mode: Crisp Porcelain Surface + Neutral #0B132B Primary CTAs + Warm Highlights */
-  --canvas: #f8fafc;
-  --surface: #ffffff;
-  --surface-alt: #eef2f7;
-  --line: #d6dfe9;
-  --ink: #0b132b;
-  --ink-muted: #3a506b;
-  --ink-subtle: #647b96;
-  --primary: #0b132b;
-  --primary-hover: #1c2541;
+  /* Light Mode: Warm Silk Champagne Parchment & Burnt Amber Architecture */
+  --canvas: #fbf5ec;
+  --surface: #fffcf7;
+  --surface-alt: #f4d6b0;
+  --surface-tint: #faebd7;
+  --line: #e4c6a0;
+  --ink: #2a1806;
+  --ink-muted: #6e4b23;
+  --ink-subtle: #967249;
+  --primary: #d97706;
+  --primary-hover: #b45309;
   --on-primary: #ffffff;
   --champagne: #d97706;
-  --champagne-soft: #fdf2e6;
-  --danger: #dc2626;
+  --champagne-soft: #f4d6b0;
+  --danger: #c83232;
 
-  /* Obsidian-calibrated feather-light shadows */
-  --shadow-xs: 0 1px 2px rgba(11, 19, 43, 0.05);
-  --shadow-sm: 0 2px 10px rgba(11, 19, 43, 0.06), 0 1px 2px rgba(11, 19, 43, 0.04);
-  --shadow-md: 0 12px 28px rgba(11, 19, 43, 0.08), 0 2px 6px rgba(11, 19, 43, 0.04);
-  --shadow-lg: 0 24px 56px -12px rgba(11, 19, 43, 0.16);
+  /* Warm Amber-Tinted Diffusion Shadows */
+  --shadow-xs: 0 1px 2px rgba(107, 63, 14, 0.06);
+  --shadow-sm: 0 3px 12px rgba(107, 63, 14, 0.08), 0 1px 2px rgba(107, 63, 14, 0.04);
+  --shadow-md: 0 12px 28px rgba(107, 63, 14, 0.1), 0 2px 6px rgba(107, 63, 14, 0.05);
+  --shadow-lg: 0 24px 56px -12px rgba(107, 63, 14, 0.18);
 
   /* Motion Tokens */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -40,26 +40,27 @@
 }
 
 .dark {
-  /* Dark Mode: #0B132B Midnight Obsidian + #1C2541 Slate Navy + Neutral White CTAs */
-  --canvas: #0b132b;
-  --surface: #131d3b;
-  --surface-alt: #1c2541;
-  --line: #283a5c;
-  --ink: #f8fafc;
-  --ink-muted: #9eb0c7;
-  --ink-subtle: #647a99;
-  --primary: #f8fafc;
-  --primary-hover: #e2e8f0;
-  --on-primary: #0b132b;
-  --champagne: #d97706;
-  --champagne-soft: rgba(244, 214, 176, 0.14);
-  --danger: #ef4444;
+  /* Dark Mode: Smoked Espresso Canvas with Luminous #F4D6B0 Silk & #D97706 Molten Amber */
+  --canvas: #130c05;
+  --surface: #1d1309;
+  --surface-alt: #2b1d0f;
+  --surface-tint: #24180c;
+  --line: #442f19;
+  --ink: #fdf2e3;
+  --ink-muted: #e2c098;
+  --ink-subtle: #a68158;
+  --primary: #d97706;
+  --primary-hover: #ea8813;
+  --on-primary: #ffffff;
+  --champagne: #f4d6b0;
+  --champagne-soft: rgba(244, 214, 176, 0.16);
+  --danger: #f87171;
 
-  /* Deep midnight specular bevel shadows */
-  --shadow-xs: 0 1px 2px rgba(4, 8, 20, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --shadow-sm: 0 4px 14px rgba(4, 8, 20, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  --shadow-md: 0 12px 32px rgba(4, 8, 20, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-lg: 0 24px 60px -12px rgba(4, 8, 20, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  /* Deep roasted specular rim shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(244, 214, 176, 0.08);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(244, 214, 176, 0.09);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(244, 214, 176, 0.1);
+  --shadow-lg: 0 24px 60px -12px rgba(0, 0, 0, 0.78), inset 0 1px 0 rgba(244, 214, 176, 0.12);
 }
 
 @theme {
@@ -77,19 +78,19 @@
   --color-champagne-soft: var(--champagne-soft);
   --color-danger: var(--danger);
 
-  /* Palette Tokens */
-  --color-obsidian-navy: #0b132b;
-  --color-slate-navy: #1c2541;
-  --color-cadet-steel: #3a506b;
-  --color-ice-blue: #5bc0de;
+  /* Core Silk Cream & Amber Gold Palette */
   --color-silk-cream: #f4d6b0;
   --color-amber-gold: #d97706;
+  --color-amber-deep: #b45309;
+  --color-honey-gold: #e69d45;
+  --color-amber-bronze: #8c5214;
+  --color-espresso-ink: #2a1806;
 
-  /* Compatibility Slate Mappings */
-  --color-slate-mist: #cbd5e1;
-  --color-platinum: #cbd5e1;
-  --color-slate-steel: #3a506b;
-  --color-slate-dark: #1c2541;
+  /* Compatibility mappings harmonized into warm amber tones */
+  --color-slate-mist: #f4d6b0;
+  --color-platinum: #ecc391;
+  --color-slate-steel: #9a5b13;
+  --color-slate-dark: #2b1d0f;
 
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
@@ -153,17 +154,22 @@
   }
 
   *:focus-visible {
-    outline: 2px solid var(--ice-blue);
+    outline: 2px solid var(--amber-gold);
     outline-offset: 2px;
   }
 
   ::selection {
-    background-color: var(--primary);
-    color: var(--on-primary);
+    background-color: var(--silk-cream);
+    color: #2a1806;
+  }
+
+  .dark ::selection {
+    background-color: var(--amber-gold);
+    color: #ffffff;
   }
 }
 
-/* Panel with 1px border, elevation shadow, and subtle top specular bevel in dark mode */
+/* Panel with 1px warm border and elevation */
 .panel {
   background-color: var(--surface);
   border: 1px solid var(--line);
@@ -172,7 +178,7 @@
 }
 
 .panel-subtle {
-  background-color: var(--surface-alt);
+  background-color: var(--surface-tint);
   border: 1px solid var(--line);
   border-radius: 14px;
   box-shadow: var(--shadow-xs);
@@ -180,67 +186,74 @@
 
 .dark .panel,
 .dark .panel-subtle {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 20px rgba(4, 8, 20, 0.5);
+  box-shadow: inset 0 1px 0 rgba(244, 214, 176, 0.08), 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Blended Ambient Illumination (Cool Ice Blue + Subtle Warm Amber over Deep Navy) */
+/* Warm Golden Sunlight Ambient Atmosphere (#F4D6B0 + #D97706) */
 .ambient-mesh {
   background-image:
-    radial-gradient(ellipse 55% 45% at 85% 0%, rgba(91, 192, 222, 0.08), transparent 70%),
-    radial-gradient(ellipse 50% 45% at 12% 88%, rgba(217, 119, 6, 0.05), transparent 70%);
+    radial-gradient(ellipse 65% 50% at 82% 0%, rgba(244, 214, 176, 0.55), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 12% 88%, rgba(217, 119, 6, 0.14), transparent 70%);
 }
 
 .dark .ambient-mesh {
   background-image:
-    radial-gradient(ellipse 55% 45% at 85% 0%, rgba(91, 192, 222, 0.11), transparent 70%),
-    radial-gradient(ellipse 50% 45% at 10% 90%, rgba(217, 119, 6, 0.09), transparent 70%);
+    radial-gradient(ellipse 60% 50% at 80% 0%, rgba(217, 119, 6, 0.22), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 15% 90%, rgba(244, 214, 176, 0.1), transparent 70%);
 }
 
-/* Signature Dual-Navy Showcase Surface (#0B132B -> #1C2541) */
-.obsidian-showcase {
-  background: linear-gradient(135deg, #0b132b 0%, #1c2541 55%, #0b132b 100%);
+/* Full Silk Cream & Molten Amber Showcase Block */
+.silk-amber-showcase {
+  background: linear-gradient(135deg, #f4d6b0 0%, #ecc38d 52%, #dfa660 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 24px 60px -15px rgba(11, 19, 43, 0.5);
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 24px 60px -15px rgba(180, 83, 9, 0.24);
 }
 
-/* Warm Silk Cream & Amber Gold Highlight Pill for Rank #1 */
+.dark .silk-amber-showcase {
+  background: linear-gradient(135deg, #2b1807 0%, #44250b 55%, #693607 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(244, 214, 176, 0.18),
+    0 24px 60px -15px rgba(0, 0, 0, 0.68);
+}
+
+/* Luminous #F4D6B0 + #D97706 Rank #1 Badge */
 .rank-1-pill {
-  background-color: rgba(244, 214, 176, 0.36);
-  border: 1px solid rgba(217, 119, 6, 0.45);
-  color: #92400e;
+  background-color: #d97706;
+  border: 1px solid #b45309;
+  color: #ffffff;
 }
 
 .dark .rank-1-pill {
-  background-color: rgba(244, 214, 176, 0.14);
-  border: 1px solid rgba(217, 119, 6, 0.5);
+  background-color: rgba(244, 214, 176, 0.2);
+  border: 1px solid #d97706;
   color: #f4d6b0;
 }
 
-/* Dot Grid Background with Fade Mask */
+/* Warm Silk Grid Background with Fade Mask */
 .dot-grid-bg {
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1px);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--amber-gold) 22%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
   mask-image: radial-gradient(ellipse at center, #000000 40%, transparent 80%);
   -webkit-mask-image: radial-gradient(ellipse at center, #000000 40%, transparent 80%);
 }
 
-/* Precision Warm Silk Cream -> Amber -> Ice Blue Hairline Divider */
+/* Precision Silk Cream -> Burnt Amber Hairline Divider */
 .hairline-divider {
   height: 1px;
   width: 100%;
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--ice-blue) 45%, transparent) 30%,
-    color-mix(in srgb, var(--silk-cream) 75%, transparent) 50%,
-    color-mix(in srgb, var(--amber-gold) 45%, transparent) 70%,
+    color-mix(in srgb, var(--silk-cream) 80%, transparent) 25%,
+    var(--amber-gold) 50%,
+    color-mix(in srgb, var(--silk-cream) 80%, transparent) 75%,
     transparent
   );
   border: none;
 }
 
-/* Thin line-colored scrollbars */
+/* Warm-tinted scrollbars */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
@@ -248,7 +261,7 @@
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--ink-subtle); }
+::-webkit-scrollbar-thumb:hover { background: var(--amber-gold); }
 
 /* Subtle 1.6s Shimmer for Skeletons */
 @keyframes shimmer {
