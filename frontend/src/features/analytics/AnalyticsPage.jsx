@@ -171,10 +171,10 @@ export default function AnalyticsPage() {
                             style={{ width: `${pct}%` }}
                             className={`h-full rounded-[4px] transition-all duration-500 ${
                               bucket === '80-100%'
-                                ? 'bg-amber-gold'
+                                ? 'bg-primary'
                                 : bucket === '60-79%'
-                                ? 'bg-honey-gold dark:bg-amber-bronze'
-                                : 'bg-silk-cream dark:bg-silk-cream/60'
+                                ? 'bg-ink/60'
+                                : 'bg-ink/25'
                             }`}
                           />
                         </div>

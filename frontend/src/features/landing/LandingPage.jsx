@@ -1,74 +1,115 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import FloatingNav from '../../components/landing/FloatingNav';
-import HeroSection from '../../components/landing/HeroSection';
-import EnterpriseLogos from '../../components/landing/EnterpriseLogos';
-import ProofStrip from '../../components/landing/ProofStrip';
-import ScoringFormulaSection from '../../components/landing/ScoringFormulaSection';
-import EnterpriseComparison from '../../components/landing/EnterpriseComparison';
-import EnterpriseSecurity from '../../components/landing/EnterpriseSecurity';
-import FeaturesAlternating from '../../components/landing/FeaturesAlternating';
-import WorkflowSimple from '../../components/landing/WorkflowSimple';
-import FAQSection from '../../components/landing/FAQSection';
-import CTASection from '../../components/landing/CTASection';
-import FooterSection from '../../components/landing/FooterSection';
-import { smoothScroll } from '../../utils/smoothScroll';
+import { FloatingNav } from '../../components/landing/FloatingNav';
+import { HeroSection } from '../../components/landing/HeroSection';
+import { AppFrameSection } from '../../components/landing/AppFrameSection';
+import { FeaturesGridSection } from '../../components/landing/FeaturesGridSection';
+import { ArchitectureSection } from '../../components/landing/ArchitectureSection';
+import { ComparisonBandSection } from '../../components/landing/ComparisonBandSection';
+import { StatementMomentSection } from '../../components/landing/StatementMomentSection';
+import { EvaluationMomentSection } from '../../components/landing/EvaluationMomentSection';
+import { FAQSection } from '../../components/landing/FAQSection';
+import { FooterSection } from '../../components/landing/FooterSection';
+import { useKitStylesheetScope } from '../../utils/kitScope';
+
+let kitBootedOnce = false;
+
+function loadPublicAssetModule(subpath) {
+  const url = `${window.location.origin}/assets/${subpath}`;
+  return import(/* @vite-ignore */ url);
+}
 
 export default function LandingPage() {
+  useKitStylesheetScope(true);
   const navigate = useNavigate();
+  const mainRef = useRef(null);
 
-  useEffect(() => {
-    smoothScroll.init();
-    return () => {
-      smoothScroll.destroy();
-    };
-  }, []);
-
-  const handleLaunchApp = () => {
+  const handleEnterApp = () => {
     navigate('/studio');
   };
 
+  useEffect(() => {
+    if (import.meta.env.MODE === 'test') {
+      document.documentElement.dataset.ready = '1';
+      return undefined;
+    }
+
+    let active = true;
+    const mountedMoments = [];
+
+    async function bootKit() {
+      try {
+        const wasBooted = kitBootedOnce;
+        kitBootedOnce = true;
+
+        const [sysMod, layoutMod, dgMod, momentsMod] = await Promise.all([
+          loadPublicAssetModule('system.js'),
+          loadPublicAssetModule('layout/layout.js'),
+          loadPublicAssetModule('diagrams/diagram.js'),
+          loadPublicAssetModule('moments/moments.js'),
+        ]);
+        if (!active) return;
+
+        // First import auto-invokes init() inside system.js & layout.js; only re-run on SPA return mounts
+        if (wasBooted) {
+          if (sysMod?.default?.init) sysMod.default.init();
+          if (layoutMod?.default?.init) layoutMod.default.init();
+        }
+        if (dgMod?.default?.auto && mainRef.current) {
+          dgMod.default.auto(mainRef.current);
+        }
+        if (momentsMod?.mountAll && mainRef.current) {
+          const list = await momentsMod.mountAll(mainRef.current);
+          if (Array.isArray(list)) mountedMoments.push(...list);
+        }
+      } catch {
+        document.documentElement.dataset.ready = '1';
+      }
+    }
+
+    bootKit();
+
+    return () => {
+      active = false;
+      mountedMoments.forEach((el) => {
+        try {
+          el?.__moment?.destroy?.();
+        } catch {
+          // ignore cleanup error on unmount
+        }
+      });
+    };
+  }, []);
+
+  const canPortal = typeof document !== 'undefined' && Boolean(document.body);
+
   return (
-    <div className="relative min-h-screen bg-canvas text-ink overflow-x-clip selection:bg-primary selection:text-on-primary">
-      {/* 1. Floating Enterprise Navigation */}
-      <FloatingNav onEnterApp={handleLaunchApp} />
+    <>
+      <FloatingNav onEnterApp={handleEnterApp} />
 
-      {/* 2. Enterprise Hero Section with Live Interactive Ranking Demo */}
-      <HeroSection onEnterApp={handleLaunchApp} />
+      <main id="top" ref={mainRef}>
+        <HeroSection onEnterApp={handleEnterApp} />
+        <AppFrameSection />
+        <FeaturesGridSection />
+        <ArchitectureSection />
+        <ComparisonBandSection />
+        <StatementMomentSection />
+        <EvaluationMomentSection />
+        <FAQSection />
+      </main>
 
-      {/* 3. Global Enterprise Logo Marquee */}
-      <EnterpriseLogos />
+      <FooterSection onEnterApp={handleEnterApp} />
 
-      {/* 4. Precision Proof & Benchmark Metrics */}
-      <ProofStrip />
-
-      {/* 5. Signature Explainable 4-Pillar Scoring Formula */}
-      <ScoringFormulaSection />
-
-      {/* 6. Three-Way Enterprise Architecture Comparison */}
-      <div id="comparison" className="scroll-mt-16">
-        <EnterpriseComparison />
-      </div>
-
-      {/* 7. Enterprise Security, Privacy & Bias-Audit Governance */}
-      <div id="security" className="scroll-mt-16">
-        <EnterpriseSecurity />
-      </div>
-
-      {/* 8. Core Product Modules */}
-      <FeaturesAlternating />
-
-      {/* 9. Three-Step Workflow */}
-      <WorkflowSimple />
-
-      {/* 10. Enterprise FAQ */}
-      <FAQSection />
-
-      {/* 11. High-Impact Call to Action */}
-      <CTASection onEnterApp={handleLaunchApp} />
-
-      {/* 12. Enterprise Multi-Column Footer */}
-      <FooterSection onEnterApp={handleLaunchApp} />
-    </div>
+      {canPortal &&
+        createPortal(
+          <nav className="actionbar" aria-label="Quick actions">
+            <button type="button" className="btn btn--primary" onClick={handleEnterApp}>
+              Open the studio
+            </button>
+          </nav>,
+          document.body
+        )}
+    </>
   );
 }

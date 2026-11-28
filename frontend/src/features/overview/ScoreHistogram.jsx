@@ -40,10 +40,10 @@ export default function ScoreHistogram({ histogramBuckets, totalEvaluated, maxBu
                       style={{ height: `${fillPercent}%` }}
                       className={`w-full rounded-[4px] transition-all duration-500 ${
                         bucket.tone === 'high'
-                          ? 'bg-amber-gold'
+                          ? 'bg-primary'
                           : bucket.tone === 'mid'
-                            ? 'bg-honey-gold dark:bg-amber-bronze'
-                            : 'bg-silk-cream dark:bg-silk-cream/60'
+                            ? 'bg-ink/60'
+                            : 'bg-ink/25'
                       }`}
                       title={`${bucket.label}: ${bucket.count} candidate(s)`}
                     />
@@ -60,15 +60,15 @@ export default function ScoreHistogram({ histogramBuckets, totalEvaluated, maxBu
 
           <div className="flex items-center justify-between text-[13px] text-ink-muted pt-1">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-[2px] bg-amber-gold" />
+              <span className="w-2 h-2 rounded-[2px] bg-primary" />
               <span>80%–100% Fit</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-[2px] bg-honey-gold dark:bg-amber-bronze" />
+              <span className="w-2 h-2 rounded-[2px] bg-ink/60" />
               <span>60%–79% Moderate</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/40 dark:bg-silk-cream/60" />
+              <span className="w-2 h-2 rounded-[2px] bg-ink/25 border border-line" />
               <span>&lt;60% Review</span>
             </span>
           </div>

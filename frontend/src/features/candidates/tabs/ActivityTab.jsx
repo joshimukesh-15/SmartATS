@@ -61,7 +61,7 @@ export default function ActivityTab({
           value={resolvedNewNoteContent}
           onChange={(e) => resolvedSetNewNoteContent(e.target.value)}
           rows={3}
-          className="w-full p-3 text-[13px] rounded-[10px] border border-line bg-surface text-ink placeholder:text-ink-subtle focus:outline-hidden focus:ring-2 focus:ring-primary resize-y"
+          className="w-full p-3 text-[13px] rounded-[10px] border border-line bg-surface text-ink placeholder:text-ink-subtle focus:ring-2 focus:ring-primary focus-visible:outline-2 focus-visible:outline-primary resize-y"
         />
         <div className="flex justify-end pt-1">
           <Button

@@ -82,7 +82,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
         <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
           <div className="flex items-center justify-between text-ink-muted">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="h-2 w-2 rounded-[2px] bg-amber-gold" />
+              <span className="h-2 w-2 rounded-[2px] bg-primary" />
               Skills Coverage ({Math.round(wSkills * 100)}%)
             </span>
             <span className="tabular-nums text-[13px]">
@@ -97,7 +97,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
         <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
           <div className="flex items-center justify-between text-ink-muted">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="h-2 w-2 rounded-[2px] bg-honey-gold dark:bg-silk-cream" />
+              <span className="h-2 w-2 rounded-[2px] bg-ink/45" />
               Semantic Text ({Math.round(wText * 100)}%)
             </span>
             <span className="tabular-nums text-[13px]">
@@ -113,7 +113,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
           <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="h-2 w-2 rounded-[2px] bg-amber-bronze" />
+                <span className="h-2 w-2 rounded-[2px] bg-ink/80" />
                 Experience Fit ({Math.round(wExp * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -130,7 +130,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
           <div className="rounded-[12px] border border-line bg-surface p-3.5 space-y-1">
             <div className="flex items-center justify-between text-ink-muted">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="h-2 w-2 rounded-[2px] bg-silk-cream border border-amber-gold/40 dark:bg-silk-cream/55" />
+                <span className="h-2 w-2 rounded-[2px] bg-ink/20 border border-line" />
                 Education ({Math.round(wEdu * 100)}%)
               </span>
               <span className="tabular-nums text-[13px]">
@@ -155,7 +155,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
         <div data-testid="eval-tab-point-math-lines" className="space-y-1.5 text-[13px] tabular-nums">
           <div className="flex items-center justify-between text-ink">
             <span className="flex items-center gap-1.5 text-ink-muted">
-              <span className="h-2 w-2 rounded-[2px] bg-amber-gold" />
+              <span className="h-2 w-2 rounded-[2px] bg-primary" />
               <span>Skills ({(wSkills * 100).toFixed(0)}%)</span>
             </span>
             <span className="font-medium">
@@ -165,7 +165,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
 
           <div className="flex items-center justify-between text-ink">
             <span className="flex items-center gap-1.5 text-ink-muted">
-              <span className="h-2 w-2 rounded-[2px] bg-honey-gold dark:bg-silk-cream" />
+              <span className="h-2 w-2 rounded-[2px] bg-ink/45" />
               <span>Text ({(wText * 100).toFixed(0)}%)</span>
             </span>
             <span className="font-medium">
@@ -177,7 +177,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
             <>
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="h-2 w-2 rounded-[2px] bg-amber-bronze" />
+                  <span className="h-2 w-2 rounded-[2px] bg-ink/80" />
                   <span>Experience ({(wExp * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">
@@ -187,7 +187,7 @@ export default function EvaluationTab({ candidate, breakdown }) {
 
               <div className="flex items-center justify-between text-ink">
                 <span className="flex items-center gap-1.5 text-ink-muted">
-                  <span className="h-2 w-2 rounded-[2px] bg-silk-cream border border-amber-gold/40 dark:bg-silk-cream/55" />
+                  <span className="h-2 w-2 rounded-[2px] bg-ink/20 border border-line" />
                   <span>Education ({(wEdu * 100).toFixed(0)}%)</span>
                 </span>
                 <span className="font-medium">

@@ -73,7 +73,7 @@ export function CommandPalette({ isOpen, onOpenChange, onCreateJobOpen }) {
               <div className="flex items-center px-4 border-b border-line">
                 <Command.Input
                   placeholder="Type a command or search screens..."
-                  className="w-full h-12 bg-transparent text-[14px] text-ink placeholder:text-ink-subtle focus:outline-none"
+                  className="w-full h-12 bg-transparent text-[14px] text-ink placeholder:text-ink-subtle focus-visible:outline-2 focus-visible:outline-primary"
                   autoFocus
                 />
                 <kbd className="px-1.5 py-0.5 text-[13px] rounded-[4px] border border-line bg-surface-alt text-ink-muted">

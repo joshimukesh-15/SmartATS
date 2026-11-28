@@ -77,7 +77,7 @@ export default function PipelineStepper({
                 workflow.handleCancelTransition();
               }
             }}
-            className="min-w-[200px] flex-1 rounded-[8px] border border-line bg-surface px-3 py-1.5 text-[13px] text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none"
+            className="min-w-[200px] flex-1 rounded-[8px] border border-line bg-surface px-3 py-1.5 text-[13px] text-ink placeholder:text-ink-muted focus:border-primary focus-visible:outline-2 focus-visible:outline-primary"
           />
           <Button variant="secondary" size="sm" id="cx" onClick={workflow.handleCancelTransition}>
             Cancel

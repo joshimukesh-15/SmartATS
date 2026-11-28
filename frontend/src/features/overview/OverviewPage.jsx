@@ -18,10 +18,10 @@ import PipelineFunnel from './PipelineFunnel';
 
 const CANONICAL_STAGE_META = [
   { stage: 'New', desc: 'Awaiting review', borderTone: 'border-l-line' },
-  { stage: 'Reviewing', desc: 'Screen in progress', borderTone: 'border-l-silk-cream' },
-  { stage: 'Interviewing', desc: 'Panel scheduled', borderTone: 'border-l-honey-gold' },
-  { stage: 'Offer', desc: 'Offer extended', borderTone: 'border-l-amber-gold' },
-  { stage: 'Hired', desc: 'Offer accepted', borderTone: 'border-l-amber-deep' },
+  { stage: 'Reviewing', desc: 'Screen in progress', borderTone: 'border-l-ink/35' },
+  { stage: 'Interviewing', desc: 'Panel scheduled', borderTone: 'border-l-ink/65' },
+  { stage: 'Offer', desc: 'Offer extended', borderTone: 'border-l-primary' },
+  { stage: 'Hired', desc: 'Offer accepted', borderTone: 'border-l-emerald-600' },
   { stage: 'Rejected', desc: 'Archived records', borderTone: 'border-l-line/60' },
 ];
 

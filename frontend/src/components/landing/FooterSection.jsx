@@ -1,99 +1,98 @@
-import { Shield, Lock, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-export default function FooterSection({ onEnterApp }) {
+export function FooterSection({ onEnterApp }) {
   return (
-    <footer className="border-t border-line bg-surface text-ink pt-16 pb-12">
-      <div className="max-w-[1240px] mx-auto px-6 sm:px-8 lg:px-12">
-        {/* Top 4-Column Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12 pb-14 border-b border-line">
-          {/* Brand Info (2 cols) */}
-          <div className="col-span-2 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-br from-amber-gold to-amber-deep text-white font-bold text-[14px] flex items-center justify-center select-none shadow-xs ring-1 ring-inset ring-silk-cream/45">
-                S
-              </span>
-              <span className="text-[18px] font-bold tracking-tight text-ink">SmartATS</span>
-              <span className="text-[13px] font-medium text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[8px] border border-line">
-                Enterprise
-              </span>
+    <footer
+      className="footer closing footer--dark ground-inverse"
+      id="closing"
+      style={{ '--hm': 2 }}
+      aria-labelledby="close-h"
+    >
+      <div className="wrap">
+        <div className="closing__cta close--word">
+          <div className="section-head--split">
+            <div>
+              <h2 id="close-h">Screen the next resume shortlist with open math</h2>
+              <p className="t-lead">Run locally on FastAPI and PostgreSQL, or open the workspace directly.</p>
             </div>
-            <p className="text-[14px] text-ink-muted leading-relaxed max-w-sm">
-              The deterministic recruitment intelligence platform. Providing mathematically explainable, auditable candidate rankings for global enterprise hiring teams.
-            </p>
-            <div className="flex items-center gap-3 pt-2 text-[13px] text-ink-muted">
-              <span className="inline-flex items-center gap-1.5 bg-surface-alt px-2.5 py-1 rounded-[8px] border border-line">
-                <Shield className="w-3.5 h-3.5 text-ink-muted" />
-                <span>EEOC Defensible</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 bg-surface-alt px-2.5 py-1 rounded-[8px] border border-line">
-                <Lock className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Zero Model Training</span>
-              </span>
-            </div>
+            <button type="button" className="btn btn--primary btn--xl" onClick={onEnterApp}>
+              Open the studio
+            </button>
           </div>
-
-          {/* Column 1: Platform */}
-          <div className="space-y-3">
-            <h4 className="text-[13px] font-semibold text-ink">Platform</h4>
-            <ul className="space-y-2 text-[14px] text-ink-muted">
-              <li>
-                <button type="button" onClick={onEnterApp} className="hover:text-ink transition-colors cursor-pointer text-left">
-                  Recruiter Studio
-                </button>
-              </li>
-              <li><a href="#scoring" className="hover:text-ink transition-colors">4-Pillar Scoring</a></li>
-              <li><a href="#features" className="hover:text-ink transition-colors">Candidate Comparison</a></li>
-              <li><a href="#workflow" className="hover:text-ink transition-colors">Deduplication Engine</a></li>
-            </ul>
-          </div>
-
-          {/* Column 2: Governance */}
-          <div className="space-y-3">
-            <h4 className="text-[13px] font-semibold text-ink">Governance</h4>
-            <ul className="space-y-2 text-[14px] text-ink-muted">
-              <li><a href="#security" className="hover:text-ink transition-colors">Enterprise Security</a></li>
-              <li><a href="#comparison" className="hover:text-ink transition-colors">Bias-Audit Defensibility</a></li>
-              <li><a href="#security" className="hover:text-ink transition-colors">Privacy Architecture</a></li>
-              <li><a href="#security" className="hover:text-ink transition-colors">SOC2 / ISO 27001</a></li>
-            </ul>
-          </div>
-
-          {/* Column 3: Resources */}
-          <div className="space-y-3">
-            <h4 className="text-[13px] font-semibold text-ink">Developers</h4>
-            <ul className="space-y-2 text-[14px] text-ink-muted">
-              <li>
-                <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer" className="hover:text-ink transition-colors">
-                  OpenAPI Reference
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/joshimukesh-15/SmartATS" target="_blank" rel="noreferrer" className="hover:text-ink transition-colors">
-                  GitHub Repository
-                </a>
-              </li>
-              <li><a href="#faq" className="hover:text-ink transition-colors">Enterprise FAQ</a></li>
-              <li>
-                <span className="inline-flex items-center gap-1.5 text-emerald-600 font-medium text-[13px]">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Systems Operational</span>
-                </span>
-              </li>
-            </ul>
+          <div
+            className="close__word"
+            aria-hidden="true"
+            style={{
+              fontSize: 'clamp(44px, 9.5vw, 132px)',
+              lineHeight: 1.15,
+              overflow: 'visible',
+              paddingBottom: '0.08em',
+            }}
+          >
+            SmartATS
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Attribution */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-ink-muted">
-          <div>
-            &copy; {new Date().getFullYear()} SmartATS Enterprise. All rights reserved. Built with FastAPI and React 19.
+        <div className="closing__links">
+          <div className="grid">
+            <div className="footer__col span-4">
+              <h4>Product</h4>
+              <ul>
+                <li>
+                  <a href="#workspace">Score explorer</a>
+                </li>
+                <li>
+                  <a href="#pipeline">Intake pipeline</a>
+                </li>
+                <li>
+                  <a href="#architecture">Local stack</a>
+                </li>
+                <li>
+                  <a href="#comparison">Method comparison</a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="footer__col span-4 start-5">
+              <h4>Workspace</h4>
+              <ul>
+                <li>
+                  <Link to="/login">Recruiter sign in</Link>
+                </li>
+                <li>
+                  <Link to="/studio">Overview</Link>
+                </li>
+                <li>
+                  <Link to="/studio/jobs">Job requisitions</Link>
+                </li>
+                <li>
+                  <Link to="/studio/candidates">Candidate leaderboard</Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="footer__col span-4 start-9">
+              <h4>Evaluation</h4>
+              <ul>
+                <li>
+                  <a href="#evaluation">Benchmark metrics</a>
+                </li>
+                <li>
+                  <a href="#faq">FAQ</a>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="flex items-center gap-6">
-            <a href="https://github.com/joshimukesh-15/SmartATS" target="_blank" rel="noreferrer" className="hover:text-ink transition-colors">
-              Source Code
-            </a>
-            <span>·</span>
-            <span>Local & Sovereign Execution</span>
+
+          <div className="footer__legal">
+            <span>SmartATS · Deterministic resume screening workspace</span>
+            <details className="credits">
+              <summary>Stack icons via gilbarbara/logos, vscode-icons, and Lucide</summary>
+              <p>
+                Python, FastAPI, React, PostgreSQL, and Docker logos from gilbarbara/logos (CC0-1.0); PDF and
+                Word file glyphs from vscode-icons (MIT); UI icons from Lucide (ISC).
+              </p>
+            </details>
           </div>
         </div>
       </div>

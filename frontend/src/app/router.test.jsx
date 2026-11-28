@@ -39,7 +39,7 @@ describe('App Router Smoke Test', () => {
     await waitFor(
       () => {
         expect(
-          screen.getByText(/Know exactly why every candidate ranks where they do/i)
+          screen.getByText(/Resume screening for hiring teams/i)
         ).toBeInTheDocument();
       },
       { timeout: 4000 }

@@ -1,285 +1,266 @@
-import { useState, useMemo } from 'react';
-import { ArrowRight, Check } from 'lucide-react';
-import { Button, ScoreBar, ScoreValue, Avatar } from '../ui';
-import { ProductFrame } from './ProductFrame';
-import { computeBreakdown, sortCandidates } from '../../lib/score';
-import { DEFAULT_WEIGHTS } from '../../lib/constants';
-
-const weights = DEFAULT_WEIGHTS || {
-  skills: 0.40,
-  text: 0.20,
-  experience: 0.25,
-  education: 0.15,
-};
-
-const INITIAL_SKILLS = ['React', 'TypeScript', 'Node.js', 'PostgreSQL'];
-
-const SAMPLE_CANDIDATES = [
-  {
-    id: 'c1',
-    name: 'Sarah Jenkins',
-    matched_skills: ['React', 'TypeScript', 'Node.js', 'PostgreSQL'],
-    text_match: 92,
-    experience_score: 95,
-    education_score: 90,
-  },
-  {
-    id: 'c2',
-    name: 'Alex Rivera',
-    matched_skills: ['React', 'TypeScript', 'Node.js'],
-    text_match: 86,
-    experience_score: 84,
-    education_score: 85,
-  },
-  {
-    id: 'c3',
-    name: 'Jordan Lee',
-    matched_skills: ['React', 'TypeScript'],
-    text_match: 88,
-    experience_score: 76,
-    education_score: 80,
-  },
-];
-
-export default function HeroSection({ onEnterApp }) {
-  const [activeSkills, setActiveSkills] = useState(['React', 'TypeScript', 'Node.js']);
-
-  const toggleSkill = (skill) => {
-    setActiveSkills((prev) =>
-      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
-    );
-  };
-
-  // Re-score and re-order live with 350ms smooth transition
-  const scoredCandidates = useMemo(() => {
-    const list = SAMPLE_CANDIDATES.map((cand) => {
-      const breakdown = computeBreakdown(cand, { required_skills: activeSkills });
-      return {
-        ...cand,
-        final_score: breakdown.finalScore,
-        breakdown,
-      };
-    });
-    return sortCandidates(list, 'score', 'desc');
-  }, [activeSkills]);
-
+export function HeroSection({ onEnterApp }) {
   return (
-    <section className="relative isolate overflow-visible border-b border-line bg-canvas pb-20 pt-32 sm:pb-28 sm:pt-40 ambient-mesh">
-      <div aria-hidden="true" className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[520px] w-full max-w-7xl bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(244,214,176,0.55),transparent_70%)] dark:bg-[radial-gradient(ellipse_55%_55%_at_75%_10%,rgba(217,119,6,0.22),transparent_70%)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[340px] w-[520px] bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(217,119,6,0.14),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_60%_at_20%_90%,rgba(244,214,176,0.12),transparent_70%)]" />
-      <img
-        src="/images/hero-backdrop.webp"
-        alt=""
-        width="2400"
-        height="1400"
-        fetchPriority="high"
-        className="absolute inset-0 -z-10 h-full w-full object-cover object-center dark:brightness-[0.45] opacity-65 dark:opacity-50 sepia-[0.25]"
-      />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-canvas via-canvas/92 to-canvas/55 dark:via-canvas/85 dark:to-canvas/65" />
-      <div className="relative z-10 mx-auto max-w-[1200px] px-6 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          {/* Left Column (5 cols): Headline, Sentence, CTAs, No Account Note */}
-          <div className="lg:col-span-5 space-y-6 relative">
-            {/* Dot Grid and Faded Backdrop behind headline */}
-            <div className="absolute -top-12 -left-10 w-96 h-96 dot-grid-bg pointer-events-none opacity-65 dark:opacity-45" />
-            <div className="absolute -top-16 -left-12 w-[460px] h-[360px] pointer-events-none opacity-15 dark:opacity-10 dark:brightness-[0.75] overflow-hidden rounded-[20px]">
-              <img
-                src="/images/hero-backdrop.webp"
-                alt=""
-                width="1400"
-                height="900"
-                loading="eager"
-                className="w-full h-full object-cover sepia-[0.3]"
-              />
+    <section className="hero hero--triptych bg-mist" data-enter="" aria-labelledby="hero-h">
+      <div className="wrap">
+        <div className="hero-text grid hero__grid">
+          <div className="span-3">
+            <h1 id="hero-h">Resume screening for hiring teams</h1>
+            <p className="hero__lead">
+              Four weighted pillars score PDF and Word resumes in 3.4 ms per file on your own server.
+            </p>
+          </div>
+
+          <div className="ly-collage span-6 start-4" aria-label="SmartATS scoring views">
+            {/* Set 1 */}
+            <div className="ly-collage__set is-on">
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '0%',
+                  top: '2%',
+                  width: '58%',
+                  height: '46%',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', fontWeight: 600 }}>
+                  <span>Ranked shortlist</span>
+                  <span className="mono" style={{ color: 'var(--accent)' }}>4 pillars</span>
+                </div>
+                <div style={{ display: 'grid', gap: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', borderRadius: '8px', background: 'var(--p-bg)', fontSize: '13px' }}>
+                    <span style={{ fontWeight: 500 }}>Hannah Meyer</span>
+                    <strong className="mono">94%</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', borderRadius: '8px', background: 'var(--p-bg)', fontSize: '13px' }}>
+                    <span style={{ fontWeight: 500 }}>David Chen</span>
+                    <strong className="mono">82%</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', borderRadius: '8px', background: 'var(--p-bg)', fontSize: '13px' }}>
+                    <span style={{ fontWeight: 500 }}>Tomasz Nowak</span>
+                    <strong className="mono">74%</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '61%',
+                  top: '6%',
+                  width: '39%',
+                  height: '42%',
+                  padding: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 600 }}>Weights</span>
+                <dl style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '6px 8px', margin: 0, fontSize: '13px' }}>
+                  <dt style={{ color: 'var(--u-muted)' }}>Skills</dt>
+                  <dd className="mono" style={{ margin: 0, fontWeight: 600, color: 'var(--accent)' }}>40%</dd>
+                  <dt style={{ color: 'var(--u-muted)' }}>Tenure</dt>
+                  <dd className="mono" style={{ margin: 0 }}>25%</dd>
+                  <dt style={{ color: 'var(--u-muted)' }}>TF-IDF</dt>
+                  <dd className="mono" style={{ margin: 0 }}>20%</dd>
+                  <dt style={{ color: 'var(--u-muted)' }}>Degree</dt>
+                  <dd className="mono" style={{ margin: 0 }}>15%</dd>
+                </dl>
+              </div>
+
+              <div
+                className="ly-piece ui ui-panel ui-stat"
+                style={{
+                  left: '0%',
+                  top: '52%',
+                  width: '96%',
+                  height: '44%',
+                  padding: '18px 56px 18px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <img src="/assets/icons/pdf.svg" alt="" width="22" height="22" />
+                  <span style={{ fontSize: '14px', fontWeight: 600 }}>Meyer_Staff_CV.pdf</span>
+                  <span className="mono" style={{ marginLeft: 'auto', fontSize: '13px', color: 'var(--accent)' }}>3.38 ms</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px', fontSize: '13px' }}>
+                  <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--p-bg)' }}>
+                    <span style={{ display: 'block', color: 'var(--u-muted)' }}>Parser</span>
+                    <span style={{ fontWeight: 500 }}>PyMuPDF</span>
+                  </div>
+                  <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--p-bg)' }}>
+                    <span style={{ display: 'block', color: 'var(--u-muted)' }}>Hash</span>
+                    <span className="mono" style={{ fontWeight: 500 }}>SHA-256</span>
+                  </div>
+                  <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--p-bg)' }}>
+                    <span style={{ display: 'block', color: 'var(--u-muted)' }}>Match</span>
+                    <span className="mono" style={{ fontWeight: 500 }}>6 / 6</span>
+                  </div>
+                </div>
+                <svg viewBox="0 0 360 32" style={{ width: '100%', height: '32px' }} aria-hidden="true">
+                  <rect x="0" y="6" width="144" height="12" rx="3" fill="#1f6b3a" />
+                  <rect x="148" y="6" width="90" height="12" rx="3" fill="#2b2b2b" />
+                  <rect x="242" y="6" width="72" height="12" rx="3" fill="#737373" />
+                  <rect x="318" y="6" width="42" height="12" rx="3" fill="#d4d4d4" />
+                </svg>
+              </div>
             </div>
 
-            <div className="relative space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-silk-cream/65 dark:bg-silk-cream/15 backdrop-blur-xs border border-amber-gold/35 text-[13px] text-ink font-medium select-none shadow-xs">
-                <span className="w-2 h-2 rounded-[2px] bg-amber-gold" />
-                <span>Deterministic 4-Pillar Scoring ({Math.round(weights.skills * 100)}/{Math.round(weights.text * 100)}/{Math.round(weights.experience * 100)}/{Math.round(weights.education * 100)})</span>
+            {/* Set 2 */}
+            <div className="ly-collage__set">
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '0%',
+                  top: '4%',
+                  width: '57%',
+                  height: '44%',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 600 }}>Intake queue</span>
+                <div style={{ display: 'grid', gap: '8px', fontSize: '13px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', borderRadius: '8px', background: 'var(--p-bg)' }}>
+                    <img src="/assets/icons/pdf.svg" alt="" width="18" height="18" />
+                    <span>PDF text · PyMuPDF</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', borderRadius: '8px', background: 'var(--p-bg)' }}>
+                    <img src="/assets/icons/docx.svg" alt="" width="18" height="18" />
+                    <span>Word · python-docx</span>
+                  </div>
+                </div>
               </div>
 
-              <h1 className="text-[clamp(38px,4.2vw,64px)] font-semibold tracking-[-0.04em] leading-[1.06] text-ink text-left">
-                Know exactly why every candidate ranks where they do.
-              </h1>
-
-              <p className="text-[17px] sm:text-[18px] text-ink-muted leading-[1.6] text-left max-w-xl">
-                SmartATS scores resumes with transparent, auditable math across 4 deterministic pillars:
-                {` ${Math.round(weights.skills * 100)}% required skills, ${Math.round(weights.text * 100)}% semantic text match, ${Math.round(weights.experience * 100)}% experience fit, and ${Math.round(weights.education * 100)}% education, so every shortlist can be defended.`}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-4 pt-1">
-                <Button variant="primary" size="lg" onClick={onEnterApp}>
-                  Open the studio
-                </Button>
-                <a
-                  href="#scoring"
-                  className="inline-flex items-center gap-2 text-[15px] font-medium text-ink hover:text-ink-muted transition-colors"
-                >
-                  <span>See how scoring works</span>
-                  <ArrowRight className="w-4 h-4" strokeWidth={1.75} />
-                </a>
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '61%',
+                  top: '8%',
+                  width: '39%',
+                  height: '40%',
+                  padding: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                }}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 600 }}>Dedup</span>
+                <div className="mono" style={{ fontSize: '14px', color: 'var(--accent)', fontWeight: 600 }}>
+                  SHA-256 skip
+                </div>
+                <span style={{ fontSize: '13px', color: 'var(--u-muted)' }}>Zero duplicate parses</span>
               </div>
 
-              {/* No account needed note */}
-              <div className="text-[13px] text-ink-subtle flex items-center gap-2 pt-1 select-none">
-                <span className="w-1.5 h-1.5 rounded-[2px] bg-ink-muted" />
-                <span>No account needed. Runs locally.</span>
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '0%',
+                  top: '52%',
+                  width: '96%',
+                  height: '44%',
+                  padding: '18px 56px 18px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 600 }}>
+                  <span>Normalized contact fields</span>
+                  <span className="mono" style={{ color: 'var(--accent)' }}>100% recall</span>
+                </div>
+                <p style={{ margin: 0, fontSize: '14px', color: 'var(--u-muted)' }}>
+                  Extracts emails, phone numbers, degrees, and date-span tenure directly into PostgreSQL.
+                </p>
+              </div>
+            </div>
+
+            {/* Set 3 */}
+            <div className="ly-collage__set">
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '0%',
+                  top: '4%',
+                  width: '57%',
+                  height: '44%',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 600 }}>Local stack</span>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <img src="/assets/icons/python.svg" alt="" width="24" height="24" />
+                  <img src="/assets/icons/fastapi.svg" alt="" width="24" height="24" />
+                  <img src="/assets/icons/react.svg" alt="" width="24" height="24" />
+                  <img src="/assets/icons/postgres.svg" alt="" width="24" height="24" />
+                </div>
+              </div>
+
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '61%',
+                  top: '8%',
+                  width: '39%',
+                  height: '40%',
+                  padding: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                }}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 600 }}>Benchmark</span>
+                <div className="mono" style={{ fontSize: '14px', color: 'var(--accent)', fontWeight: 600 }}>
+                  98.8% F1
+                </div>
+                <span style={{ fontSize: '13px', color: 'var(--u-muted)' }}>1.000 NDCG@3</span>
+              </div>
+
+              <div
+                className="ly-piece ui ui-panel"
+                style={{
+                  left: '0%',
+                  top: '52%',
+                  width: '96%',
+                  height: '44%',
+                  padding: '18px 56px 18px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 600 }}>
+                  <span>Zero third-party API calls</span>
+                  <span className="mono" style={{ color: 'var(--accent)' }}>Self-hosted</span>
+                </div>
+                <p style={{ margin: 0, fontSize: '14px', color: 'var(--u-muted)' }}>
+                  Runs inside local FastAPI and Docker with identical rank order on every rerun.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Right Column (7 cols): <ProductFrame> with 48px Bottom Overlap */}
-          <div className="lg:col-span-7 relative z-20 lg:-mb-12 lg:translate-y-12">
-            <ProductFrame url="smartats.app/studio/leaderboard" className="shadow-lg">
-              <div className="p-5 sm:p-6 space-y-5 bg-surface">
-                {/* Live Demo Skill Toggle Chips */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-medium text-ink">
-                      Toggle required job competencies:
-                    </span>
-                    <span className="text-[13px] font-medium text-ink-muted bg-surface-alt px-2 py-0.5 rounded-[8px] border border-line">
-                      Live demo
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {INITIAL_SKILLS.map((skill) => {
-                      const active = activeSkills.includes(skill);
-                      return (
-                        <button
-                          key={skill}
-                          type="button"
-                          onClick={() => toggleSkill(skill)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[13px] font-medium transition-colors cursor-pointer select-none border ${
-                            active
-                              ? 'bg-primary text-on-primary border-primary'
-                              : 'bg-surface-alt text-ink border-line hover:border-ink-subtle'
-                          }`}
-                        >
-                          {active && <Check className="w-3.5 h-3.5" strokeWidth={1.75} />}
-                          <span>{skill}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Candidate Table with Avatar, Rank Markers, Two-Segment Bars */}
-                <div className="space-y-2.5">
-                  {scoredCandidates.map((cand, idx) => {
-                    const b = cand.breakdown;
-                    const isTop = idx === 0;
-
-                    return (
-                      <div
-                        key={cand.id}
-                        className={`p-3.5 rounded-[10px] border transition-all duration-350 ease-out space-y-2 ${
-                          isTop
-                            ? 'bg-silk-cream/40 dark:bg-surface-alt/80 border-amber-gold/45 shadow-xs'
-                            : 'bg-surface-alt/30 border-line/60 hover:bg-surface-alt/50'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3 min-w-0">
-                            {/* Rank Marker */}
-                            <span
-                              className={`w-6 h-6 rounded-[6px] font-semibold text-[13px] flex items-center justify-center shrink-0 ${
-                                isTop
-                                  ? 'rank-1-pill'
-                                  : 'bg-surface text-ink-muted border border-line'
-                              }`}
-                            >
-                              {idx + 1}
-                            </span>
-
-                            {/* Avatar */}
-                            <Avatar name={cand.name} size="sm" />
-
-                            {/* Name & Matched Skills */}
-                            <div className="min-w-0">
-                              <div className="font-semibold text-ink text-[14px] truncate">
-                                {cand.name}
-                              </div>
-                              <div className="flex flex-wrap items-center gap-1 mt-0.5">
-                                {cand.matched_skills.map((s) => (
-                                  <span
-                                    key={s}
-                                    className={`inline-flex items-center gap-0.5 text-[13px] px-1.5 py-0.2 rounded-[4px] font-medium ${
-                                      activeSkills.includes(s)
-                                        ? 'bg-surface-alt text-ink'
-                                        : 'bg-surface text-ink-muted border border-line/60'
-                                    }`}
-                                  >
-                                    <Check className="w-3 h-3 text-primary shrink-0" strokeWidth={1.75} />
-                                    <span>{s}</span>
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="text-right shrink-0">
-                            <ScoreValue score={cand.final_score} size="sm" />
-                          </div>
-                        </div>
-
-                        {/* Multi-Segment Score Bar (4 Pillars) */}
-                        <ScoreBar
-                          skillsPoints={b.skillsCoveredPoints}
-                          textMatchPoints={b.textMatchPoints}
-                          experiencePoints={b.experiencePoints}
-                          educationPoints={b.educationPoints}
-                          finalScore={b.finalScore}
-                          height="h-2"
-                        />
-
-                        {/* Live Formula Breakdown Line Under Top Candidate (4 Point-Math Components) */}
-                        {isTop && (
-                          <div className="mt-2 pt-2 border-t border-line/70 space-y-1.5 text-[13px] font-medium transition-all duration-350 ease-out">
-                            <div className="flex items-center justify-between gap-2 text-ink">
-                              <div className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-[2px] bg-primary shrink-0" />
-                                <span className="text-ink-muted">Top Candidate Formula (4-Pillar):</span>
-                              </div>
-                              <div className="text-primary font-semibold tabular-nums shrink-0">
-                                = {cand.final_score.toFixed(1)}% final score
-                              </div>
-                            </div>
-                            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-[13px] tabular-nums text-ink-muted">
-                              <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                <span className="w-2 h-2 rounded-[2px] bg-amber-gold shrink-0" />
-                                <span>Skills ({Math.round(weights.skills * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.skillsCoveredPoints.toFixed(1)} pts</strong></span>
-                              </div>
-                              <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                <span className="w-2 h-2 rounded-[2px] bg-honey-gold dark:bg-silk-cream shrink-0" />
-                                <span>Text ({Math.round(weights.text * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.textMatchPoints.toFixed(1)} pts</strong></span>
-                              </div>
-                              <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                <span className="w-2 h-2 rounded-[2px] bg-amber-bronze shrink-0" />
-                                <span>Exp ({Math.round(weights.experience * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.experiencePoints.toFixed(1)} pts</strong></span>
-                              </div>
-                              <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                <span className="w-2 h-2 rounded-[2px] bg-silk-cream border border-amber-gold/40 dark:bg-silk-cream/55 shrink-0" />
-                                <span>Edu ({Math.round(weights.education * 100)}%): <strong className="text-ink font-semibold whitespace-nowrap">{b.educationPoints.toFixed(1)} pts</strong></span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="text-[13px] text-ink-muted leading-normal pt-1 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                  <span>Deterministic: {Math.round(weights.skills * 100)}% Required Skills + {Math.round(weights.text * 100)}% Text Match + {Math.round(weights.experience * 100)}% Experience + {Math.round(weights.education * 100)}% Education</span>
-                  <span className="text-ink-subtle">Updated live (350ms)</span>
-                </div>
-              </div>
-            </ProductFrame>
+          <div className="hero__cta span-3 start-10">
+            <button type="button" className="btn btn--primary" onClick={onEnterApp}>
+              Open the studio
+            </button>
           </div>
         </div>
       </div>
     </section>
   );
 }
+
+export default HeroSection;

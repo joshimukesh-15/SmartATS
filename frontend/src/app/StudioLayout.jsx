@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button';
 import { Kbd } from '../components/ui/Kbd';
 import { ErrorBoundary } from './ErrorBoundary';
 import { RouteSkeleton } from './RouteSkeleton';
+import { useKitStylesheetScope } from '../utils/kitScope';
 
 const ROUTE_TITLES = {
   '/studio': 'Overview',
@@ -21,6 +22,7 @@ const ROUTE_TITLES = {
 };
 
 export default function StudioLayout() {
+  useKitStylesheetScope(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);

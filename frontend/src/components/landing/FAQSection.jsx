@@ -1,103 +1,81 @@
-import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { DEFAULT_WEIGHTS } from '../../lib/constants';
+const FAQS = [
+  {
+    q: 'How are the 4 scoring pillars weighted?',
+    a: 'Default weighting assigns 40% to required skill coverage, 25% to experience tenure, 20% to scikit-learn TF-IDF similarity, and 15% to education degree tier.',
+  },
+  {
+    q: 'Does resume data stay inside our local server?',
+    a: 'Yes. Parsing, scikit-learn vectorization, and PostgreSQL persistence execute inside your own Docker stack without external inference APIs.',
+  },
+  {
+    q: 'What happens when a resume is uploaded twice?',
+    a: 'SmartATS computes a SHA-256 hash on incoming bytes. Exact duplicates bypass redundant parsing while keeping existing records intact.',
+  },
+  {
+    q: 'How does resume OCR read scanned PDFs?',
+    a: 'PyMuPDF extracts text layers first. When extracted characters fall below threshold, the intake worker invokes local Tesseract OCR.',
+  },
+];
 
-const weights = DEFAULT_WEIGHTS || {
-  skills: 0.40,
-  text: 0.20,
-  experience: 0.25,
-  education: 0.15,
-};
+const RUNTIME_CHECKS = [
+  { icon: '/assets/icons/ui-file-text.svg', label: 'PyMuPDF & DOCX parsers', status: 'Local worker' },
+  { icon: '/assets/icons/ui-shield-check.svg', label: 'SHA-256 duplicate skip', status: 'Before queue' },
+  { icon: '/assets/icons/ui-sliders-horizontal.svg', label: 'Four-pillar rubric math', status: 'Deterministic' },
+  { icon: '/assets/icons/docker.svg', label: 'Postgres & FastAPI stack', status: 'Self-hosted' },
+];
 
-export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState(0);
-
-  const faqs = [
-    {
-      q: 'How does SmartATS calculate candidate scores?',
-      a: `Scores are generated using a deterministic 4-pillar formula: ${Math.round(weights.skills * 100)}% Required Skills coverage from verified experience, ${Math.round(weights.text * 100)}% Semantic Text Alignment (TF-IDF vector cosine similarity), ${Math.round(weights.experience * 100)}% Experience Fit against seniority requirements, and ${Math.round(weights.education * 100)}% Education and credential verification. Recruiter weights can also be customized per job opening.`,
-    },
-    {
-      q: 'Does SmartATS use black-box generative AI to rank resumes?',
-      a: 'No. SmartATS intentionally avoids LLM hallucinations and black-box scoring. Every recommendation is auditable and backed by mathematical evidence that can be shown directly to engineering hiring managers.',
-    },
-    {
-      q: 'How does duplicate resume detection operate?',
-      a: 'When an applicant file is uploaded, SmartATS immediately calculates its SHA-256 cryptographic hash. If the identical file has previously been submitted by another agency or source, it is flagged and skipped without redundant reprocessing.',
-    },
-    {
-      q: 'What resume file formats are supported?',
-      a: 'Native PDF files (via PyMuPDF) and Microsoft Word documents (.docx via python-docx) are parsed directly. Scanned documents automatically use OCR fallback when text density is low.',
-    },
-    {
-      q: 'Can rankings be exported for team review?',
-      a: 'Yes. Complete leaderboards and evaluation data can be exported as structured CSV files with one click, or formatted for print and PDF reporting.',
-    },
-  ];
-
-  const toggle = (idx) => {
-    setOpenIndex((prev) => (prev === idx ? -1 : idx));
-  };
-
+export function FAQSection() {
   return (
-    <section id="faq" className="py-[72px] lg:py-[128px] bg-canvas border-t border-line scroll-mt-16">
-      <div className="max-w-[1200px] mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          {/* Left Column (Sticky Heading) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-4 text-left">
-            <div className="text-[13px] font-medium text-ink-muted">
-              Common questions
-            </div>
-            <h2 className="text-[30px] font-semibold text-ink tracking-[-0.03em] leading-[1.15]">
-              Frequently asked questions
-            </h2>
-            <p className="text-[15px] leading-[1.6] text-ink-muted">
-              Everything you need to know about our deterministic resume evaluation engine,
-              mathematical scoring formula, and data privacy.
-            </p>
+    <section className="section" id="faq" aria-labelledby="faq-h">
+      <div className="wrap grid grid--top fill">
+        <div className="span-5" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="section-head" style={{ marginBottom: 0 }}>
+            <h2 id="faq-h">Questions hiring teams ask about screening</h2>
+            <p>Operational details on file parsing, local hosting, and deterministic scoring math.</p>
           </div>
 
-          {/* Right Column: Accessible Accordion with Hairline Dividers */}
-          <div className="lg:col-span-7 text-left">
-            <div className="border-t border-line">
-              {faqs.map((faq, idx) => {
-                const isOpen = openIndex === idx;
-                return (
-                  <div key={idx} className="group">
-                    <button
-                      type="button"
-                      onClick={() => toggle(idx)}
-                      aria-expanded={isOpen}
-                      className="w-full py-5 flex items-center justify-between gap-4 text-left font-medium text-[16px] text-ink hover:text-primary transition-colors cursor-pointer select-none"
-                    >
-                      <span className="leading-snug">{faq.q}</span>
-                      <ChevronDown
-                        className={`w-4 h-4 text-ink-muted shrink-0 transition-transform duration-250 ease-out ${
-                          isOpen ? 'rotate-180 text-primary' : ''
-                        }`}
-                        strokeWidth={1.75}
-                      />
-                    </button>
+          <div
+            className="ui ui-checklist"
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--line)',
+              borderRadius: 'var(--r-md, 12px)',
+              padding: '16px 20px',
+              display: 'grid',
+              gap: '12px',
+            }}
+          >
+            {RUNTIME_CHECKS.map((check) => (
+              <div
+                key={check.label}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '12px',
+                  fontSize: '14px',
+                }}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', color: 'var(--ink)', fontWeight: 500 }}>
+                  <img src={check.icon} alt="" width="18" height="18" style={{ flexShrink: 0 }} />
+                  <span>{check.label}</span>
+                </span>
+                <span className="mono" style={{ fontSize: '12px', color: 'var(--accent)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  {check.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-                    {/* Smooth 250ms Height Transition */}
-                    <div
-                      className={`grid transition-[grid-template-rows] duration-250 ease-out overflow-hidden ${
-                        isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                      }`}
-                    >
-                      <div className="overflow-hidden">
-                        <p className="pb-5 pr-8 text-[15px] leading-[1.6] text-ink-muted">
-                          {faq.a}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Hairline Divider */}
-                    <div className="hairline-divider" />
-                  </div>
-                );
-              })}
-            </div>
+        <div className="span-6 start-7">
+          <div className="faq">
+            {FAQS.map((item) => (
+              <div key={item.q} className="faq__item">
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

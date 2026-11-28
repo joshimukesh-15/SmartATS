@@ -3,8 +3,10 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { apiClient, setAuthToken } from '../../api/client';
 import { Button } from '../../components/ui/Button';
+import { useKitStylesheetScope } from '../../utils/kitScope';
 
 export default function LoginPage() {
+  useKitStylesheetScope(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -62,13 +64,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col justify-center items-center px-4 py-12 selection:bg-primary selection:text-on-primary font-sans relative ambient-mesh">
-      {/* Background Warm Sunlight Glows over Warm Canvas */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
-        <div className="w-[520px] h-[520px] rounded-full bg-silk-cream/60 dark:bg-amber-gold/16 blur-3xl -translate-y-24 translate-x-24" />
-        <div className="w-[460px] h-[460px] rounded-full bg-amber-gold/16 dark:bg-silk-cream/10 blur-3xl translate-y-24 -translate-x-24" />
-      </div>
-
+    <div className="min-h-screen bg-canvas text-ink flex flex-col justify-center items-center px-4 py-12 selection:bg-primary selection:text-primary-ink font-sans relative">
+      {/* Main Content */}
       <div className="w-full max-w-[420px] relative z-10 space-y-6">
         {/* Brand / Logo Header */}
         <div className="text-center space-y-2">
@@ -76,7 +73,7 @@ export default function LoginPage() {
             to="/"
             className="inline-flex items-center gap-2.5 group focus-visible:outline-2 focus-visible:outline-primary rounded-[8px]"
           >
-            <span className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-amber-gold to-amber-deep text-white font-bold text-[18px] flex items-center justify-center shadow-sm ring-1 ring-inset ring-silk-cream/45 group-hover:scale-105 transition-transform">
+            <span className="w-9 h-9 rounded-[10px] bg-primary text-primary-ink font-bold text-[18px] flex items-center justify-center">
               S
             </span>
             <span className="text-[22px] font-bold text-ink tracking-tight">
@@ -123,7 +120,7 @@ export default function LoginPage() {
                   placeholder="recruiter@smartats.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-[14px] bg-surface rounded-[10px] border border-line text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  className="w-full pl-9 pr-3 py-2 text-[14px] bg-surface rounded-[10px] border border-line text-ink placeholder:text-ink-subtle focus:ring-2 focus:ring-primary focus:border-transparent focus-visible:outline-2 focus-visible:outline-primary transition-all"
                 />
               </div>
             </div>
@@ -149,7 +146,7 @@ export default function LoginPage() {
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-[14px] bg-surface rounded-[10px] border border-line text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  className="w-full pl-9 pr-3 py-2 text-[14px] bg-surface rounded-[10px] border border-line text-ink placeholder:text-ink-subtle focus:ring-2 focus:ring-primary focus:border-transparent focus-visible:outline-2 focus-visible:outline-primary transition-all"
                 />
               </div>
             </div>

@@ -61,3 +61,6 @@ frontend/.env.local
 .idea/
 *.swp
 *.swo
+
+# Design audit artifacts
+.taste-skill/
